@@ -619,6 +619,55 @@ export class GameEngine {
     return 4;
   }
 
+  // ─── Player-to-Player Trade ────────────────────────────────────────────
+
+  /**
+   * Execute a direct trade between two players.
+   * The active player gives `offering` and receives `requesting`.
+   */
+  playerTrade(
+    fromId: string,
+    toId: string,
+    offering: Partial<Record<ResourceType, number>>,
+    requesting: Partial<Record<ResourceType, number>>
+  ): ActionResult {
+    if (this.state.turnPhase !== 'TRADE_BUILD') return { ok: false, error: 'Not trade phase' };
+    if (this.currentPlayer().id !== fromId) return { ok: false, error: 'Not your turn' };
+
+    const from = this.getPlayer(fromId)!;
+    const to = this.getPlayer(toId);
+    if (!to) return { ok: false, error: 'Player not found' };
+    if (from.id === to.id) return { ok: false, error: 'Cannot trade with yourself' };
+
+    // Check both players can afford their side
+    for (const [res, amount] of Object.entries(offering)) {
+      if ((from.resources[res as ResourceType] ?? 0) < (amount ?? 0))
+        return { ok: false, error: `You don't have enough ${res}` };
+    }
+    for (const [res, amount] of Object.entries(requesting)) {
+      if ((to.resources[res as ResourceType] ?? 0) < (amount ?? 0))
+        return { ok: false, error: `${to.name} doesn't have enough ${res}` };
+    }
+
+    // Execute trade
+    for (const [res, amount] of Object.entries(offering)) {
+      from.resources[res as ResourceType] -= amount ?? 0;
+      to.resources[res as ResourceType] += amount ?? 0;
+    }
+    for (const [res, amount] of Object.entries(requesting)) {
+      to.resources[res as ResourceType] -= amount ?? 0;
+      from.resources[res as ResourceType] += amount ?? 0;
+    }
+
+    this.addLog(from.name, 'player-trade', {
+      with: to.name,
+      gave: offering,
+      received: requesting,
+    });
+
+    return { ok: true };
+  }
+
   // ─── End Turn ─────────────────────────────────────────────────────────
 
   endTurn(playerId?: string): ActionResult {

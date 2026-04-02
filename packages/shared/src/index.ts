@@ -55,6 +55,7 @@ export type {
   BoardRoad,
   ValidActions,
   GameView,
+  TradeOffer,
   GameActionEvents,
   GameStateEvents,
 } from './types/game-view';

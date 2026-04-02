@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLobby } from '@/lib/use-socket';
 import { HexBoard } from '@/components/board/HexBoard';
 import { QRCodeSVG } from '@/components/lobby/QRCode';
@@ -17,7 +18,13 @@ const COLOR_HEX: Record<string, string> = {
 
 export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = use(params);
-  const { lobby, connected, regenerateBoard, startGame } = useLobby(gameId, 'observer');
+  const router = useRouter();
+  const { lobby, connected, regenerateBoard, startGame, gameStarted } = useLobby(gameId, 'observer');
+
+  // Redirect to game view when game starts
+  useEffect(() => {
+    if (gameStarted) router.push(`/game/${gameStarted}`);
+  }, [gameStarted, router]);
   const [joinUrl, setJoinUrl] = useState('');
 
   useEffect(() => {

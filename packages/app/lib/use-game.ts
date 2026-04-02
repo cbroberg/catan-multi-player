@@ -45,6 +45,8 @@ export function useGame(gameId: string | null) {
     connected,
     lastDice,
     error,
+    setupSettlement: useCallback((vertexId: string) => emit('action:setup-settlement', vertexId), [emit]),
+    setupRoad: useCallback((edgeId: string) => emit('action:setup-road', edgeId), [emit]),
     rollDice: useCallback(() => emit('action:roll-dice'), [emit]),
     buildSettlement: useCallback((vertexId: string) => emit('action:build-settlement', vertexId), [emit]),
     buildCity: useCallback((vertexId: string) => emit('action:build-city', vertexId), [emit]),
@@ -58,5 +60,10 @@ export function useGame(gameId: string | null) {
     moveRobber: useCallback((hex: HexCoord, stealFrom?: string) => emit('action:move-robber', hex, stealFrom), [emit]),
     discardCards: useCallback((cards: Partial<Record<ResourceType, number>>) => emit('action:discard', cards), [emit]),
     endTurn: useCallback(() => emit('action:end-turn'), [emit]),
+    proposeTrade: useCallback((offering: Partial<Record<ResourceType, number>>, requesting: Partial<Record<ResourceType, number>>) => emit('action:propose-trade', offering, requesting), [emit]),
+    acceptTrade: useCallback((tradeId: string) => emit('action:accept-trade', tradeId), [emit]),
+    rejectTrade: useCallback((tradeId: string) => emit('action:reject-trade', tradeId), [emit]),
+    cancelTrade: useCallback(() => emit('action:cancel-trade'), [emit]),
+    confirmTrade: useCallback((tradeId: string, withPlayerId: string) => emit('action:confirm-trade', tradeId, withPlayerId), [emit]),
   };
 }

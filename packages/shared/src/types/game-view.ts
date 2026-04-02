@@ -91,6 +91,18 @@ export interface GameView {
   /** Recent game log entries */
   recentLog: { player: string; action: string; details: string }[];
 
+  /** Active trade offer (if any) */
+  activeTrade: TradeOffer | null;
+
+  /** Setup phase: whose turn and what they need to place */
+  setupInfo: {
+    currentPlayerId: string;
+    currentPlayerName: string;
+    needsSettlement: boolean;
+    needsRoad: boolean;
+    round: 1 | 2;
+  } | null;
+
   /** Winner ID (if game over) */
   winner: string | null;
   winnerName: string | null;
@@ -99,9 +111,30 @@ export interface GameView {
   victoryPoints: number;
 }
 
+// ─── Trade ───────────────────────────────────────────────────────────────────
+
+export interface TradeOffer {
+  id: string;
+  fromPlayerId: string;
+  fromPlayerName: string;
+  /** Resources the proposer is offering */
+  offering: Partial<Record<ResourceType, number>>;
+  /** Resources the proposer wants */
+  requesting: Partial<Record<ResourceType, number>>;
+  /** Player IDs that have accepted */
+  accepted: string[];
+  /** Player IDs that have rejected */
+  rejected: string[];
+  status: 'open' | 'accepted' | 'rejected' | 'cancelled';
+}
+
 // ─── Game Action Events (Client → Server) ────────────────────────────────────
 
 export interface GameActionEvents {
+  /** Setup phase actions */
+  'action:setup-settlement': (gameId: string, vertexId: string) => void;
+  'action:setup-road': (gameId: string, edgeId: string) => void;
+  /** Main game actions */
   'action:roll-dice': (gameId: string) => void;
   'action:build-settlement': (gameId: string, vertexId: string) => void;
   'action:build-city': (gameId: string, vertexId: string) => void;
@@ -115,6 +148,12 @@ export interface GameActionEvents {
   'action:move-robber': (gameId: string, hexCoord: HexCoord, stealFromId?: string) => void;
   'action:discard': (gameId: string, cards: Partial<Record<ResourceType, number>>) => void;
   'action:end-turn': (gameId: string) => void;
+  /** Trade actions */
+  'action:propose-trade': (gameId: string, offering: Partial<Record<ResourceType, number>>, requesting: Partial<Record<ResourceType, number>>) => void;
+  'action:accept-trade': (gameId: string, tradeId: string) => void;
+  'action:reject-trade': (gameId: string, tradeId: string) => void;
+  'action:cancel-trade': (gameId: string) => void;
+  'action:confirm-trade': (gameId: string, tradeId: string, withPlayerId: string) => void;
 }
 
 // ─── Game State Events (Server → Client) ──────────────────────────────────────

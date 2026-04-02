@@ -1,4 +1,4 @@
-import type { GameView, ValidActions, PublicPlayer, BoardBuilding, BoardRoad, ResourceType, HexCoord } from '@catan/shared';
+import type { GameView, ValidActions, PublicPlayer, BoardBuilding, BoardRoad, ResourceType, HexCoord, TradeOffer } from '@catan/shared';
 import { TERRAIN_TO_RESOURCE } from '@catan/shared';
 import { GameEngine } from '@catan/game-engine';
 import type { PlayerState } from '@catan/game-engine';
@@ -6,11 +6,13 @@ import type { PlayerState } from '@catan/game-engine';
 /**
  * Build a GameView for a specific player (includes their private hand).
  * For observers (big screen), pass null as playerId to get no private data.
+ * Pass activeTrade from the session if there's an ongoing trade offer.
  */
 export function buildGameView(
   engine: GameEngine,
   gameId: string,
-  playerId: string | null
+  playerId: string | null,
+  activeTrade?: TradeOffer | null
 ): GameView {
   const state = engine.getState();
   const currentPlayer = engine.currentPlayer();
@@ -96,9 +98,24 @@ export function buildGameView(
     myDevCards: myDevCards as any[],
     validActions,
     recentLog,
+    activeTrade: activeTrade ?? null,
+    setupInfo: buildSetupInfo(state),
     winner,
     winnerName: winnerPlayer?.name ?? null,
     victoryPoints: state.config.victoryPoints,
+  };
+}
+
+function buildSetupInfo(state: ReturnType<GameEngine['getState']>): GameView['setupInfo'] {
+  if (state.phase !== 'SETUP_ROUND_1' && state.phase !== 'SETUP_ROUND_2') return null;
+  const player = state.players[state.setupPlayerIndex];
+  if (!player) return null;
+  return {
+    currentPlayerId: player.id,
+    currentPlayerName: player.name,
+    needsSettlement: !state.setupPlacedSettlement,
+    needsRoad: state.setupPlacedSettlement,
+    round: state.setupRound,
   };
 }
 
@@ -117,7 +134,26 @@ function buildValidActions(
     validRobberHexes: [], stealTargets: [],
   };
 
-  if (!me || state.phase !== 'PLAYING') return empty;
+  if (!me) return empty;
+
+  // Setup phase — show valid placement spots for the current setup player
+  if (state.phase === 'SETUP_ROUND_1' || state.phase === 'SETUP_ROUND_2') {
+    const isSetupTurn = state.players[state.setupPlayerIndex]?.id === me.id;
+    if (!isSetupTurn) return empty;
+
+    if (!state.setupPlacedSettlement) {
+      return { ...empty, canBuildSettlement: true, validSettlementSpots: engine.getValidSettlementSpots(me.id, true) };
+    } else {
+      // Need to place road adjacent to last settlement
+      const lastSettlement = me.settlements[me.settlements.length - 1];
+      const validRoads = state.board.edges
+        .filter((e) => !e.road && e.vertexIds.includes(lastSettlement) && e.edgeType !== 'sea')
+        .map((e) => e.id);
+      return { ...empty, canBuildRoad: true, validRoadSpots: validRoads };
+    }
+  }
+
+  if (state.phase !== 'PLAYING') return empty;
 
   // Must discard (anyone, not just current player)
   if (state.turnPhase === 'ROBBER_DISCARD' && state.pendingRobberDiscard.includes(me.id)) {

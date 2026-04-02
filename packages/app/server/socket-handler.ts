@@ -74,6 +74,103 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
       }
     });
 
+    // ─── Setup Actions ──────────────────────────────────────────────────
+
+    socket.on('action:setup-settlement', (gameId, vertexId) => {
+      runAction(io, gm, socket, gameId, (engine, pid) =>
+        engine.placeInitialSettlement(pid, vertexId)
+      );
+    });
+
+    socket.on('action:setup-road', (gameId, edgeId) => {
+      runAction(io, gm, socket, gameId, (engine, pid) =>
+        engine.placeInitialRoad(pid, edgeId)
+      );
+    });
+
+    // ─── Trade Actions ──────────────────────────────────────────────────
+
+    socket.on('action:propose-trade', (gameId, offering, requesting) => {
+      const mapping = gm.getPlayerIdForSocket(socket.id);
+      if (!mapping) return;
+      const session = gm.getSession(gameId);
+      if (!session) return;
+
+      const tradeId = Math.random().toString(36).slice(2, 10);
+      const player = session.players.get(mapping.playerId);
+
+      // Store trade on session (simple single-trade model)
+      (session as any).activeTrade = {
+        id: tradeId,
+        fromPlayerId: mapping.playerId,
+        fromPlayerName: player?.name ?? 'Unknown',
+        offering,
+        requesting,
+        accepted: [],
+        rejected: [],
+        status: 'open',
+      };
+
+      broadcastGameView(io, gm, gameId);
+    });
+
+    socket.on('action:accept-trade', (gameId, tradeId) => {
+      const mapping = gm.getPlayerIdForSocket(socket.id);
+      if (!mapping) return;
+      const session = gm.getSession(gameId);
+      if (!session) return;
+      const trade = (session as any).activeTrade;
+      if (!trade || trade.id !== tradeId || trade.status !== 'open') return;
+
+      if (!trade.accepted.includes(mapping.playerId)) {
+        trade.accepted.push(mapping.playerId);
+      }
+      broadcastGameView(io, gm, gameId);
+    });
+
+    socket.on('action:reject-trade', (gameId, tradeId) => {
+      const mapping = gm.getPlayerIdForSocket(socket.id);
+      if (!mapping) return;
+      const session = gm.getSession(gameId);
+      if (!session) return;
+      const trade = (session as any).activeTrade;
+      if (!trade || trade.id !== tradeId || trade.status !== 'open') return;
+
+      if (!trade.rejected.includes(mapping.playerId)) {
+        trade.rejected.push(mapping.playerId);
+      }
+      broadcastGameView(io, gm, gameId);
+    });
+
+    socket.on('action:cancel-trade', (gameId) => {
+      const session = gm.getSession(gameId);
+      if (!session) return;
+      (session as any).activeTrade = null;
+      broadcastGameView(io, gm, gameId);
+    });
+
+    socket.on('action:confirm-trade', (gameId, tradeId, withPlayerId) => {
+      const mapping = gm.getPlayerIdForSocket(socket.id);
+      if (!mapping) return;
+      const session = gm.getSession(gameId);
+      if (!session) return;
+      const engine = gm.getEngine(gameId);
+      if (!engine) return;
+      const trade = (session as any).activeTrade;
+      if (!trade || trade.id !== tradeId || trade.status !== 'open') return;
+      if (trade.fromPlayerId !== mapping.playerId) return;
+      if (!trade.accepted.includes(withPlayerId)) return;
+
+      const result = engine.playerTrade(mapping.playerId, withPlayerId, trade.offering, trade.requesting);
+      if (result.ok) {
+        trade.status = 'accepted';
+        (session as any).activeTrade = null;
+      } else {
+        socket.emit('game:action-error', result.error ?? 'Trade failed');
+      }
+      broadcastGameView(io, gm, gameId);
+    });
+
     // ─── Game Action Events ────────────────────────────────────────────
 
     socket.on('game:request-view', (gameId) => {
@@ -201,6 +298,9 @@ function broadcastGameView(io: TypedServer, gm: GameManager, gameId: string) {
   const engine = gm.getEngine(gameId);
   if (!engine) return;
 
+  const session = gm.getSession(gameId);
+  const activeTrade = (session as any)?.activeTrade ?? null;
+
   const room = gm.getGameRoom(gameId);
   const sockets = io.sockets.adapter.rooms.get(room);
   if (!sockets) return;
@@ -209,7 +309,7 @@ function broadcastGameView(io: TypedServer, gm: GameManager, gameId: string) {
     const s = io.sockets.sockets.get(socketId);
     if (!s) continue;
     const mapping = gm.getPlayerIdForSocket(socketId);
-    const view = buildGameView(engine, gameId, mapping?.playerId ?? null);
+    const view = buildGameView(engine, gameId, mapping?.playerId ?? null, activeTrade);
     s.emit('game:view', view);
   }
 }

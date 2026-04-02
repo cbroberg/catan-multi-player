@@ -52,6 +52,8 @@ export interface ClientToServerEvents {
   'game:regenerate-board': (gameId: string) => void;
 
   // ─── Game Actions (forwarded to GameEngine) ────────────────────────
+  'action:setup-settlement': GameActionEvents['action:setup-settlement'];
+  'action:setup-road': GameActionEvents['action:setup-road'];
   'action:roll-dice': GameActionEvents['action:roll-dice'];
   'action:build-settlement': GameActionEvents['action:build-settlement'];
   'action:build-city': GameActionEvents['action:build-city'];
@@ -65,6 +67,11 @@ export interface ClientToServerEvents {
   'action:move-robber': GameActionEvents['action:move-robber'];
   'action:discard': GameActionEvents['action:discard'];
   'action:end-turn': GameActionEvents['action:end-turn'];
+  'action:propose-trade': GameActionEvents['action:propose-trade'];
+  'action:accept-trade': GameActionEvents['action:accept-trade'];
+  'action:reject-trade': GameActionEvents['action:reject-trade'];
+  'action:cancel-trade': GameActionEvents['action:cancel-trade'];
+  'action:confirm-trade': GameActionEvents['action:confirm-trade'];
 
   /** Request current game view */
   'game:request-view': (gameId: string) => void;
