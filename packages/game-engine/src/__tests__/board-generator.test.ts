@@ -183,9 +183,13 @@ describe('Topology for larger boards', () => {
   });
 
   it('all edges should have an edgeType', () => {
+    // Generate a board to get actual sea positions (procedural island generation)
+    const { board } = generateRandomBalancedBoard('seafarers-3-4');
+    const seaHexes = board.hexes.filter((h) => h.terrain === 'sea');
+    const seaSet = new Set(seaHexes.map((h) => `${h.coord.q},${h.coord.r}`));
+
     const config = getVariant('seafarers-3-4');
     const positions = resolveHexPositions(config);
-    const seaSet = new Set((config.seaPositions ?? []).map((s) => `${s.q},${s.r}`));
     const topo = computeBoardTopology(positions, seaSet);
 
     for (const edge of topo.edges) {

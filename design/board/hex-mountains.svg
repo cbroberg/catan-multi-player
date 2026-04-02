@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 115" width="100" height="115">
+  <defs>
+    <linearGradient id="mtn-bg" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%" stop-color="#90a4ae"/>
+      <stop offset="50%" stop-color="#78909c"/>
+      <stop offset="100%" stop-color="#607d8b"/>
+    </linearGradient>
+    <linearGradient id="mtn-face" x1="0" y1="0" x2="1" y2="0.5">
+      <stop offset="0%" stop-color="#8a9ea8"/>
+      <stop offset="100%" stop-color="#546e7a"/>
+    </linearGradient>
+    <linearGradient id="snow-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cfd8dc" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Hex shape -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="url(#mtn-bg)" stroke="#455a64" stroke-width="1.5"/>
+  <!-- Rock texture -->
+  <g opacity="0.25">
+    <path d="M20,50 L25,45 L28,52 L22,55 Z" fill="#546e7a"/>
+    <path d="M65,55 L70,48 L74,54 L68,58 Z" fill="#546e7a"/>
+    <path d="M40,60 L44,56 L48,62 L42,64 Z" fill="#546e7a"/>
+  </g>
+  <!-- Mountain back -->
+  <polygon points="22,60 38,20 54,60" fill="url(#mtn-face)" opacity="0.7"/>
+  <polygon points="22,60 38,20 38,60" fill="#546e7a" opacity="0.3"/>
+  <!-- Mountain front (main peak) -->
+  <polygon points="35,65 55,12 75,65" fill="url(#mtn-face)"/>
+  <polygon points="35,65 55,12 55,65" fill="#455a64" opacity="0.4"/>
+  <!-- Snow caps - back mountain -->
+  <polygon points="33,28 38,20 43,28 40,30 36,29" fill="url(#snow-grad)" opacity="0.6"/>
+  <!-- Snow caps - front mountain -->
+  <polygon points="49,22 55,12 61,22 58,25 52,24" fill="url(#snow-grad)" opacity="0.8"/>
+  <polygon points="51,20 55,12 59,20 57,22 53,21" fill="#fff" opacity="0.5"/>
+  <!-- Ridge lines for depth -->
+  <line x1="55" y1="12" x2="75" y2="65" stroke="#37474f" stroke-width="0.5" opacity="0.4"/>
+  <line x1="38" y1="20" x2="54" y2="60" stroke="#37474f" stroke-width="0.4" opacity="0.3"/>
+  <!-- Small rocks at base -->
+  <g opacity="0.3">
+    <circle cx="30" cy="62" r="2.5" fill="#546e7a"/>
+    <circle cx="68" cy="60" r="2" fill="#546e7a"/>
+    <circle cx="48" cy="64" r="1.8" fill="#607d8b"/>
+  </g>
+  <!-- Edge softening -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="none" stroke="#0e1a2e" stroke-width="0.5" opacity="0.3"/>
+</svg>

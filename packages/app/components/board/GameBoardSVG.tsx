@@ -3,9 +3,11 @@
 import { useRef, useEffect, useState } from 'react';
 import type { GameView, HexCoord } from '@catan/shared';
 import { vertexPixelPosition } from '@catan/game-engine';
-import { hexToPixel, hexPolygonPoints, TERRAIN_COLORS } from './hex-utils';
+import { hexToPixel, hexPolygonPoints } from './hex-utils';
+import { TerrainHexSVG } from './TerrainHexSVG';
 import { NumberToken } from './NumberToken';
 import { HarborMarker } from './HarborMarker';
+import { SettlementPiece, CityPiece, RoadPiece } from './PlayerPieces';
 
 const COLOR_HEX: Record<string, string> = {
   red: '#ef4444', blue: '#3b82f6', white: '#e5e5e5',
@@ -80,11 +82,19 @@ export function GameBoardSVG({
           const isHL = highlightHSet.has(`${hex.coord.q},${hex.coord.r}`);
           return (
             <g key={`h${i}`}>
+              {/* Textured terrain SVG */}
+              <TerrainHexSVG
+                terrain={hex.terrain}
+                x={c.x}
+                y={c.y}
+                size={hexSize}
+              />
+              {/* Transparent clickable overlay with highlight support */}
               <polygon
                 points={hexPolygonPoints(c, hexSize)}
-                fill={TERRAIN_COLORS[hex.terrain] ?? '#888'}
-                stroke={isHL ? '#fbbf24' : isSea ? '#1256a0' : '#8b7355'}
-                strokeWidth={isHL ? 3 : isSea ? 1 : 1.5}
+                fill="transparent"
+                stroke={isHL ? '#fbbf24' : 'none'}
+                strokeWidth={isHL ? 3 : 0}
                 opacity={isSea ? 0.5 : 1}
               />
               {hex.number != null && <NumberToken cx={c.x} cy={c.y} number={hex.number} radius={hexSize * 0.24} />}
@@ -111,8 +121,8 @@ export function GameBoardSVG({
           const b = vertexPos.get(edge.vertexIds[1]);
           if (!a || !b) return null;
           if (road) {
-            return <line key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y}
-              stroke={COLOR_HEX[road.color] ?? '#888'} strokeWidth={3.5} strokeLinecap="round" />;
+            const fill = COLOR_HEX[road.color] ?? '#888';
+            return <RoadPiece key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} color={fill} width={3.5} />;
           }
           if (isHL) {
             return <line key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y}
@@ -130,19 +140,9 @@ export function GameBoardSVG({
           if (building) {
             const fill = COLOR_HEX[building.color] ?? '#888';
             if (building.type === 'city') {
-              return (
-                <g key={v.id}>
-                  <rect x={pos.x - 5} y={pos.y - 6} width={10} height={12} rx={1.5} fill={fill} stroke="#000" strokeWidth={0.8} />
-                  <rect x={pos.x - 3} y={pos.y - 9} width={6} height={5} rx={1} fill={fill} stroke="#000" strokeWidth={0.8} />
-                </g>
-              );
+              return <CityPiece key={v.id} x={pos.x} y={pos.y} color={fill} size={hexSize * 0.38} />;
             }
-            return (
-              <g key={v.id}>
-                <rect x={pos.x - 4} y={pos.y - 3} width={8} height={7} rx={1} fill={fill} stroke="#000" strokeWidth={0.8} />
-                <polygon points={`${pos.x - 5},${pos.y - 3} ${pos.x},${pos.y - 8} ${pos.x + 5},${pos.y - 3}`} fill={fill} stroke="#000" strokeWidth={0.8} />
-              </g>
-            );
+            return <SettlementPiece key={v.id} x={pos.x} y={pos.y} color={fill} size={hexSize * 0.3} />;
           }
           if (isHL) {
             return <circle key={v.id} cx={pos.x} cy={pos.y} r={5} fill="#fbbf24" opacity={0.7} />;
@@ -155,8 +155,33 @@ export function GameBoardSVG({
           const rp = hexToPixel(view.robberPosition.q, view.robberPosition.r, hexSize);
           return (
             <g>
-              <ellipse cx={rp.x} cy={rp.y + 3} rx={5} ry={8} fill="#111" stroke="#444" strokeWidth={0.8} />
-              <circle cx={rp.x} cy={rp.y - 6} r={3.5} fill="#111" stroke="#444" strokeWidth={0.8} />
+              <defs>
+                <linearGradient id="robber-body" x1="0" y1="0" x2="0.3" y2="1">
+                  <stop offset="0%" stopColor="#3a3a3a" />
+                  <stop offset="100%" stopColor="#1a1a1a" />
+                </linearGradient>
+                <linearGradient id="robber-cloak" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#4a4040" />
+                  <stop offset="100%" stopColor="#2a2020" />
+                </linearGradient>
+              </defs>
+              {/* Base/feet */}
+              <ellipse cx={rp.x} cy={rp.y + 5} rx={5} ry={1.5} fill="#1a1a1a" />
+              {/* Body/cloak */}
+              <path d={`M${rp.x - 5},${rp.y + 4} Q${rp.x - 6},${rp.y - 5} ${rp.x - 3},${rp.y - 9} L${rp.x},${rp.y - 12} L${rp.x + 3},${rp.y - 9} Q${rp.x + 6},${rp.y - 5} ${rp.x + 5},${rp.y + 4} Z`}
+                fill="url(#robber-cloak)" />
+              {/* Head */}
+              <circle cx={rp.x} cy={rp.y - 13} r={3.5} fill="url(#robber-body)" />
+              {/* Hood */}
+              <path d={`M${rp.x - 3.5},${rp.y - 13} Q${rp.x - 3},${rp.y - 17} ${rp.x},${rp.y - 17.5} Q${rp.x + 3},${rp.y - 17} ${rp.x + 3.5},${rp.y - 13}`}
+                fill="#3a3535" stroke="#2a2020" strokeWidth="0.3" />
+              {/* Face shadow */}
+              <ellipse cx={rp.x} cy={rp.y - 12.5} rx={2.2} ry={1.5} fill="#0a0a0a" opacity="0.6" />
+              {/* Eyes */}
+              <ellipse cx={rp.x - 1.2} cy={rp.y - 12.8} rx={0.6} ry={0.35} fill="#c0392b" opacity="0.7" />
+              <ellipse cx={rp.x + 1.2} cy={rp.y - 12.8} rx={0.6} ry={0.35} fill="#c0392b" opacity="0.7" />
+              {/* Belt */}
+              <rect x={rp.x - 4} y={rp.y - 3} width={8} height={1.2} rx={0.3} fill="#5a4030" />
             </g>
           );
         })()}

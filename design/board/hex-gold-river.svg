@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 115" width="100" height="115">
+  <defs>
+    <linearGradient id="gold-bg" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#ffc107"/>
+      <stop offset="40%" stop-color="#f0a800"/>
+      <stop offset="100%" stop-color="#d49000"/>
+    </linearGradient>
+    <linearGradient id="river-water" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffd54f" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#ffecb3" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffd54f" stop-opacity="0.6"/>
+    </linearGradient>
+    <linearGradient id="shimmer" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8e1" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#fff8e1" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#fff8e1" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Hex shape -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="url(#gold-bg)" stroke="#b87800" stroke-width="1.5"/>
+  <!-- River path -->
+  <path d="M30,10 Q20,25 35,35 Q50,45 40,55 Q30,65 45,78" fill="none" stroke="url(#river-water)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M30,10 Q20,25 35,35 Q50,45 40,55 Q30,65 45,78" fill="none" stroke="#ffd54f" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <!-- River banks -->
+  <path d="M26,10 Q16,25 31,35 Q46,45 36,55 Q26,65 41,78" fill="none" stroke="#b87800" stroke-width="1" opacity="0.4"/>
+  <path d="M34,10 Q24,25 39,35 Q54,45 44,55 Q34,65 49,78" fill="none" stroke="#b87800" stroke-width="1" opacity="0.4"/>
+  <!-- Gold shimmer spots -->
+  <g opacity="0.6">
+    <circle cx="28" cy="22" r="1.5" fill="#fff8e1"/>
+    <circle cx="38" cy="38" r="1.2" fill="#fff8e1"/>
+    <circle cx="42" cy="50" r="1" fill="#fff8e1"/>
+    <circle cx="35" cy="60" r="1.3" fill="#fff8e1"/>
+    <circle cx="40" cy="72" r="1.1" fill="#fff8e1"/>
+  </g>
+  <!-- Sparkle effects -->
+  <g opacity="0.4">
+    <path d="M60,25 L62,23 L64,25 L62,27 Z" fill="#fff8e1"/>
+    <path d="M70,42 L71.5,40.5 L73,42 L71.5,43.5 Z" fill="#fff8e1"/>
+    <path d="M55,58 L56.5,56.5 L58,58 L56.5,59.5 Z" fill="#fff8e1"/>
+    <path d="M22,48 L23.5,46.5 L25,48 L23.5,49.5 Z" fill="#fff8e1"/>
+  </g>
+  <!-- Gold nuggets on shore -->
+  <g opacity="0.5">
+    <ellipse cx="62" cy="30" rx="2.5" ry="1.5" fill="#d4a000" transform="rotate(15,62,30)"/>
+    <ellipse cx="18" cy="42" rx="2" ry="1.2" fill="#d4a000" transform="rotate(-10,18,42)"/>
+    <ellipse cx="65" cy="55" rx="1.8" ry="1" fill="#d4a000" transform="rotate(8,65,55)"/>
+  </g>
+  <!-- Terrain texture -->
+  <g opacity="0.15">
+    <circle cx="70" cy="22" r="0.8" fill="#8a6500"/>
+    <circle cx="15" cy="35" r="0.6" fill="#8a6500"/>
+    <circle cx="75" cy="48" r="0.7" fill="#8a6500"/>
+    <circle cx="58" cy="65" r="0.5" fill="#8a6500"/>
+  </g>
+  <!-- Edge softening -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="none" stroke="#0e1a2e" stroke-width="0.5" opacity="0.3"/>
+</svg>

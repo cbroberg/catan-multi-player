@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 115" width="100" height="115">
+  <defs>
+    <linearGradient id="sea-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1565c0"/>
+      <stop offset="50%" stop-color="#0d47a1"/>
+      <stop offset="100%" stop-color="#0a3d8f"/>
+    </linearGradient>
+    <linearGradient id="wave-highlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#42a5f5" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#1565c0" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Hex shape -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="url(#sea-bg)" stroke="#0a3680" stroke-width="1.5"/>
+  <!-- Wave patterns -->
+  <g opacity="0.4" fill="none" stroke="#2979b3" stroke-width="1">
+    <path d="M15,20 Q25,16 35,20 Q45,24 55,20 Q65,16 75,20"/>
+    <path d="M12,32 Q22,28 32,32 Q42,36 52,32 Q62,28 72,32 Q82,36 88,32"/>
+    <path d="M10,44 Q20,40 30,44 Q40,48 50,44 Q60,40 70,44 Q80,48 90,44"/>
+    <path d="M12,56 Q22,52 32,56 Q42,60 52,56 Q62,52 72,56 Q82,60 88,56"/>
+    <path d="M18,68 Q28,64 38,68 Q48,72 58,68 Q68,64 78,68"/>
+  </g>
+  <!-- Wave crests (lighter) -->
+  <g opacity="0.2" fill="none" stroke="#64b5f6" stroke-width="0.6">
+    <path d="M20,19 Q28,16 36,19"/>
+    <path d="M42,31 Q50,28 58,31"/>
+    <path d="M25,43 Q33,40 41,43"/>
+    <path d="M55,55 Q63,52 71,55"/>
+    <path d="M30,67 Q38,64 46,67"/>
+  </g>
+  <!-- Deep water darker areas -->
+  <ellipse cx="35" cy="38" rx="10" ry="5" fill="#0a3680" opacity="0.2"/>
+  <ellipse cx="60" cy="52" rx="8" ry="4" fill="#0a3680" opacity="0.15"/>
+  <!-- Subtle foam specks -->
+  <g opacity="0.15" fill="#b3d9f7">
+    <circle cx="30" cy="20" r="0.5"/>
+    <circle cx="55" cy="32" r="0.4"/>
+    <circle cx="40" cy="55" r="0.5"/>
+    <circle cx="65" cy="44" r="0.3"/>
+  </g>
+  <!-- Edge softening -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="none" stroke="#0e1a2e" stroke-width="0.5" opacity="0.3"/>
+</svg>

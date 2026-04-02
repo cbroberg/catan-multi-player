@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catan Board Design — Agent A Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0e1a2e;
+    color: #e0dcc8;
+    font-family: Georgia, 'Times New Roman', serif;
+    padding: 40px;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 2.2rem;
+    color: #f5e6c8;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    color: #8899aa;
+    font-size: 0.95rem;
+    margin-bottom: 48px;
+    font-style: italic;
+  }
+  h2 {
+    font-size: 1.4rem;
+    color: #d4a040;
+    margin: 48px 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2a3a50;
+  }
+  h3 {
+    font-size: 1rem;
+    color: #8899aa;
+    margin: 24px 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+  }
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: end;
+  }
+  .card {
+    background: #13243d;
+    border: 1px solid #2a3a50;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    min-width: 140px;
+  }
+  .card .label {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #7788a0;
+  }
+  .card .sublabel {
+    font-size: 0.7rem;
+    color: #556677;
+  }
+  .size-row {
+    display: flex;
+    align-items: end;
+    gap: 20px;
+    margin: 12px 0;
+  }
+  .size-row .item {
+    text-align: center;
+  }
+  .size-row .item span {
+    display: block;
+    font-size: 0.65rem;
+    color: #556677;
+    margin-top: 4px;
+  }
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .swatch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #13243d;
+    border-radius: 6px;
+    border: 1px solid #2a3a50;
+  }
+  .swatch .color {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+  }
+  .swatch .info {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+  .swatch .info .name {
+    color: #c0b898;
+  }
+  .swatch .info .hex {
+    color: #667788;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.65rem;
+  }
+  .number-tokens-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .board-demo {
+    position: relative;
+    width: 500px;
+    height: 460px;
+    margin: 20px auto;
+    background: #0d47a1;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .hex-in-board {
+    position: absolute;
+  }
+  .notes {
+    background: #13243d;
+    border: 1px solid #2a3a50;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 32px;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #8899aa;
+  }
+  .notes strong { color: #c0b898; }
+  .notes code {
+    background: #1a2d48;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    color: #8bc34a;
+  }
+  .inline-svg { display: inline-block; vertical-align: middle; }
+  .dark-bg-demo {
+    background: #0e1a2e;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #2a3a50;
+  }
+  .player-pieces-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .player-color-set {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    padding: 12px;
+    background: #13243d;
+    border-radius: 8px;
+    border: 1px solid #2a3a50;
+  }
+  .player-color-set .name {
+    font-size: 0.75rem;
+    color: #7788a0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .pieces-row {
+    display: flex;
+    gap: 8px;
+    align-items: end;
+  }
+</style>
+</head>
+<body>
+
+<h1>Catan Board Elements</h1>
+<p class="subtitle">Agent A — Board Designer | Terrain hexes, tokens, pieces, and game elements</p>
+
+<!-- ============================================ -->
+<h2>1. Terrain Hex Tiles</h2>
+<p style="color:#667788; font-size:0.85rem; margin-bottom:20px;">Flat-top hexagons with internal texture, visual variation, and distinguishing patterns for accessibility.</p>
+
+<div class="grid">
+  <div class="card">
+    <img src="hex-forest.svg" width="100" height="115" alt="Forest">
+    <span class="label">Forest</span>
+    <span class="sublabel">Lumber | #2d6a30</span>
+  </div>
+  <div class="card">
+    <img src="hex-pasture.svg" width="100" height="115" alt="Pasture">
+    <span class="label">Pasture</span>
+    <span class="sublabel">Wool | #8bc34a</span>
+  </div>
+  <div class="card">
+    <img src="hex-fields.svg" width="100" height="115" alt="Fields">
+    <span class="label">Fields</span>
+    <span class="sublabel">Grain | #fdd835</span>
+  </div>
+  <div class="card">
+    <img src="hex-hills.svg" width="100" height="115" alt="Hills">
+    <span class="label">Hills</span>
+    <span class="sublabel">Brick | #d4852e</span>
+  </div>
+  <div class="card">
+    <img src="hex-mountains.svg" width="100" height="115" alt="Mountains">
+    <span class="label">Mountains</span>
+    <span class="sublabel">Ore | #78909c</span>
+  </div>
+  <div class="card">
+    <img src="hex-desert.svg" width="100" height="115" alt="Desert">
+    <span class="label">Desert</span>
+    <span class="sublabel">None | #f5e6c8</span>
+  </div>
+  <div class="card">
+    <img src="hex-sea.svg" width="100" height="115" alt="Sea">
+    <span class="label">Sea</span>
+    <span class="sublabel">Border | #1565c0</span>
+  </div>
+  <div class="card">
+    <img src="hex-gold-river.svg" width="100" height="115" alt="Gold River">
+    <span class="label">Gold River</span>
+    <span class="sublabel">Expansion | #ffc107</span>
+  </div>
+</div>
+
+<h3>Scale test (30px, 60px, 120px)</h3>
+<div class="grid" style="align-items:center;">
+  <div class="size-row">
+    <div class="item"><img src="hex-forest.svg" width="30" height="35"><span>30px</span></div>
+    <div class="item"><img src="hex-forest.svg" width="60" height="69"><span>60px</span></div>
+    <div class="item"><img src="hex-forest.svg" width="120" height="138"><span>120px</span></div>
+  </div>
+  <div class="size-row">
+    <div class="item"><img src="hex-mountains.svg" width="30" height="35"><span>30px</span></div>
+    <div class="item"><img src="hex-mountains.svg" width="60" height="69"><span>60px</span></div>
+    <div class="item"><img src="hex-mountains.svg" width="120" height="138"><span>120px</span></div>
+  </div>
+  <div class="size-row">
+    <div class="item"><img src="hex-fields.svg" width="30" height="35"><span>30px</span></div>
+    <div class="item"><img src="hex-fields.svg" width="60" height="69"><span>60px</span></div>
+    <div class="item"><img src="hex-fields.svg" width="120" height="138"><span>120px</span></div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>2. Number Tokens</h2>
+<p style="color:#667788; font-size:0.85rem; margin-bottom:20px;">Parchment-style circular tokens with pip indicators. Numbers 6 and 8 are red and bold.</p>
+
+<div class="number-tokens-demo">
+  <!-- Generate tokens for each number using inline SVG -->
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="14" fill="#2c1810">2</text><circle cx="20" cy="30" r="1.2" fill="#5d4037"/></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="14" fill="#2c1810">3</text><g fill="#5d4037"><circle cx="18" cy="30" r="1.2"/><circle cx="22" cy="30" r="1.2"/></g></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="14" fill="#2c1810">4</text><g fill="#5d4037"><circle cx="16" cy="30" r="1.2"/><circle cx="20" cy="30" r="1.2"/><circle cx="24" cy="30" r="1.2"/></g></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="14" fill="#2c1810">5</text><g fill="#5d4037"><circle cx="14" cy="30" r="1.2"/><circle cx="18" cy="30" r="1.2"/><circle cx="22" cy="30" r="1.2"/><circle cx="26" cy="30" r="1.2"/></g></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="16" font-weight="bold" fill="#c62828">6</text><g fill="#c62828"><circle cx="12" cy="30" r="1.2"/><circle cx="16" cy="30" r="1.2"/><circle cx="20" cy="30" r="1.2"/><circle cx="24" cy="30" r="1.2"/><circle cx="28" cy="30" r="1.2"/></g></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="16" font-weight="bold" fill="#c62828">8</text><g fill="#c62828"><circle cx="12" cy="30" r="1.2"/><circle cx="16" cy="30" r="1.2"/><circle cx="20" cy="30" r="1.2"/><circle cx="24" cy="30" r="1.2"/><circle cx="28" cy="30" r="1.2"/></g></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="14" fill="#2c1810">9</text><g fill="#5d4037"><circle cx="14" cy="30" r="1.2"/><circle cx="18" cy="30" r="1.2"/><circle cx="22" cy="30" r="1.2"/><circle cx="26" cy="30" r="1.2"/></g></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="13" fill="#2c1810">10</text><g fill="#5d4037"><circle cx="16" cy="30" r="1.2"/><circle cx="20" cy="30" r="1.2"/><circle cx="24" cy="30" r="1.2"/></g></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="13" fill="#2c1810">11</text><g fill="#5d4037"><circle cx="18" cy="30" r="1.2"/><circle cx="22" cy="30" r="1.2"/></g></svg>
+
+  <svg width="44" height="44" viewBox="0 0 40 40"><circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/><circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/><text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="13" fill="#2c1810">12</text><circle cx="20" cy="30" r="1.2" fill="#5d4037"/></svg>
+</div>
+
+<h3>Token on hex demo</h3>
+<div style="position:relative; display:inline-block;">
+  <img src="hex-fields.svg" width="120" height="138">
+  <svg width="48" height="48" viewBox="0 0 40 40" style="position:absolute; top:47px; left:36px;">
+    <circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/>
+    <circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/>
+    <circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/>
+    <text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="16" font-weight="bold" fill="#c62828">6</text>
+    <g fill="#c62828"><circle cx="12" cy="30" r="1.2"/><circle cx="16" cy="30" r="1.2"/><circle cx="20" cy="30" r="1.2"/><circle cx="24" cy="30" r="1.2"/><circle cx="28" cy="30" r="1.2"/></g>
+  </svg>
+</div>
+<div style="position:relative; display:inline-block; margin-left:16px;">
+  <img src="hex-forest.svg" width="120" height="138">
+  <svg width="48" height="48" viewBox="0 0 40 40" style="position:absolute; top:47px; left:36px;">
+    <circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/>
+    <circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/>
+    <circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/>
+    <text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="14" fill="#2c1810">9</text>
+    <g fill="#5d4037"><circle cx="14" cy="30" r="1.2"/><circle cx="18" cy="30" r="1.2"/><circle cx="22" cy="30" r="1.2"/><circle cx="26" cy="30" r="1.2"/></g>
+  </svg>
+</div>
+<div style="position:relative; display:inline-block; margin-left:16px;">
+  <img src="hex-mountains.svg" width="120" height="138">
+  <svg width="48" height="48" viewBox="0 0 40 40" style="position:absolute; top:47px; left:36px;">
+    <circle cx="20" cy="21" r="16" fill="#000" opacity="0.2"/>
+    <circle cx="20" cy="20" r="15" fill="#f5e6c8" stroke="#a0895e" stroke-width="1.2"/>
+    <circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/>
+    <text x="20" y="19" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="14" fill="#2c1810">3</text>
+    <g fill="#5d4037"><circle cx="18" cy="30" r="1.2"/><circle cx="22" cy="30" r="1.2"/></g>
+  </svg>
+</div>
+
+<!-- ============================================ -->
+<h2>3. Harbor Marker</h2>
+<div class="grid">
+  <div class="card">
+    <img src="harbor-marker.svg" width="80" height="64" alt="Harbor Marker">
+    <span class="label">Wooden tavern-sign</span>
+    <span class="sublabel">3:1 generic / 2:1 + resource</span>
+  </div>
+  <div class="card">
+    <div class="size-row" style="justify-content:center;">
+      <div class="item"><img src="harbor-marker.svg" width="30" height="24"><span>30px</span></div>
+      <div class="item"><img src="harbor-marker.svg" width="60" height="48"><span>60px</span></div>
+      <div class="item"><img src="harbor-marker.svg" width="120" height="96"><span>120px</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>4. Robber &amp; Pirate</h2>
+<div class="grid">
+  <div class="card">
+    <img src="robber.svg" width="45" height="60" alt="Robber">
+    <span class="label">Robber</span>
+    <span class="sublabel">Dark medieval bandit</span>
+  </div>
+  <div class="card">
+    <img src="pirate.svg" width="60" height="52" alt="Pirate">
+    <span class="label">Pirate Ship</span>
+    <span class="sublabel">Purple vessel for sea hexes</span>
+  </div>
+</div>
+
+<h3>Robber on hex demo</h3>
+<div style="position:relative; display:inline-block;">
+  <img src="hex-hills.svg" width="120" height="138">
+  <img src="robber.svg" width="30" height="40" style="position:absolute; top:42px; left:45px;">
+</div>
+<div style="position:relative; display:inline-block; margin-left:16px;">
+  <img src="hex-sea.svg" width="120" height="138">
+  <img src="pirate.svg" width="48" height="42" style="position:absolute; top:48px; left:36px;">
+</div>
+
+<!-- ============================================ -->
+<h2>5. Player Pieces</h2>
+<p style="color:#667788; font-size:0.85rem; margin-bottom:20px;">
+  Template uses red (<code>#ef4444</code>). To swap player color, replace all gradient stop-colors.
+  See SVG comments marked <code>PLAYER_COLOR</code>.
+</p>
+
+<div class="player-pieces-row">
+  <!-- Red (template) -->
+  <div class="player-color-set">
+    <span class="name" style="color:#ef4444;">Red (template)</span>
+    <div class="pieces-row">
+      <img src="settlement.svg" width="30" height="30" alt="Settlement">
+      <img src="city.svg" width="38" height="38" alt="City">
+      <img src="road.svg" width="50" height="12" alt="Road">
+    </div>
+  </div>
+</div>
+
+<h3>Scale test</h3>
+<div class="grid" style="align-items:center;">
+  <div class="size-row">
+    <div class="item"><img src="settlement.svg" width="20" height="20"><span>20px</span></div>
+    <div class="item"><img src="settlement.svg" width="30" height="30"><span>30px</span></div>
+    <div class="item"><img src="settlement.svg" width="60" height="60"><span>60px</span></div>
+  </div>
+  <div class="size-row">
+    <div class="item"><img src="city.svg" width="25" height="25"><span>25px</span></div>
+    <div class="item"><img src="city.svg" width="38" height="38"><span>38px</span></div>
+    <div class="item"><img src="city.svg" width="75" height="75"><span>75px</span></div>
+  </div>
+  <div class="size-row">
+    <div class="item"><img src="road.svg" width="30" height="8"><span>30px</span></div>
+    <div class="item"><img src="road.svg" width="50" height="12"><span>50px</span></div>
+    <div class="item"><img src="road.svg" width="100" height="25"><span>100px</span></div>
+  </div>
+</div>
+
+<h3>All 6 Player Colors (simulated)</h3>
+<div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:12px;">
+  <div style="padding:12px 20px; background:#13243d; border-radius:8px; border:1px solid #2a3a50; text-align:center;">
+    <svg width="28" height="28" viewBox="0 0 20 20"><rect x="4" y="10" width="12" height="8" fill="#ef4444" rx="0.5"/><polygon points="2,10.5 10,3 18,10.5" fill="#dc2626"/><rect x="13" y="5" width="2" height="5.5" fill="#b91c1c" rx="0.3"/></svg>
+    <div style="font-size:0.7rem; color:#ef4444; margin-top:4px;">Red</div>
+  </div>
+  <div style="padding:12px 20px; background:#13243d; border-radius:8px; border:1px solid #2a3a50; text-align:center;">
+    <svg width="28" height="28" viewBox="0 0 20 20"><rect x="4" y="10" width="12" height="8" fill="#3b82f6" rx="0.5"/><polygon points="2,10.5 10,3 18,10.5" fill="#2563eb"/><rect x="13" y="5" width="2" height="5.5" fill="#1d4ed8" rx="0.3"/></svg>
+    <div style="font-size:0.7rem; color:#3b82f6; margin-top:4px;">Blue</div>
+  </div>
+  <div style="padding:12px 20px; background:#13243d; border-radius:8px; border:1px solid #2a3a50; text-align:center;">
+    <svg width="28" height="28" viewBox="0 0 20 20"><rect x="4" y="10" width="12" height="8" fill="#e5e5e5" rx="0.5"/><polygon points="2,10.5 10,3 18,10.5" fill="#d4d4d4"/><rect x="13" y="5" width="2" height="5.5" fill="#a3a3a3" rx="0.3"/></svg>
+    <div style="font-size:0.7rem; color:#e5e5e5; margin-top:4px;">White</div>
+  </div>
+  <div style="padding:12px 20px; background:#13243d; border-radius:8px; border:1px solid #2a3a50; text-align:center;">
+    <svg width="28" height="28" viewBox="0 0 20 20"><rect x="4" y="10" width="12" height="8" fill="#f97316" rx="0.5"/><polygon points="2,10.5 10,3 18,10.5" fill="#ea580c"/><rect x="13" y="5" width="2" height="5.5" fill="#c2410c" rx="0.3"/></svg>
+    <div style="font-size:0.7rem; color:#f97316; margin-top:4px;">Orange</div>
+  </div>
+  <div style="padding:12px 20px; background:#13243d; border-radius:8px; border:1px solid #2a3a50; text-align:center;">
+    <svg width="28" height="28" viewBox="0 0 20 20"><rect x="4" y="10" width="12" height="8" fill="#22c55e" rx="0.5"/><polygon points="2,10.5 10,3 18,10.5" fill="#16a34a"/><rect x="13" y="5" width="2" height="5.5" fill="#15803d" rx="0.3"/></svg>
+    <div style="font-size:0.7rem; color:#22c55e; margin-top:4px;">Green</div>
+  </div>
+  <div style="padding:12px 20px; background:#13243d; border-radius:8px; border:1px solid #2a3a50; text-align:center;">
+    <svg width="28" height="28" viewBox="0 0 20 20"><rect x="4" y="10" width="12" height="8" fill="#92400e" rx="0.5"/><polygon points="2,10.5 10,3 18,10.5" fill="#78350f"/><rect x="13" y="5" width="2" height="5.5" fill="#5c2a0a" rx="0.3"/></svg>
+    <div style="font-size:0.7rem; color:#b45a1a; margin-top:4px;">Brown</div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>6. Dice</h2>
+<div class="grid">
+  <div class="card" style="min-width:200px;">
+    <img src="dice.svg" width="130" height="70" alt="Dice">
+    <span class="label">3D Isometric Dice</span>
+    <span class="sublabel">Showing 5+4 = 9</span>
+  </div>
+  <div class="card">
+    <div class="size-row" style="justify-content:center;">
+      <div class="item"><img src="dice.svg" width="60" height="32"><span>60px</span></div>
+      <div class="item"><img src="dice.svg" width="100" height="54"><span>100px</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>7. Mini Board Assembly Demo</h2>
+<p style="color:#667788; font-size:0.85rem; margin-bottom:20px;">How the hexes look placed together on the dark sea background.</p>
+
+<div style="background:#0d47a1; padding:40px; border-radius:12px; display:inline-block;">
+  <div style="display:flex; flex-direction:column; align-items:center; gap:-10px;">
+    <!-- Row 1: 3 hexes -->
+    <div style="display:flex; gap:4px;">
+      <img src="hex-mountains.svg" width="70" height="80">
+      <img src="hex-pasture.svg" width="70" height="80">
+      <img src="hex-fields.svg" width="70" height="80">
+    </div>
+    <!-- Row 2: 4 hexes -->
+    <div style="display:flex; gap:4px; margin-top:-18px;">
+      <img src="hex-forest.svg" width="70" height="80">
+      <img src="hex-hills.svg" width="70" height="80">
+      <img src="hex-desert.svg" width="70" height="80">
+      <img src="hex-mountains.svg" width="70" height="80">
+    </div>
+    <!-- Row 3: 5 hexes -->
+    <div style="display:flex; gap:4px; margin-top:-18px;">
+      <img src="hex-fields.svg" width="70" height="80">
+      <img src="hex-forest.svg" width="70" height="80">
+      <img src="hex-pasture.svg" width="70" height="80">
+      <img src="hex-hills.svg" width="70" height="80">
+      <img src="hex-gold-river.svg" width="70" height="80">
+    </div>
+    <!-- Row 4: 4 hexes -->
+    <div style="display:flex; gap:4px; margin-top:-18px;">
+      <img src="hex-mountains.svg" width="70" height="80">
+      <img src="hex-fields.svg" width="70" height="80">
+      <img src="hex-pasture.svg" width="70" height="80">
+      <img src="hex-forest.svg" width="70" height="80">
+    </div>
+    <!-- Row 5: 3 hexes -->
+    <div style="display:flex; gap:4px; margin-top:-18px;">
+      <img src="hex-hills.svg" width="70" height="80">
+      <img src="hex-forest.svg" width="70" height="80">
+      <img src="hex-mountains.svg" width="70" height="80">
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>8. Color Palette</h2>
+
+<h3>Terrain Colors</h3>
+<div class="palette-grid">
+  <div class="swatch"><div class="color" style="background:#2d6a30;"></div><div class="info"><div class="name">Forest</div><div class="hex">#2d6a30</div></div></div>
+  <div class="swatch"><div class="color" style="background:#8bc34a;"></div><div class="info"><div class="name">Pasture</div><div class="hex">#8bc34a</div></div></div>
+  <div class="swatch"><div class="color" style="background:#fdd835;"></div><div class="info"><div class="name">Fields</div><div class="hex">#fdd835</div></div></div>
+  <div class="swatch"><div class="color" style="background:#d4852e;"></div><div class="info"><div class="name">Hills</div><div class="hex">#d4852e</div></div></div>
+  <div class="swatch"><div class="color" style="background:#78909c;"></div><div class="info"><div class="name">Mountains</div><div class="hex">#78909c</div></div></div>
+  <div class="swatch"><div class="color" style="background:#f5e6c8;"></div><div class="info"><div class="name">Desert</div><div class="hex">#f5e6c8</div></div></div>
+  <div class="swatch"><div class="color" style="background:#1565c0;"></div><div class="info"><div class="name">Sea</div><div class="hex">#1565c0</div></div></div>
+  <div class="swatch"><div class="color" style="background:#ffc107;"></div><div class="info"><div class="name">Gold River</div><div class="hex">#ffc107</div></div></div>
+</div>
+
+<h3>Player Colors</h3>
+<div class="palette-grid">
+  <div class="swatch"><div class="color" style="background:#ef4444;"></div><div class="info"><div class="name">Red</div><div class="hex">#ef4444</div></div></div>
+  <div class="swatch"><div class="color" style="background:#3b82f6;"></div><div class="info"><div class="name">Blue</div><div class="hex">#3b82f6</div></div></div>
+  <div class="swatch"><div class="color" style="background:#e5e5e5;"></div><div class="info"><div class="name">White</div><div class="hex">#e5e5e5</div></div></div>
+  <div class="swatch"><div class="color" style="background:#f97316;"></div><div class="info"><div class="name">Orange</div><div class="hex">#f97316</div></div></div>
+  <div class="swatch"><div class="color" style="background:#22c55e;"></div><div class="info"><div class="name">Green</div><div class="hex">#22c55e</div></div></div>
+  <div class="swatch"><div class="color" style="background:#92400e;"></div><div class="info"><div class="name">Brown</div><div class="hex">#92400e</div></div></div>
+</div>
+
+<h3>UI Colors</h3>
+<div class="palette-grid">
+  <div class="swatch"><div class="color" style="background:#0e1a2e;"></div><div class="info"><div class="name">Background</div><div class="hex">#0e1a2e</div></div></div>
+  <div class="swatch"><div class="color" style="background:#0d47a1;"></div><div class="info"><div class="name">Sea BG</div><div class="hex">#0d47a1</div></div></div>
+  <div class="swatch"><div class="color" style="background:#13243d;"></div><div class="info"><div class="name">Card BG</div><div class="hex">#13243d</div></div></div>
+  <div class="swatch"><div class="color" style="background:#2a3a50;"></div><div class="info"><div class="name">Border</div><div class="hex">#2a3a50</div></div></div>
+  <div class="swatch"><div class="color" style="background:#f5e6c8;"></div><div class="info"><div class="name">Parchment</div><div class="hex">#f5e6c8</div></div></div>
+  <div class="swatch"><div class="color" style="background:#d4a040;"></div><div class="info"><div class="name">Gold Accent</div><div class="hex">#d4a040</div></div></div>
+  <div class="swatch"><div class="color" style="background:#c62828;"></div><div class="info"><div class="name">Red Accent (6/8)</div><div class="hex">#c62828</div></div></div>
+  <div class="swatch"><div class="color" style="background:#5d4037;"></div><div class="info"><div class="name">Pip Brown</div><div class="hex">#5d4037</div></div></div>
+</div>
+
+<!-- ============================================ -->
+<h2>9. Implementation Notes</h2>
+<div class="notes">
+  <p><strong>Hex geometry:</strong> All hexes use flat-top orientation with points at <code>50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4</code> in a 100x115 viewBox. This matches the flat-top hex math from Red Blob Games (60-degree angles).</p>
+  <br>
+  <p><strong>Player color swapping:</strong> In <code>settlement.svg</code>, <code>city.svg</code>, and <code>road.svg</code>, search for gradient stops containing <code>#ef4444</code> (primary), <code>#dc2626</code> (mid), <code>#b91c1c</code> (dark), <code>#991b1b</code> (darkest), and <code>#fca5a5</code> (highlight). Replace these with the equivalent shades of the player's color.</p>
+  <br>
+  <p><strong>Number token rendering:</strong> In the game, tokens should be rendered as React SVG components with dynamic <code>text</code> content and pip count. The <code>number-token.svg</code> file is a visual reference; the actual component should accept <code>number</code> and <code>isRed</code> props.</p>
+  <br>
+  <p><strong>Accessibility:</strong> Each terrain hex has distinct visual patterns beyond color: trees (forest), sheep+fence (pasture), wheat stalks (fields), brick pattern+kiln (hills), snow-capped peaks (mountains), sand dunes+cracks (desert), waves (sea), river+sparkles (gold). These patterns remain visible at all scales.</p>
+  <br>
+  <p><strong>File sizes:</strong> All SVGs are well under 5KB. No raster images, no external dependencies.</p>
+  <br>
+  <p><strong>Harbor marker:</strong> The sign text (ratio + resource icon) should be rendered dynamically in React. The SVG provides the wooden frame design template.</p>
+</div>
+
+<div style="margin-top:48px; padding-top:24px; border-top:1px solid #2a3a50; color:#445566; font-size:0.75rem;">
+  Catan Board Design — Agent A | All assets are SVG, scalable, and designed for dark background (#0e1a2e)
+</div>
+
+</body>
+</html>

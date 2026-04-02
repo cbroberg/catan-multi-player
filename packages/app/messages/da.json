@@ -1,0 +1,134 @@
+{
+  "common": {
+    "loading": "Indlæser...",
+    "connecting": "Forbinder...",
+    "error": "Fejl",
+    "waitingForGameData": "Venter på spildata...",
+    "gameStarting": "Spillet starter...",
+    "joiningGame": "Joiner spil...",
+    "players": "Spillere",
+    "cards": "kort"
+  },
+  "home": {
+    "title": "CATAN",
+    "subtitle": "Multiplayer Big Screen + Mobile",
+    "createGame": "Opret Nyt Spil",
+    "joinGame": "Join Spil",
+    "boardPreview": "Board Preview"
+  },
+  "lobby": {
+    "title": "Lobby",
+    "loading": "Indlæser lobby...",
+    "gameCode": "Game Code",
+    "scanOrVisit": "Scan eller gå til /join",
+    "players": "Spillere",
+    "waitingForPlayer": "Venter på spiller...",
+    "newBoard": "Nyt Board",
+    "balance": "Balance",
+    "startGame": "Start Spil",
+    "waitingForPlayers": "Venter på spillere ({ready}/{total} klar)",
+    "ready": "Klar",
+    "notReady": "Ikke klar",
+    "host": "Host",
+    "game": "Game",
+    "playersCount": "spillere"
+  },
+  "join": {
+    "title": "Join Catan",
+    "gameCodeLabel": "Game Code",
+    "gameCodePlaceholder": "XXXXX",
+    "codeError": "Koden skal være 5 tegn",
+    "next": "Næste",
+    "nameLabel": "Navn",
+    "namePlaceholder": "Dit navn",
+    "nameError": "Indtast dit navn",
+    "colorLabel": "Farve",
+    "avatarLabel": "Avatar",
+    "joinGame": "Join Spil",
+    "colors": {
+      "red": "Rød",
+      "blue": "Blå",
+      "white": "Hvid",
+      "orange": "Orange",
+      "green": "Grøn",
+      "brown": "Brun"
+    }
+  },
+  "game": {
+    "yourTurn": "Din tur",
+    "playerTurn": "{name}s tur",
+    "turn": "Tur",
+    "player": "Spiller",
+    "gameLog": "Game Log",
+    "phase": {
+      "SETUP_ROUND_1": "Setup Runde 1",
+      "SETUP_ROUND_2": "Setup Runde 2",
+      "PLAYING": "Spiller",
+      "GAME_OVER": "Spil Slut"
+    },
+    "turnPhase": {
+      "PRE_ROLL": "Kast terninger",
+      "ROLL_DICE": "Terningkast",
+      "ROBBER_DISCARD": "Kassér kort",
+      "ROBBER_MOVE": "Flyt røver",
+      "ROBBER_STEAL": "Stjæl kort",
+      "TRADE_BUILD": "Handel & Byg",
+      "END_TURN": "Afslut tur"
+    },
+    "setup": {
+      "placeSettlement": "Placér din settlement",
+      "placeRoad": "Placér din road",
+      "round": "Runde {round} — Tryk på boardet",
+      "waitingFor": "Venter på {name}..."
+    },
+    "actions": {
+      "rollDice": "Kast Terninger",
+      "buildSettlement": "Settlement",
+      "buildCity": "City",
+      "buildRoad": "Road",
+      "buyDevCard": "Dev Card",
+      "maritimeTrade": "Maritime 4:1",
+      "endTurn": "Afslut tur"
+    },
+    "robber": {
+      "chooseHex": "Vælg hex for røveren",
+      "stealFrom": "Stjæl fra hvem?"
+    },
+    "discard": {
+      "discardCards": "Kassér {count} kort"
+    },
+    "resources": {
+      "lumber": "Tømmer",
+      "brick": "Mursten",
+      "wool": "Uld",
+      "grain": "Korn",
+      "ore": "Malm"
+    },
+    "terrain": {
+      "forest": "Skov",
+      "pasture": "Eng",
+      "fields": "Marker",
+      "hills": "Bakker",
+      "mountains": "Bjerge",
+      "desert": "Ørken",
+      "sea": "Hav",
+      "gold_river": "Guld"
+    },
+    "harbor": {
+      "3:1": "3:1",
+      "lumber": "2:1 T",
+      "wool": "2:1 U",
+      "grain": "2:1 K",
+      "brick": "2:1 M",
+      "ore": "2:1 M"
+    },
+    "gameOver": {
+      "winner": "{name} vinder!",
+      "victoryPoints": "Victory Points"
+    },
+    "readyButton": {
+      "ready": "Klar!",
+      "notReady": "Klar?"
+    }
+  }
+}

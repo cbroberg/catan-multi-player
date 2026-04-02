@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 70" width="130" height="70">
+  <defs>
+    <linearGradient id="die-face" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e8e8e8"/>
+    </linearGradient>
+    <linearGradient id="die-side-r" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d0d0d0"/>
+      <stop offset="100%" stop-color="#b0b0b0"/>
+    </linearGradient>
+    <linearGradient id="die-side-b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c8c8c8"/>
+      <stop offset="100%" stop-color="#a0a0a0"/>
+    </linearGradient>
+    <filter id="die-shadow" x="-10%" y="-5%" width="125%" height="130%">
+      <feDropShadow dx="2" dy="3" stdDeviation="2.5" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <!-- Die 1 (showing 3) -->
+  <g transform="translate(5,5)" filter="url(#die-shadow)">
+    <!-- Top face -->
+    <polygon points="25,0 50,12 25,24 0,12" fill="url(#die-face)" stroke="#999" stroke-width="0.5"/>
+    <!-- Right face -->
+    <polygon points="50,12 50,42 25,54 25,24" fill="url(#die-side-r)" stroke="#999" stroke-width="0.5"/>
+    <!-- Left face -->
+    <polygon points="0,12 25,24 25,54 0,42" fill="url(#die-side-b)" stroke="#999" stroke-width="0.5"/>
+    <!-- Dots on top face (showing 5) -->
+    <circle cx="15" cy="7" r="2.2" fill="#1a1a1a"/>
+    <circle cx="35" cy="7" r="2.2" fill="#1a1a1a"/>
+    <circle cx="25" cy="12" r="2.2" fill="#1a1a1a"/>
+    <circle cx="15" cy="17" r="2.2" fill="#1a1a1a"/>
+    <circle cx="35" cy="17" r="2.2" fill="#1a1a1a"/>
+    <!-- Dots on right face (showing 3) -->
+    <circle cx="43" cy="20" r="1.8" fill="#2a2a2a"/>
+    <circle cx="38" cy="33" r="1.8" fill="#2a2a2a"/>
+    <circle cx="33" cy="46" r="1.8" fill="#2a2a2a"/>
+    <!-- Edge highlights -->
+    <line x1="25" y1="0" x2="50" y2="12" stroke="#fff" stroke-width="0.3" opacity="0.5"/>
+    <line x1="25" y1="0" x2="0" y2="12" stroke="#fff" stroke-width="0.3" opacity="0.4"/>
+  </g>
+  <!-- Die 2 (showing 2) -->
+  <g transform="translate(65,5)" filter="url(#die-shadow)">
+    <!-- Top face -->
+    <polygon points="25,0 50,12 25,24 0,12" fill="url(#die-face)" stroke="#999" stroke-width="0.5"/>
+    <!-- Right face -->
+    <polygon points="50,12 50,42 25,54 25,24" fill="url(#die-side-r)" stroke="#999" stroke-width="0.5"/>
+    <!-- Left face -->
+    <polygon points="0,12 25,24 25,54 0,42" fill="url(#die-side-b)" stroke="#999" stroke-width="0.5"/>
+    <!-- Dots on top face (showing 4) -->
+    <circle cx="15" cy="7" r="2.2" fill="#1a1a1a"/>
+    <circle cx="35" cy="7" r="2.2" fill="#1a1a1a"/>
+    <circle cx="15" cy="17" r="2.2" fill="#1a1a1a"/>
+    <circle cx="35" cy="17" r="2.2" fill="#1a1a1a"/>
+    <!-- Dots on right face (showing 2) -->
+    <circle cx="42" cy="22" r="1.8" fill="#2a2a2a"/>
+    <circle cx="34" cy="44" r="1.8" fill="#2a2a2a"/>
+    <!-- Edge highlights -->
+    <line x1="25" y1="0" x2="50" y2="12" stroke="#fff" stroke-width="0.3" opacity="0.5"/>
+    <line x1="25" y1="0" x2="0" y2="12" stroke="#fff" stroke-width="0.3" opacity="0.4"/>
+  </g>
+</svg>

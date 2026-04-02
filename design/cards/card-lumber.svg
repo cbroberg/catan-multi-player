@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 70" width="50" height="70">
+  <defs>
+    <linearGradient id="lumber-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2d5a1e"/>
+      <stop offset="100%" stop-color="#1a3a12"/>
+    </linearGradient>
+    <linearGradient id="lumber-wood" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8B6914"/>
+      <stop offset="30%" stop-color="#a67c2e"/>
+      <stop offset="60%" stop-color="#8B6914"/>
+      <stop offset="100%" stop-color="#6b4f10"/>
+    </linearGradient>
+    <filter id="lumber-shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Card body -->
+  <rect x="1" y="1" width="48" height="68" rx="5" ry="5" fill="url(#lumber-bg)" stroke="#3d7a2e" stroke-width="1.5"/>
+  <!-- Inner border -->
+  <rect x="4" y="4" width="42" height="62" rx="3" ry="3" fill="none" stroke="#3d7a2e" stroke-width="0.5" opacity="0.5"/>
+  <!-- Tree trunk pattern (background texture) -->
+  <line x1="12" y1="58" x2="12" y2="48" stroke="#1a3a12" stroke-width="0.5" opacity="0.3"/>
+  <line x1="25" y1="60" x2="25" y2="50" stroke="#1a3a12" stroke-width="0.5" opacity="0.3"/>
+  <line x1="38" y1="58" x2="38" y2="48" stroke="#1a3a12" stroke-width="0.5" opacity="0.3"/>
+  <!-- Log icon -->
+  <g transform="translate(25,30)" filter="url(#lumber-shadow)">
+    <!-- Bottom log -->
+    <rect x="-14" y="2" width="28" height="8" rx="4" fill="url(#lumber-wood)" stroke="#5a3e0a" stroke-width="0.8"/>
+    <!-- Log end circle -->
+    <ellipse cx="14" cy="6" rx="4" ry="4" fill="#a67c2e" stroke="#5a3e0a" stroke-width="0.8"/>
+    <circle cx="14" cy="6" r="2" fill="#8B6914" stroke="#6b4f10" stroke-width="0.4"/>
+    <circle cx="14" cy="6" r="0.8" fill="#6b4f10"/>
+    <!-- Top log -->
+    <rect x="-10" y="-8" width="28" height="8" rx="4" fill="url(#lumber-wood)" stroke="#5a3e0a" stroke-width="0.8"/>
+    <!-- Top log end circle -->
+    <ellipse cx="-10" cy="-4" rx="4" ry="4" fill="#a67c2e" stroke="#5a3e0a" stroke-width="0.8"/>
+    <circle cx="-10" cy="-4" r="2" fill="#8B6914" stroke="#6b4f10" stroke-width="0.4"/>
+    <circle cx="-10" cy="-4" r="0.8" fill="#6b4f10"/>
+    <!-- Axe -->
+    <g transform="translate(2,-6) rotate(-30)">
+      <rect x="-1" y="-12" width="2" height="14" rx="0.5" fill="#8B7355"/>
+      <path d="M-5,-12 Q-6,-15 -2,-16 L1,-12 Z" fill="#9ca3af" stroke="#6b7280" stroke-width="0.5"/>
+    </g>
+  </g>
+  <!-- Label -->
+  <text x="25" y="54" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#c8e6c9" font-weight="bold" letter-spacing="0.5">LUMBER</text>
+  <!-- Count badge -->
+  <circle cx="41" cy="10" r="7" fill="#1a3a12" stroke="#4caf50" stroke-width="1"/>
+  <text x="41" y="13" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="#e8f5e9" font-weight="bold">0</text>
+  <!-- Diagonal stripe pattern for colorblind (subtle) -->
+  <line x1="4" y1="62" x2="8" y2="66" stroke="#3d7a2e" stroke-width="0.5" opacity="0.4"/>
+  <line x1="8" y1="62" x2="12" y2="66" stroke="#3d7a2e" stroke-width="0.5" opacity="0.4"/>
+  <line x1="12" y1="62" x2="16" y2="66" stroke="#3d7a2e" stroke-width="0.5" opacity="0.4"/>
+</svg>

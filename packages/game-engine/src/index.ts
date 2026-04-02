@@ -37,6 +37,16 @@ export {
   distributeHarbors,
 } from './board/harbor-detection';
 
+// Island generation (Seafarers)
+export {
+  generateIslandLayout,
+  computeTerrainDistribution,
+} from './board/island-generator';
+export type {
+  IslandGenerationConfig,
+  IslandGenerationResult,
+} from './board/island-generator';
+
 // Game engine
 export { GameEngine } from './engine/game-engine';
 export type { EngineState, PlayerState, DevCardType, ActionResult, GameLogEntry } from './engine/types';

@@ -92,6 +92,8 @@ export interface GameBoard {
   robberPosition: HexCoord;
   piratePosition: HexCoord | null;
   variantId: string;
+  /** Foreign island groups for Seafarers VP bonus (procedurally generated) */
+  foreignIslands?: HexCoord[][];
 }
 
 // ─── Board Presets ───────────────────────────────────────────────────────────

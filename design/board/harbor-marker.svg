@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 40" width="50" height="40">
+  <defs>
+    <linearGradient id="wood-frame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b6914"/>
+      <stop offset="30%" stop-color="#6d4c2e"/>
+      <stop offset="100%" stop-color="#5a3a1e"/>
+    </linearGradient>
+    <linearGradient id="sign-face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5e6c8"/>
+      <stop offset="100%" stop-color="#e0cda5"/>
+    </linearGradient>
+    <pattern id="wood-grain" patternUnits="userSpaceOnUse" width="4" height="30">
+      <rect width="4" height="30" fill="none"/>
+      <line x1="1" y1="0" x2="1.2" y2="30" stroke="#4a2a10" stroke-width="0.4" opacity="0.3"/>
+      <line x1="3" y1="0" x2="2.8" y2="30" stroke="#4a2a10" stroke-width="0.3" opacity="0.2"/>
+    </pattern>
+    <filter id="sign-shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="1" dy="1.5" stdDeviation="1" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Hanging post -->
+  <rect x="23" y="0" width="4" height="8" fill="url(#wood-frame)" rx="1"/>
+  <rect x="23" y="0" width="4" height="8" fill="url(#wood-grain)" rx="1"/>
+  <!-- Cross beam -->
+  <rect x="8" y="6" width="34" height="3.5" fill="url(#wood-frame)" rx="1"/>
+  <rect x="8" y="6" width="34" height="3.5" fill="url(#wood-grain)" rx="1"/>
+  <!-- Chains -->
+  <line x1="14" y1="9.5" x2="14" y2="13" stroke="#8b7a5e" stroke-width="0.8"/>
+  <line x1="36" y1="9.5" x2="36" y2="13" stroke="#8b7a5e" stroke-width="0.8"/>
+  <!-- Sign board -->
+  <rect x="6" y="13" width="38" height="22" rx="2" fill="url(#sign-face)" stroke="url(#wood-frame)" stroke-width="1.5" filter="url(#sign-shadow)"/>
+  <!-- Wood grain on sign edge -->
+  <rect x="6" y="13" width="38" height="22" rx="2" fill="url(#wood-grain)" opacity="0.15"/>
+  <!-- Trade ratio text placeholder -->
+  <!-- 3:1 generic or 2:1 + resource icon -->
+  <text x="25" y="26" text-anchor="middle" dominant-baseline="middle" font-family="Georgia, 'Times New Roman', serif" font-size="10" font-weight="bold" fill="#5a3a1e">3:1</text>
+  <!-- Resource icon placeholder (question mark for generic) -->
+  <text x="25" y="33" text-anchor="middle" dominant-baseline="middle" font-family="Georgia, serif" font-size="6" fill="#8b6914">?</text>
+  <!-- Corner nails -->
+  <circle cx="10" cy="17" r="1" fill="#a0895e"/>
+  <circle cx="40" cy="17" r="1" fill="#a0895e"/>
+  <circle cx="10" cy="31" r="1" fill="#a0895e"/>
+  <circle cx="40" cy="31" r="1" fill="#a0895e"/>
+</svg>

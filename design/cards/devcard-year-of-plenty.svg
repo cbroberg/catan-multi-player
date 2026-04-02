@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 80" width="60" height="80">
+  <defs>
+    <linearGradient id="yop-bg" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#4a1a6b"/>
+      <stop offset="100%" stop-color="#2a0e40"/>
+    </linearGradient>
+    <linearGradient id="chest-wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8d6e63"/>
+      <stop offset="100%" stop-color="#5d4037"/>
+    </linearGradient>
+    <linearGradient id="chest-lid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a1887f"/>
+      <stop offset="100%" stop-color="#6d4c41"/>
+    </linearGradient>
+    <filter id="yop-shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.5"/>
+    </filter>
+    <filter id="yop-glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Card body -->
+  <rect x="1" y="1" width="58" height="78" rx="6" ry="6" fill="url(#yop-bg)" stroke="#7b3fa0" stroke-width="1.5"/>
+  <rect x="4" y="4" width="52" height="72" rx="4" ry="4" fill="none" stroke="#9c27b0" stroke-width="0.5" opacity="0.4"/>
+  <!-- Corner flourishes -->
+  <path d="M8,8 Q12,8 12,12" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M52,8 Q48,8 48,12" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M8,72 Q12,72 12,68" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M52,72 Q48,72 48,68" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <!-- Treasure chest icon -->
+  <g transform="translate(30,30)" filter="url(#yop-shadow)">
+    <!-- Golden glow behind chest -->
+    <ellipse cx="0" cy="-4" rx="16" ry="12" fill="#ffd54f" opacity="0.1" filter="url(#yop-glow)"/>
+    <!-- Chest body -->
+    <rect x="-14" y="-2" width="28" height="14" rx="2" fill="url(#chest-wood)" stroke="#4e342e" stroke-width="0.8"/>
+    <!-- Chest lid (open) -->
+    <path d="M-14,-2 L-14,-8 Q-14,-14 0,-16 Q14,-14 14,-8 L14,-2 Z" fill="url(#chest-lid)" stroke="#4e342e" stroke-width="0.8"/>
+    <!-- Metal bands -->
+    <rect x="-14" y="4" width="28" height="2" fill="#ffd54f" opacity="0.6"/>
+    <line x1="-14" y1="-2" x2="14" y2="-2" stroke="#ffd54f" stroke-width="1" opacity="0.6"/>
+    <!-- Lock -->
+    <rect x="-2" y="2" width="4" height="4" rx="0.5" fill="#ffd54f" stroke="#e09000" stroke-width="0.4"/>
+    <circle cx="0" cy="4" r="0.8" fill="#4e342e"/>
+    <!-- Treasures spilling out -->
+    <circle cx="-6" cy="-8" r="3" fill="#ffd54f" stroke="#e09000" stroke-width="0.4"/> <!-- gold coin -->
+    <circle cx="-6" cy="-8" r="1.5" fill="#e09000" opacity="0.4"/>
+    <circle cx="2" cy="-10" r="2.5" fill="#ffd54f" stroke="#e09000" stroke-width="0.4"/> <!-- gold coin -->
+    <circle cx="8" cy="-6" r="2" fill="#ffd54f" stroke="#e09000" stroke-width="0.4"/> <!-- gold coin -->
+    <!-- Gems -->
+    <polygon points="-2,-14 -4,-12 -2,-10 0,-12" fill="#e53935" stroke="#c62828" stroke-width="0.3"/>
+    <polygon points="6,-12 4,-10 6,-8 8,-10" fill="#1e88e5" stroke="#1565c0" stroke-width="0.3"/>
+    <polygon points="10,-10 9,-8 11,-8" fill="#43a047" stroke="#2e7d32" stroke-width="0.3"/>
+    <!-- Sparkles -->
+    <circle cx="-8" cy="-14" r="1" fill="#fff" opacity="0.7"/>
+    <circle cx="4" cy="-16" r="0.7" fill="#fff" opacity="0.5"/>
+    <circle cx="12" cy="-12" r="0.8" fill="#fff" opacity="0.6"/>
+  </g>
+  <!-- Card title -->
+  <text x="30" y="56" text-anchor="middle" font-family="Georgia, serif" font-size="5.5" fill="#ffd54f" font-weight="bold">YEAR OF PLENTY</text>
+  <!-- Effect text -->
+  <text x="30" y="66" text-anchor="middle" font-family="Georgia, serif" font-size="5" fill="#9575cd" font-style="italic">2 free resources</text>
+  <!-- Top label -->
+  <text x="30" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="4.5" fill="#7b3fa0" letter-spacing="2" font-weight="bold">DEVELOPMENT</text>
+</svg>

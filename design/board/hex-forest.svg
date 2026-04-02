@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 115" width="100" height="115">
+  <defs>
+    <linearGradient id="forest-bg" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#2d6a30"/>
+      <stop offset="50%" stop-color="#1e5424"/>
+      <stop offset="100%" stop-color="#163d1a"/>
+    </linearGradient>
+    <linearGradient id="tree-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a8040"/>
+      <stop offset="100%" stop-color="#1a4a1e"/>
+    </linearGradient>
+    <pattern id="forest-floor" patternUnits="userSpaceOnUse" width="12" height="12">
+      <rect width="12" height="12" fill="none"/>
+      <circle cx="2" cy="3" r="0.8" fill="#1a4a1e" opacity="0.4"/>
+      <circle cx="8" cy="7" r="0.6" fill="#1a4a1e" opacity="0.3"/>
+      <circle cx="5" cy="10" r="0.7" fill="#245a28" opacity="0.35"/>
+    </pattern>
+  </defs>
+  <!-- Hex shape -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="url(#forest-bg)" stroke="#163d1a" stroke-width="1.5"/>
+  <!-- Floor texture -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="url(#forest-floor)" opacity="0.5"/>
+  <!-- Pine tree group - back row -->
+  <g opacity="0.5">
+    <polygon points="25,38 30,18 35,38" fill="#1a5020"/>
+    <polygon points="25,32 30,12 35,32" fill="#1e5a24"/>
+    <rect x="29" y="38" width="2" height="4" fill="#4a3520"/>
+    <polygon points="68,40 73,20 78,40" fill="#1a5020"/>
+    <polygon points="68,34 73,14 78,34" fill="#1e5a24"/>
+    <rect x="72" y="40" width="2" height="4" fill="#4a3520"/>
+  </g>
+  <!-- Pine trees - front row -->
+  <g>
+    <polygon points="40,52 47,24 54,52" fill="url(#tree-shade)"/>
+    <polygon points="41,44 47,18 53,44" fill="#2a7030"/>
+    <polygon points="42,36 47,12 52,36" fill="#348a3a"/>
+    <rect x="45.5" y="52" width="3" height="6" fill="#5a4030"/>
+    <polygon points="58,56 64,32 70,56" fill="url(#tree-shade)"/>
+    <polygon points="59,48 64,26 69,48" fill="#287028"/>
+    <polygon points="60,42 64,22 68,42" fill="#308432"/>
+    <rect x="62.5" y="56" width="3" height="5" fill="#5a4030"/>
+    <polygon points="30,58 36,36 42,58" fill="url(#tree-shade)"/>
+    <polygon points="31,50 36,30 41,50" fill="#267026"/>
+    <polygon points="32,44 36,26 40,44" fill="#2e8230"/>
+    <rect x="34.5" y="58" width="3" height="5" fill="#5a4030"/>
+  </g>
+  <!-- Subtle ground shadow -->
+  <ellipse cx="47" cy="64" rx="22" ry="4" fill="#0a2a0e" opacity="0.25"/>
+  <!-- Edge softening -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="none" stroke="#0e1a2e" stroke-width="0.5" opacity="0.3"/>
+</svg>

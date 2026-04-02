@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 70" width="50" height="70">
+  <defs>
+    <linearGradient id="grain-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c9a825"/>
+      <stop offset="100%" stop-color="#917518"/>
+    </linearGradient>
+    <filter id="grain-shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Card body -->
+  <rect x="1" y="1" width="48" height="68" rx="5" ry="5" fill="url(#grain-bg)" stroke="#dbb830" stroke-width="1.5"/>
+  <!-- Inner border -->
+  <rect x="4" y="4" width="42" height="62" rx="3" ry="3" fill="none" stroke="#dbb830" stroke-width="0.5" opacity="0.5"/>
+  <!-- Background grain field lines -->
+  <g opacity="0.15">
+    <path d="M6,58 Q10,54 14,58" stroke="#fff" fill="none" stroke-width="0.8"/>
+    <path d="M14,58 Q18,54 22,58" stroke="#fff" fill="none" stroke-width="0.8"/>
+    <path d="M22,58 Q26,54 30,58" stroke="#fff" fill="none" stroke-width="0.8"/>
+    <path d="M30,58 Q34,54 38,58" stroke="#fff" fill="none" stroke-width="0.8"/>
+    <path d="M38,58 Q42,54 46,58" stroke="#fff" fill="none" stroke-width="0.8"/>
+  </g>
+  <!-- Wheat sheaf icon -->
+  <g transform="translate(25,28)" filter="url(#grain-shadow)">
+    <!-- Center stalk -->
+    <line x1="0" y1="14" x2="0" y2="-4" stroke="#8B7355" stroke-width="1.5"/>
+    <!-- Left stalk -->
+    <line x1="-4" y1="14" x2="-6" y2="-2" stroke="#8B7355" stroke-width="1.2"/>
+    <!-- Right stalk -->
+    <line x1="4" y1="14" x2="6" y2="-2" stroke="#8B7355" stroke-width="1.2"/>
+    <!-- Far left stalk -->
+    <line x1="-7" y1="14" x2="-10" y2="0" stroke="#8B7355" stroke-width="1"/>
+    <!-- Far right stalk -->
+    <line x1="7" y1="14" x2="10" y2="0" stroke="#8B7355" stroke-width="1"/>
+    <!-- Wheat grains - center -->
+    <ellipse cx="0" cy="-6" rx="2" ry="3.5" fill="#fdd835"/>
+    <ellipse cx="0" cy="-11" rx="1.8" ry="3" fill="#fdd835"/>
+    <ellipse cx="0" cy="-15" rx="1.5" ry="2.5" fill="#fdd835"/>
+    <!-- Wheat grains - left -->
+    <ellipse cx="-6" cy="-4" rx="1.8" ry="3" fill="#fdd835" transform="rotate(10,-6,-4)"/>
+    <ellipse cx="-7" cy="-8" rx="1.5" ry="2.5" fill="#fdd835" transform="rotate(10,-7,-8)"/>
+    <ellipse cx="-8" cy="-12" rx="1.2" ry="2" fill="#fdd835" transform="rotate(10,-8,-12)"/>
+    <!-- Wheat grains - right -->
+    <ellipse cx="6" cy="-4" rx="1.8" ry="3" fill="#fdd835" transform="rotate(-10,6,-4)"/>
+    <ellipse cx="7" cy="-8" rx="1.5" ry="2.5" fill="#fdd835" transform="rotate(-10,7,-8)"/>
+    <ellipse cx="8" cy="-12" rx="1.2" ry="2" fill="#fdd835" transform="rotate(-10,8,-12)"/>
+    <!-- Far left grains -->
+    <ellipse cx="-10" cy="-2" rx="1.5" ry="2.5" fill="#ecc526" transform="rotate(15,-10,-2)"/>
+    <ellipse cx="-11" cy="-6" rx="1.2" ry="2" fill="#ecc526" transform="rotate(15,-11,-6)"/>
+    <!-- Far right grains -->
+    <ellipse cx="10" cy="-2" rx="1.5" ry="2.5" fill="#ecc526" transform="rotate(-15,10,-2)"/>
+    <ellipse cx="11" cy="-6" rx="1.2" ry="2" fill="#ecc526" transform="rotate(-15,11,-6)"/>
+    <!-- Tie band -->
+    <path d="M-6,10 Q0,8 6,10" stroke="#8B7355" stroke-width="1.5" fill="none"/>
+    <!-- Grain detail lines -->
+    <line x1="-1" y1="-7" x2="1" y2="-7" stroke="#c9a825" stroke-width="0.3"/>
+    <line x1="-1" y1="-12" x2="1" y2="-12" stroke="#c9a825" stroke-width="0.3"/>
+  </g>
+  <!-- Label -->
+  <text x="25" y="54" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#fff9c4" font-weight="bold" letter-spacing="0.5">GRAIN</text>
+  <!-- Count badge -->
+  <circle cx="41" cy="10" r="7" fill="#6d5500" stroke="#fdd835" stroke-width="1"/>
+  <text x="41" y="13" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="#fff9c4" font-weight="bold">0</text>
+  <!-- Horizontal lines for colorblind -->
+  <line x1="5" y1="62" x2="19" y2="62" stroke="#dbb830" stroke-width="0.5" opacity="0.4"/>
+  <line x1="5" y1="64" x2="19" y2="64" stroke="#dbb830" stroke-width="0.5" opacity="0.4"/>
+  <line x1="5" y1="66" x2="19" y2="66" stroke="#dbb830" stroke-width="0.5" opacity="0.4"/>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+  <defs>
+    <radialGradient id="token-bg" cx="0.45" cy="0.4" r="0.55">
+      <stop offset="0%" stop-color="#f5e6c8"/>
+      <stop offset="60%" stop-color="#e8d5b0"/>
+      <stop offset="100%" stop-color="#d4c098"/>
+    </radialGradient>
+    <filter id="token-shadow" x="-20%" y="-10%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+    <pattern id="parchment" patternUnits="userSpaceOnUse" width="6" height="6">
+      <rect width="6" height="6" fill="none"/>
+      <circle cx="1" cy="2" r="0.3" fill="#c4a870" opacity="0.3"/>
+      <circle cx="4" cy="5" r="0.2" fill="#c4a870" opacity="0.25"/>
+      <circle cx="3" cy="1" r="0.25" fill="#c4a870" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <!-- Shadow base -->
+  <circle cx="20" cy="21" r="16" fill="#000" opacity="0.2" filter="url(#token-shadow)"/>
+  <!-- Token body -->
+  <circle cx="20" cy="20" r="15" fill="url(#token-bg)" stroke="#a0895e" stroke-width="1.2"/>
+  <!-- Parchment texture -->
+  <circle cx="20" cy="20" r="15" fill="url(#parchment)"/>
+  <!-- Inner ring -->
+  <circle cx="20" cy="20" r="12.5" fill="none" stroke="#b8a070" stroke-width="0.5" opacity="0.5"/>
+  <!-- Number placeholder (centered, using text for preview) -->
+  <!-- For 6/8: use fill="#c62828" font-weight="bold" -->
+  <!-- For others: use fill="#2c1810" -->
+  <text x="20" y="22" text-anchor="middle" dominant-baseline="middle" font-family="Georgia, 'Times New Roman', serif" font-size="14" font-weight="bold" fill="#2c1810">5</text>
+  <!-- Pip dots (example: 4 pips for number 5) -->
+  <g fill="#5d4037">
+    <circle cx="14" cy="30" r="1.2"/>
+    <circle cx="17.5" cy="30" r="1.2"/>
+    <circle cx="22.5" cy="30" r="1.2"/>
+    <circle cx="26" cy="30" r="1.2"/>
+  </g>
+  <!-- Subtle wear marks -->
+  <circle cx="12" cy="14" r="3" fill="#c4a870" opacity="0.1"/>
+  <circle cx="26" cy="24" r="2.5" fill="#c4a870" opacity="0.08"/>
+</svg>

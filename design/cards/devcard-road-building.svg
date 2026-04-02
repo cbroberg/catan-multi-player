@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 80" width="60" height="80">
+  <defs>
+    <linearGradient id="road-bg" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#4a1a6b"/>
+      <stop offset="100%" stop-color="#2a0e40"/>
+    </linearGradient>
+    <linearGradient id="road-surface" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8d6e63"/>
+      <stop offset="50%" stop-color="#a1887f"/>
+      <stop offset="100%" stop-color="#795548"/>
+    </linearGradient>
+    <filter id="road-shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Card body -->
+  <rect x="1" y="1" width="58" height="78" rx="6" ry="6" fill="url(#road-bg)" stroke="#7b3fa0" stroke-width="1.5"/>
+  <rect x="4" y="4" width="52" height="72" rx="4" ry="4" fill="none" stroke="#9c27b0" stroke-width="0.5" opacity="0.4"/>
+  <!-- Corner flourishes -->
+  <path d="M8,8 Q12,8 12,12" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M52,8 Q48,8 48,12" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M8,72 Q12,72 12,68" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M52,72 Q48,72 48,68" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <!-- Particles -->
+  <circle cx="10" cy="22" r="0.7" fill="#ce93d8" opacity="0.3"/>
+  <circle cx="50" cy="30" r="0.5" fill="#ce93d8" opacity="0.4"/>
+  <!-- Road segments icon -->
+  <g transform="translate(30,30)" filter="url(#road-shadow)">
+    <!-- Road segment 1 (going right-up) -->
+    <g transform="rotate(-30)">
+      <rect x="-2.5" y="-18" width="5" height="18" rx="1" fill="url(#road-surface)" stroke="#5d4037" stroke-width="0.8"/>
+      <!-- Road markings -->
+      <line x1="0" y1="-15" x2="0" y2="-12" stroke="#a1887f" stroke-width="0.8" opacity="0.6"/>
+      <line x1="0" y1="-9" x2="0" y2="-6" stroke="#a1887f" stroke-width="0.8" opacity="0.6"/>
+      <line x1="0" y1="-3" x2="0" y2="0" stroke="#a1887f" stroke-width="0.8" opacity="0.6"/>
+    </g>
+    <!-- Road segment 2 (going right-down) -->
+    <g transform="rotate(30)">
+      <rect x="-2.5" y="0" width="5" height="18" rx="1" fill="url(#road-surface)" stroke="#5d4037" stroke-width="0.8"/>
+      <!-- Road markings -->
+      <line x1="0" y1="3" x2="0" y2="6" stroke="#a1887f" stroke-width="0.8" opacity="0.6"/>
+      <line x1="0" y1="9" x2="0" y2="12" stroke="#a1887f" stroke-width="0.8" opacity="0.6"/>
+      <line x1="0" y1="15" x2="0" y2="18" stroke="#a1887f" stroke-width="0.8" opacity="0.6"/>
+    </g>
+    <!-- Junction node -->
+    <circle cx="0" cy="0" r="4" fill="#7b3fa0" stroke="#9c27b0" stroke-width="0.8"/>
+    <circle cx="0" cy="0" r="2" fill="#ce93d8" opacity="0.6"/>
+    <!-- "x2" badge -->
+    <g transform="translate(12,-10)">
+      <circle cx="0" cy="0" r="6" fill="#7b3fa0" stroke="#ce93d8" stroke-width="0.8"/>
+      <text x="0" y="3" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#ffd54f" font-weight="bold">x2</text>
+    </g>
+  </g>
+  <!-- Card title -->
+  <text x="30" y="56" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#ce93d8" font-weight="bold">ROAD BUILDING</text>
+  <!-- Effect text -->
+  <text x="30" y="66" text-anchor="middle" font-family="Georgia, serif" font-size="5" fill="#9575cd" font-style="italic">2 free roads</text>
+  <!-- Top label -->
+  <text x="30" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="4.5" fill="#7b3fa0" letter-spacing="2" font-weight="bold">DEVELOPMENT</text>
+</svg>

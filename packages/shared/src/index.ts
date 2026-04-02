@@ -75,6 +75,7 @@ export {
   generateHexPositions,
   resolveHexPositions,
   expandTerrainCounts,
+  validateIslandSeparation,
   BASE_3_4,
   BASE_5_6,
   BASE_7_8,

@@ -2,7 +2,8 @@
 
 import type { GameBoard, Harbor } from '@catan/shared';
 import { vertexPixelPosition } from '@catan/game-engine';
-import { hexToPixel, hexPolygonPoints, TERRAIN_COLORS } from './hex-utils';
+import { hexToPixel, hexPolygonPoints } from './hex-utils';
+import { TerrainHexSVG } from './TerrainHexSVG';
 import { NumberToken } from './NumberToken';
 import { Robber } from './Robber';
 import { HarborMarker } from './HarborMarker';
@@ -64,26 +65,20 @@ export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
 
         return (
           <g key={`hex-${hex.coord.q}-${hex.coord.r}`}>
+            {/* Textured terrain SVG */}
+            <TerrainHexSVG
+              terrain={hex.terrain}
+              x={center.x}
+              y={center.y}
+              size={hexSize}
+            />
+            {/* Transparent clickable overlay preserving original hex shape */}
             <polygon
               points={hexPolygonPoints(center, hexSize)}
-              fill={TERRAIN_COLORS[hex.terrain] ?? '#888'}
-              stroke={isSea ? '#1256a0' : '#8b7355'}
-              strokeWidth={isSea ? 1 : 2}
+              fill="transparent"
+              stroke="none"
               opacity={isSea ? 0.6 : 1}
             />
-            {/* Gold river sparkle indicator */}
-            {hex.terrain === 'gold_river' && (
-              <text
-                x={center.x}
-                y={center.y - hexSize * 0.35}
-                textAnchor="middle"
-                fontSize={hexSize * 0.22}
-                fill="#fff"
-                opacity={0.9}
-              >
-                ★
-              </text>
-            )}
             {/* Number token */}
             {hex.number !== null && (
               <NumberToken

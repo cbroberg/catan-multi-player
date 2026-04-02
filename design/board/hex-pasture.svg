@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 115" width="100" height="115">
+  <defs>
+    <linearGradient id="pasture-bg" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#8bc34a"/>
+      <stop offset="40%" stop-color="#7cb342"/>
+      <stop offset="100%" stop-color="#689f38"/>
+    </linearGradient>
+    <pattern id="grass-pattern" patternUnits="userSpaceOnUse" width="16" height="10">
+      <rect width="16" height="10" fill="none"/>
+      <path d="M2,10 Q2,6 4,4" stroke="#9ccc65" stroke-width="0.7" fill="none" opacity="0.5"/>
+      <path d="M6,10 Q7,5 5,3" stroke="#aed581" stroke-width="0.6" fill="none" opacity="0.4"/>
+      <path d="M12,10 Q11,7 13,5" stroke="#9ccc65" stroke-width="0.7" fill="none" opacity="0.5"/>
+    </pattern>
+  </defs>
+  <!-- Hex shape -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="url(#pasture-bg)" stroke="#558b2f" stroke-width="1.5"/>
+  <!-- Grass texture -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="url(#grass-pattern)"/>
+  <!-- Rolling hills -->
+  <path d="M15,55 Q30,45 50,50 Q70,55 85,48" stroke="#7cb342" stroke-width="1.2" fill="none" opacity="0.5"/>
+  <path d="M20,62 Q40,54 60,58 Q75,62 85,56" stroke="#689f38" stroke-width="1" fill="none" opacity="0.4"/>
+  <!-- Sheep silhouettes -->
+  <g transform="translate(28,32)" opacity="0.35">
+    <ellipse cx="0" cy="0" rx="5" ry="3.5" fill="#f5f5f0"/>
+    <circle cx="-4" cy="-1.5" r="2" fill="#f5f5f0"/>
+    <rect x="-3" y="2.5" width="1" height="2.5" fill="#666" rx="0.3"/>
+    <rect x="1" y="2.5" width="1" height="2.5" fill="#666" rx="0.3"/>
+  </g>
+  <g transform="translate(65,45)" opacity="0.3">
+    <ellipse cx="0" cy="0" rx="4.5" ry="3" fill="#f0f0e8"/>
+    <circle cx="4" cy="-1.5" r="1.8" fill="#f0f0e8"/>
+    <rect x="-2" y="2" width="1" height="2.2" fill="#666" rx="0.3"/>
+    <rect x="1.5" y="2" width="1" height="2.2" fill="#666" rx="0.3"/>
+  </g>
+  <g transform="translate(45,55)" opacity="0.25">
+    <ellipse cx="0" cy="0" rx="4" ry="2.8" fill="#ece8e0"/>
+    <circle cx="-3.5" cy="-1" r="1.6" fill="#ece8e0"/>
+    <rect x="-2" y="1.8" width="0.8" height="2" fill="#666" rx="0.3"/>
+    <rect x="1" y="1.8" width="0.8" height="2" fill="#666" rx="0.3"/>
+  </g>
+  <!-- Fence posts hint -->
+  <g opacity="0.2" stroke="#6d4c2e" stroke-width="0.8">
+    <line x1="18" y1="22" x2="18" y2="28"/>
+    <line x1="24" y1="20" x2="24" y2="26"/>
+    <line x1="18" y1="24" x2="24" y2="22"/>
+  </g>
+  <!-- Edge softening -->
+  <polygon points="50,0 93.3,14.4 93.3,72.2 50,86.6 6.7,72.2 6.7,14.4" fill="none" stroke="#0e1a2e" stroke-width="0.5" opacity="0.3"/>
+</svg>

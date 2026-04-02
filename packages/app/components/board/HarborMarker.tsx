@@ -1,13 +1,9 @@
 import type { HarborType } from '@catan/shared';
 
 interface HarborMarkerProps {
-  /** Center X of the harbor label */
   cx: number;
-  /** Center Y of the harbor label */
   cy: number;
   type: HarborType;
-  /** Angle from board center to position the dock lines */
-  angle?: number;
 }
 
 const HARBOR_LABELS: Record<HarborType, string> = {
@@ -19,44 +15,84 @@ const HARBOR_LABELS: Record<HarborType, string> = {
   ore: '2:1 O',
 };
 
-const HARBOR_COLORS: Record<HarborType, string> = {
-  '3:1': '#ffffff',
-  lumber: '#2d6a30',
-  wool: '#8bc34a',
-  grain: '#fdd835',
-  brick: '#d4852e',
-  ore: '#78909c',
+const HARBOR_ICON: Record<HarborType, string> = {
+  '3:1': '?',
+  lumber: '\u2663', // club = tree
+  wool: '\u2601',   // cloud = wool
+  grain: '\u2660',  // spade = wheat
+  brick: '\u25A0',  // square = brick
+  ore: '\u25C6',    // diamond = ore
 };
 
 export function HarborMarker({ cx, cy, type }: HarborMarkerProps) {
-  const bgColor = HARBOR_COLORS[type];
-  const textColor = type === '3:1' || type === 'grain' ? '#333' : '#fff';
+  // Original SVG viewBox 50x40, we render at ~28x22 to match previous sizing
+  const w = 28;
+  const h = 22;
+  const scaleX = w / 50;
+  const scaleY = h / 40;
+  const offsetX = cx - w / 2;
+  const offsetY = cy - h / 2;
 
   return (
-    <g>
-      <rect
-        x={cx - 14}
-        y={cy - 8}
-        width={28}
-        height={16}
-        rx={3}
-        fill={bgColor}
-        stroke="#8b7355"
-        strokeWidth={1}
-        opacity={0.9}
-      />
+    <g transform={`translate(${offsetX}, ${offsetY}) scale(${scaleX}, ${scaleY})`}>
+      <defs>
+        <linearGradient id="harbor-wood" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#8b6914" />
+          <stop offset="30%" stopColor="#6d4c2e" />
+          <stop offset="100%" stopColor="#5a3a1e" />
+        </linearGradient>
+        <linearGradient id="harbor-sign" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f5e6c8" />
+          <stop offset="100%" stopColor="#e0cda5" />
+        </linearGradient>
+        <pattern id="harbor-grain" patternUnits="userSpaceOnUse" width="4" height="30">
+          <rect width="4" height="30" fill="none" />
+          <line x1="1" y1="0" x2="1.2" y2="30" stroke="#4a2a10" strokeWidth="0.4" opacity="0.3" />
+          <line x1="3" y1="0" x2="2.8" y2="30" stroke="#4a2a10" strokeWidth="0.3" opacity="0.2" />
+        </pattern>
+      </defs>
+      {/* Post */}
+      <rect x="23" y="0" width="4" height="8" fill="url(#harbor-wood)" rx="1" />
+      <rect x="23" y="0" width="4" height="8" fill="url(#harbor-grain)" rx="1" />
+      {/* Cross beam */}
+      <rect x="8" y="6" width="34" height="3.5" fill="url(#harbor-wood)" rx="1" />
+      <rect x="8" y="6" width="34" height="3.5" fill="url(#harbor-grain)" rx="1" />
+      {/* Chains */}
+      <line x1="14" y1="9.5" x2="14" y2="13" stroke="#8b7a5e" strokeWidth="0.8" />
+      <line x1="36" y1="9.5" x2="36" y2="13" stroke="#8b7a5e" strokeWidth="0.8" />
+      {/* Sign board */}
+      <rect x="6" y="13" width="38" height="22" rx="2" fill="url(#harbor-sign)" stroke="url(#harbor-wood)" strokeWidth="1.5" />
+      <rect x="6" y="13" width="38" height="22" rx="2" fill="url(#harbor-grain)" opacity="0.15" />
+      {/* Trade ratio text */}
       <text
-        x={cx}
-        y={cy}
+        x="25"
+        y="25"
         textAnchor="middle"
-        dominantBaseline="central"
-        fontSize={7}
+        dominantBaseline="middle"
+        fontFamily="Georgia, 'Times New Roman', serif"
+        fontSize="10"
         fontWeight="bold"
-        fill={textColor}
-        fontFamily="sans-serif"
+        fill="#5a3a1e"
       >
         {HARBOR_LABELS[type]}
       </text>
+      {/* Resource icon */}
+      <text
+        x="25"
+        y="33"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontFamily="Georgia, serif"
+        fontSize="6"
+        fill="#8b6914"
+      >
+        {HARBOR_ICON[type]}
+      </text>
+      {/* Corner nails */}
+      <circle cx="10" cy="17" r="1" fill="#a0895e" />
+      <circle cx="40" cy="17" r="1" fill="#a0895e" />
+      <circle cx="10" cy="31" r="1" fill="#a0895e" />
+      <circle cx="40" cy="31" r="1" fill="#a0895e" />
     </g>
   );
 }

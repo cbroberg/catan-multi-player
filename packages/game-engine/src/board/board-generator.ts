@@ -13,6 +13,8 @@ import type { BoardVariantConfig } from '@catan/shared';
 import { computeBoardTopology, cornerVertexId, edgeId, areHexNeighbors, hexKey, computeHexAdjacency } from './hex-grid';
 import { passesHardConstraints, computeBalanceScore } from './balance-scoring';
 import { detectPerimeterEdges, distributeHarbors } from './harbor-detection';
+import { generateIslandLayout, computeTerrainDistribution } from './island-generator';
+import { validateIslandSeparation } from '@catan/shared';
 import type { BoardTopology } from './hex-grid';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -47,36 +49,54 @@ function assembleHexes(
 /**
  * Place terrains using randomized backtracking.
  * Guarantees no adjacent hexes share terrain (except desert, sea, gold_river).
+ *
+ * If seaIndices is provided, those hex positions are PRE-FILLED with 'sea'
+ * and excluded from backtracking. This ensures sea tiles stay on designated
+ * sea positions in Seafarers layouts, preserving island separation.
  */
 function placeTerrains(
   hexCount: number,
   terrainTiles: TerrainType[],
-  adjacency: number[][]
+  adjacency: number[][],
+  seaIndices?: Set<number>
 ): string[] | null {
   const available: Record<string, number> = {};
   for (const t of terrainTiles) {
     available[t] = (available[t] || 0) + 1;
   }
-  const terrainTypes = Object.keys(available);
 
   const result: string[] = new Array(hexCount);
 
+  // Pre-fill sea positions — these are locked and not part of backtracking
+  if (seaIndices && seaIndices.size > 0) {
+    for (const idx of seaIndices) {
+      result[idx] = 'sea';
+    }
+    available['sea'] = (available['sea'] || 0) - seaIndices.size;
+    if (available['sea'] <= 0) delete available['sea'];
+  }
+
+  const terrainTypes = Object.keys(available);
+
+  // Build backtracking order: only non-sea hexes
+  const landIndices = Array.from({ length: hexCount }, (_, i) => i)
+    .filter((i) => !seaIndices || !seaIndices.has(i));
+  const landCount = landIndices.length;
+
   // Most-constrained-first: place hexes with most neighbors first (center hexes).
-  // This prunes dead ends earlier, critical for larger boards (30-37 hexes).
-  const hexOrder = Array.from({ length: hexCount }, (_, i) => i)
-    .sort((a, b) => adjacency[b].length - adjacency[a].length);
+  landIndices.sort((a, b) => adjacency[b].length - adjacency[a].length);
   // Shuffle within groups of equal constraint count for variety
   let groupStart = 0;
-  while (groupStart < hexOrder.length) {
+  while (groupStart < landIndices.length) {
     let groupEnd = groupStart;
-    while (groupEnd < hexOrder.length &&
-      adjacency[hexOrder[groupEnd]].length === adjacency[hexOrder[groupStart]].length) {
+    while (groupEnd < landIndices.length &&
+      adjacency[landIndices[groupEnd]].length === adjacency[landIndices[groupStart]].length) {
       groupEnd++;
     }
-    const group = hexOrder.slice(groupStart, groupEnd);
+    const group = landIndices.slice(groupStart, groupEnd);
     const shuffled = shuffle(group);
     for (let k = 0; k < shuffled.length; k++) {
-      hexOrder[groupStart + k] = shuffled[k];
+      landIndices[groupStart + k] = shuffled[k];
     }
     groupStart = groupEnd;
   }
@@ -96,10 +116,10 @@ function placeTerrains(
   }
 
   function backtrack(step: number): boolean {
-    if (step === hexCount) return true;
+    if (step === landCount) return true;
     if (++nodesVisited > maxNodes) return false;
 
-    const hexIdx = hexOrder[step];
+    const hexIdx = landIndices[step];
     const shuffledTypes = shuffle(terrainTypes.filter((t) => available[t] > 0));
 
     for (const terrain of shuffledTypes) {
@@ -254,22 +274,67 @@ export function generateRandomBalancedBoard(
 ): GeneratedBoard {
   const config = getVariant(variantId);
   const hexPositions = resolveHexPositions(config);
-  const terrainTiles = expandTerrainCounts(config.terrainCounts);
   const adjacency = computeHexAdjacency(hexPositions);
-  const seaSet = config.seaPositions
-    ? new Set(config.seaPositions.map((s) => hexKey(s)))
+
+  // ─── Procedural island generation (Seafarers) ─────────────────────────────
+  let effectiveConfig = config;
+  let foreignIslands: HexCoord[][] | undefined;
+
+  if (config.islandGeneration) {
+    const islandResult = generateIslandLayout({
+      allPositions: hexPositions,
+      ...config.islandGeneration,
+    });
+
+    // Validate island separation (main island + foreign islands)
+    const allIslands = [islandResult.mainIsland, ...islandResult.foreignIslands];
+    validateIslandSeparation(allIslands);
+
+    foreignIslands = islandResult.foreignIslands;
+
+    // Compute terrain distribution based on actual land/sea counts
+    const landCount = islandResult.mainIsland.length +
+      islandResult.foreignIslands.reduce((sum, island) => sum + island.length, 0);
+    const seaCount = islandResult.seaPositions.length;
+    const { terrainCounts, numberTokens } = computeTerrainDistribution(landCount, seaCount);
+
+    // Build effective config with procedural values
+    effectiveConfig = {
+      ...config,
+      seaPositions: islandResult.seaPositions,
+      terrainCounts,
+      numberTokens,
+      foreignIslands: islandResult.foreignIslands,
+    };
+  }
+
+  const terrainTiles = expandTerrainCounts(effectiveConfig.terrainCounts);
+  const seaSet = effectiveConfig.seaPositions
+    ? new Set(effectiveConfig.seaPositions.map((s) => hexKey(s)))
     : undefined;
   const topology = computeBoardTopology(hexPositions, seaSet);
   const candidates = maxCandidates(hexPositions.length);
+
+  // Build sea index set: map sea positions to their indices in hexPositions
+  let seaIndices: Set<number> | undefined;
+  if (effectiveConfig.seaPositions && effectiveConfig.seaPositions.length > 0) {
+    const posToIndex = new Map<string, number>();
+    hexPositions.forEach((p, i) => posToIndex.set(hexKey(p), i));
+    seaIndices = new Set<number>();
+    for (const sp of effectiveConfig.seaPositions) {
+      const idx = posToIndex.get(hexKey(sp));
+      if (idx !== undefined) seaIndices.add(idx);
+    }
+  }
 
   let bestHexes: Hex[] | null = null;
   let bestScore: BalanceScore = { total: -1, resourceEV: 0, intersectionBalance: 0, geographicSpread: 0 };
 
   for (let attempt = 0; attempt < candidates; attempt++) {
-    const terrains = placeTerrains(hexPositions.length, terrainTiles, adjacency);
+    const terrains = placeTerrains(hexPositions.length, terrainTiles, adjacency, seaIndices);
     if (!terrains) continue;
 
-    const numbers = assignNumbers(terrains, config.numberTokens, adjacency);
+    const numbers = assignNumbers(terrains, effectiveConfig.numberTokens, adjacency);
     if (!passesNumberConstraint(numbers, adjacency)) continue;
 
     const hexes = assembleHexes(hexPositions, terrains, numbers);
@@ -282,23 +347,23 @@ export function generateRandomBalancedBoard(
 
   // Safety net
   if (!bestHexes) {
-    const terrains = placeTerrains(hexPositions.length, terrainTiles, adjacency)
+    const terrains = placeTerrains(hexPositions.length, terrainTiles, adjacency, seaIndices)
       ?? terrainTiles.map(String);
-    const numbers = assignNumbers(terrains, config.numberTokens, adjacency);
+    const numbers = assignNumbers(terrains, effectiveConfig.numberTokens, adjacency);
     bestHexes = assembleHexes(hexPositions, terrains, numbers);
     bestScore = computeBalanceScore(bestHexes, topology);
   }
 
   // Build harbors on fresh topology (harbor building modifies vertices)
   const freshTopology = computeBoardTopology(hexPositions, seaSet);
-  const harbors = buildHarbors(config, hexPositions, freshTopology);
+  const harbors = buildHarbors(effectiveConfig, hexPositions, freshTopology);
 
   // Find robber/pirate positions
   const desertHex = bestHexes.find((h) => h.terrain === 'desert');
   const robberPosition = desertHex?.coord ?? { q: 0, r: 0 };
 
   let piratePosition: HexCoord | null = null;
-  if (config.hasPirate) {
+  if (effectiveConfig.hasPirate) {
     const seaHex = bestHexes.find((h) => h.terrain === 'sea');
     if (seaHex) {
       piratePosition = seaHex.coord;
@@ -315,6 +380,7 @@ export function generateRandomBalancedBoard(
       robberPosition,
       piratePosition,
       variantId,
+      foreignIslands: foreignIslands ?? effectiveConfig.foreignIslands,
     },
     score: bestScore,
   };

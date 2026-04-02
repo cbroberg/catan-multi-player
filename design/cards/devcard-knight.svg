@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 80" width="60" height="80">
+  <defs>
+    <linearGradient id="knight-bg" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#4a1a6b"/>
+      <stop offset="100%" stop-color="#2a0e40"/>
+    </linearGradient>
+    <linearGradient id="knight-armor" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c0c0c0"/>
+      <stop offset="50%" stop-color="#e0e0e0"/>
+      <stop offset="100%" stop-color="#9e9e9e"/>
+    </linearGradient>
+    <linearGradient id="knight-sword" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#bdbdbd"/>
+      <stop offset="50%" stop-color="#e8e8e8"/>
+      <stop offset="100%" stop-color="#9e9e9e"/>
+    </linearGradient>
+    <filter id="dev-glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="dev-shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Card body -->
+  <rect x="1" y="1" width="58" height="78" rx="6" ry="6" fill="url(#knight-bg)" stroke="#7b3fa0" stroke-width="1.5"/>
+  <!-- Ornate border -->
+  <rect x="4" y="4" width="52" height="72" rx="4" ry="4" fill="none" stroke="#9c27b0" stroke-width="0.5" opacity="0.4"/>
+  <!-- Corner flourishes -->
+  <path d="M8,8 Q12,8 12,12" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M52,8 Q48,8 48,12" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M8,72 Q12,72 12,68" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <path d="M52,72 Q48,72 48,68" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+  <!-- Magical particle background -->
+  <circle cx="12" cy="18" r="0.8" fill="#ce93d8" opacity="0.4"/>
+  <circle cx="48" cy="24" r="0.6" fill="#ce93d8" opacity="0.3"/>
+  <circle cx="14" cy="50" r="0.5" fill="#ce93d8" opacity="0.3"/>
+  <circle cx="50" cy="55" r="0.7" fill="#ce93d8" opacity="0.4"/>
+  <!-- Knight icon -->
+  <g transform="translate(30,32)" filter="url(#dev-shadow)">
+    <!-- Shield -->
+    <path d="M-10,0 L-10,-8 Q-10,-14 0,-16 Q10,-14 10,-8 L10,0 Q10,8 0,12 Q-10,8 -10,0 Z" fill="#5c2d82" stroke="#9c27b0" stroke-width="0.8"/>
+    <path d="M0,-16 L0,12" stroke="#7b3fa0" stroke-width="0.5" opacity="0.5"/>
+    <path d="M-10,-2 L10,-2" stroke="#7b3fa0" stroke-width="0.5" opacity="0.5"/>
+    <!-- Helmet -->
+    <path d="M-6,-20 Q-6,-28 0,-30 Q6,-28 6,-20 L4,-18 L-4,-18 Z" fill="url(#knight-armor)" stroke="#757575" stroke-width="0.6"/>
+    <!-- Visor slit -->
+    <rect x="-4" y="-24" width="8" height="2" rx="1" fill="#37474f"/>
+    <!-- Helmet plume -->
+    <path d="M0,-30 Q4,-34 2,-28 Q6,-32 4,-26" fill="#e53935" stroke="#c62828" stroke-width="0.4"/>
+    <!-- Sword (right side) -->
+    <g transform="translate(12,-8) rotate(25)">
+      <rect x="-1" y="-16" width="2" height="20" rx="0.3" fill="url(#knight-sword)" stroke="#9e9e9e" stroke-width="0.4"/>
+      <!-- Crossguard -->
+      <rect x="-4" y="3" width="8" height="2" rx="1" fill="#ffd54f" stroke="#f9a825" stroke-width="0.3"/>
+      <!-- Pommel -->
+      <circle cx="0" cy="6" r="1.5" fill="#ffd54f" stroke="#f9a825" stroke-width="0.3"/>
+      <!-- Blade point -->
+      <polygon points="-1,-16 0,-19 1,-16" fill="#e8e8e8"/>
+    </g>
+  </g>
+  <!-- Card title -->
+  <text x="30" y="56" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#ce93d8" font-weight="bold">KNIGHT</text>
+  <!-- Effect text -->
+  <text x="30" y="66" text-anchor="middle" font-family="Georgia, serif" font-size="5" fill="#9575cd" font-style="italic">Move the robber</text>
+  <!-- Top label -->
+  <text x="30" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="4.5" fill="#7b3fa0" letter-spacing="2" font-weight="bold">DEVELOPMENT</text>
+</svg>

@@ -13,15 +13,27 @@ export function NumberToken({ cx, cy, number, radius = 14 }: NumberTokenProps) {
 
   return (
     <g>
-      {/* Token background circle */}
-      <circle
-        cx={cx}
-        cy={cy}
-        r={radius}
-        fill="#f5f0e1"
-        stroke="#8b7355"
-        strokeWidth={1.5}
-      />
+      <defs>
+        <radialGradient id="nt-bg" cx="0.45" cy="0.4" r="0.55">
+          <stop offset="0%" stopColor="#f5e6c8" />
+          <stop offset="60%" stopColor="#e8d5b0" />
+          <stop offset="100%" stopColor="#d4c098" />
+        </radialGradient>
+        <pattern id="nt-parchment" patternUnits="userSpaceOnUse" width="6" height="6">
+          <rect width="6" height="6" fill="none" />
+          <circle cx="1" cy="2" r="0.3" fill="#c4a870" opacity="0.3" />
+          <circle cx="4" cy="5" r="0.2" fill="#c4a870" opacity="0.25" />
+          <circle cx="3" cy="1" r="0.25" fill="#c4a870" opacity="0.2" />
+        </pattern>
+      </defs>
+      {/* Shadow */}
+      <circle cx={cx} cy={cy + 1} r={radius} fill="#000" opacity="0.2" />
+      {/* Token body with radial gradient */}
+      <circle cx={cx} cy={cy} r={radius} fill="url(#nt-bg)" stroke="#a0895e" strokeWidth={1.2} />
+      {/* Parchment texture */}
+      <circle cx={cx} cy={cy} r={radius} fill="url(#nt-parchment)" />
+      {/* Inner ring */}
+      <circle cx={cx} cy={cy} r={radius * 0.83} fill="none" stroke="#b8a070" strokeWidth={0.5} opacity="0.5" />
       {/* Number */}
       <text
         x={cx}
@@ -30,8 +42,8 @@ export function NumberToken({ cx, cy, number, radius = 14 }: NumberTokenProps) {
         dominantBaseline="central"
         fontSize={radius * 0.9}
         fontWeight={isRed ? 'bold' : 'normal'}
-        fill={isRed ? '#c62828' : '#3e2723'}
-        fontFamily="serif"
+        fill={isRed ? '#c62828' : '#2c1810'}
+        fontFamily="Georgia, 'Times New Roman', serif"
       >
         {number}
       </text>
@@ -53,6 +65,9 @@ export function NumberToken({ cx, cy, number, radius = 14 }: NumberTokenProps) {
           );
         })}
       </g>
+      {/* Subtle wear marks */}
+      <circle cx={cx - radius * 0.55} cy={cy - radius * 0.42} r={radius * 0.2} fill="#c4a870" opacity="0.1" />
+      <circle cx={cx + radius * 0.42} cy={cy + radius * 0.28} r={radius * 0.17} fill="#c4a870" opacity="0.08" />
     </g>
   );
 }

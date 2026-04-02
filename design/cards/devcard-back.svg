@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 80" width="60" height="80">
+  <defs>
+    <linearGradient id="back-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4a1a6b"/>
+      <stop offset="50%" stop-color="#3a1258"/>
+      <stop offset="100%" stop-color="#2a0e40"/>
+    </linearGradient>
+    <radialGradient id="back-glow" cx="50%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#9c27b0" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#4a1a6b" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="back-pattern" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M6,0 L12,6 L6,12 L0,6 Z" fill="none" stroke="#7b3fa0" stroke-width="0.4" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <!-- Card body -->
+  <rect x="1" y="1" width="58" height="78" rx="6" ry="6" fill="url(#back-bg)" stroke="#7b3fa0" stroke-width="1.5"/>
+  <!-- Diamond pattern fill -->
+  <rect x="4" y="4" width="52" height="72" rx="4" ry="4" fill="url(#back-pattern)"/>
+  <!-- Inner border -->
+  <rect x="6" y="6" width="48" height="68" rx="3" ry="3" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.4"/>
+  <rect x="9" y="9" width="42" height="62" rx="2" ry="2" fill="none" stroke="#7b3fa0" stroke-width="0.5" opacity="0.3"/>
+  <!-- Center glow -->
+  <ellipse cx="30" cy="40" rx="20" ry="24" fill="url(#back-glow)"/>
+  <!-- Central mystical symbol -->
+  <g transform="translate(30,40)">
+    <!-- Outer circle -->
+    <circle cx="0" cy="0" r="14" fill="none" stroke="#9c27b0" stroke-width="0.8" opacity="0.5"/>
+    <!-- Inner circle -->
+    <circle cx="0" cy="0" r="10" fill="none" stroke="#ce93d8" stroke-width="0.5" opacity="0.4"/>
+    <!-- Star/pentagram shape -->
+    <polygon points="0,-12 3,-4 11,-4 5,1 7,9 0,5 -7,9 -5,1 -11,-4 -3,-4" fill="none" stroke="#ce93d8" stroke-width="0.6" opacity="0.5"/>
+    <!-- Center question mark / mystery symbol -->
+    <text x="0" y="5" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#ce93d8" font-weight="bold" opacity="0.6">?</text>
+    <!-- Dots at star points -->
+    <circle cx="0" cy="-12" r="1" fill="#ce93d8" opacity="0.6"/>
+    <circle cx="11" cy="-4" r="1" fill="#ce93d8" opacity="0.6"/>
+    <circle cx="7" cy="9" r="1" fill="#ce93d8" opacity="0.6"/>
+    <circle cx="-7" cy="9" r="1" fill="#ce93d8" opacity="0.6"/>
+    <circle cx="-11" cy="-4" r="1" fill="#ce93d8" opacity="0.6"/>
+  </g>
+  <!-- Scattered sparkles -->
+  <circle cx="12" cy="14" r="0.8" fill="#ce93d8" opacity="0.4"/>
+  <circle cx="48" cy="18" r="0.6" fill="#ce93d8" opacity="0.3"/>
+  <circle cx="10" cy="64" r="0.7" fill="#ce93d8" opacity="0.35"/>
+  <circle cx="50" cy="60" r="0.5" fill="#ce93d8" opacity="0.4"/>
+  <circle cx="16" cy="38" r="0.4" fill="#fff" opacity="0.2"/>
+  <circle cx="46" cy="44" r="0.5" fill="#fff" opacity="0.2"/>
+</svg>

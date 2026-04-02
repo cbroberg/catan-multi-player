@@ -41,6 +41,15 @@ export interface BoardVariantConfig {
   hasPirate?: boolean;
   /** Groups of hex coords forming foreign islands (for VP bonus) */
   foreignIslands?: HexCoord[][];
+  /** Seafarers island generation params (if set, islands are generated procedurally) */
+  islandGeneration?: {
+    mainIslandSize: number;
+    foreignIslandCount: number;
+    foreignIslandMinSize: number;
+    foreignIslandMaxSize: number;
+    /** Max players — used to validate main island has enough settlement spots */
+    maxPlayers?: number;
+  };
 }
 
 // ─── Hex Position Generator ──────────────────────────────────────────────────
@@ -154,205 +163,175 @@ export const BASE_7_8: BoardVariantConfig = {
 };
 
 // ─── Seafarers Variants ──────────────────────────────────────────────────────
+// Inspired by official Catan Seafarers scenarios ("The Four Islands",
+// "Heading for New Shores"). Uses large hex frames filled with sea,
+// with island clusters placed inside. Sea is the dominant terrain —
+// it creates the navigable ocean for ships, pirate, and exploration.
+//
+// CRITICAL: Every island group is separated from every other island group
+// by at least 1 hex of sea. No hex in island A may be adjacent to any hex
+// in island B. This is enforced by validateIslandSeparation().
+
+/**
+ * Returns the 6 axial neighbors of a hex in flat-top orientation.
+ */
+function hexNeighbors(q: number, r: number): HexCoord[] {
+  return [
+    { q: q + 1, r }, { q: q - 1, r },
+    { q, r: r + 1 }, { q, r: r - 1 },
+    { q: q + 1, r: r - 1 }, { q: q - 1, r: r + 1 },
+  ];
+}
+
+/**
+ * Validates that no two island groups share adjacent hexes.
+ * Each hex in island A must NOT be a neighbor of any hex in island B.
+ * Throws if any pair of islands violates separation.
+ */
+export function validateIslandSeparation(islands: HexCoord[][]): void {
+  for (let i = 0; i < islands.length; i++) {
+    // Build the "expanded zone" = all hexes in island i + their neighbors
+    const zone = new Set<string>();
+    for (const h of islands[i]) {
+      zone.add(`${h.q},${h.r}`);
+      for (const n of hexNeighbors(h.q, h.r)) {
+        zone.add(`${n.q},${n.r}`);
+      }
+    }
+    for (let j = i + 1; j < islands.length; j++) {
+      for (const h of islands[j]) {
+        if (zone.has(`${h.q},${h.r}`)) {
+          throw new Error(
+            `Island separation violated: island ${i} and island ${j} ` +
+            `touch or overlap at (${h.q},${h.r})`
+          );
+        }
+      }
+    }
+  }
+}
 
 /**
  * Seafarers: Heading for New Shores (3-4 players).
- * Main island + 3 small foreign islands separated by sea.
- * Uses a [5,6,7,6,5] grid = 29 hexes total.
+ * Frame [4,5,6,7,6,5,4] = 37 hexes.
+ * Main island (~12 hexes) in center + 4-5 small foreign islands (2-3 hexes each).
+ * Islands are procedurally generated — every game has a unique map.
  */
-function buildSeafarers34(): BoardVariantConfig {
-  const allPositions = generateHexPositions([5, 6, 7, 6, 5]);
-
-  // Define land clusters (main island center + 3 small islands in corners)
-  const mainIsland = new Set([
-    // Central cluster of 11 hexes (roughly 2-3-3-2-1)
-    '0,-2', '1,-2',
-    '-1,-1', '0,-1', '1,-1',
-    '-1,0', '0,0', '1,0',
-    '-1,1', '0,1',
-    '0,2',
-  ]);
-
-  const island1Coords: HexCoord[] = [
-    { q: 3, r: -2 }, { q: 3, r: -1 }, { q: 2, r: -1 },
-  ];
-  const island2Coords: HexCoord[] = [
-    { q: -3, r: 1 }, { q: -3, r: 2 }, { q: -2, r: 2 },
-  ];
-  const island3Coords: HexCoord[] = [
-    { q: 2, r: 1 }, { q: 1, r: 2 }, { q: 2, r: 0 },
-  ];
-
-  const landSet = new Set([
-    ...mainIsland,
-    ...island1Coords.map((c) => `${c.q},${c.r}`),
-    ...island2Coords.map((c) => `${c.q},${c.r}`),
-    ...island3Coords.map((c) => `${c.q},${c.r}`),
-  ]);
-
-  const seaPositions = allPositions.filter(
-    (p) => !landSet.has(`${p.q},${p.r}`)
-  );
-
-  // 20 land hexes: 11 main + 9 islands
-  // Terrain: 11 main + 9 small = 20 land hexes
-  // Of those: 1 desert, 2 gold_river, 17 regular land
-  const landCount = landSet.size; // 20
-
-  return {
-    id: 'seafarers-3-4',
-    name: 'Søfarer (3-4 spillere)',
-    expansion: 'seafarers',
-    playerRange: [3, 4],
-    hexPositions: allPositions,
-    seaPositions,
-    terrainCounts: {
-      forest: 4, pasture: 4, fields: 4,
-      hills: 3, mountains: 3, desert: 1,
-      gold_river: 1,
-      sea: seaPositions.length,
-    },
-    // 18 tokens for 18 producing hexes (20 land - 1 desert - 1 gold_river gets a token too = 19 tokens)
-    // Actually gold_river DOES produce (player choice) so it gets a token
-    // 20 land - 1 desert = 19 producing hexes
-    numberTokens: [
-      2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12, 4,
-    ],
-    harborTypes: [
-      '3:1', '3:1', '3:1', '3:1', '3:1',
-      'lumber', 'wool', 'grain', 'brick', 'ore', '3:1',
-    ],
-    defaultVictoryPoints: 12,
-    specialBuildingPhase: false,
-    hasShips: true,
-    hasPirate: true,
-    foreignIslands: [island1Coords, island2Coords, island3Coords],
-  };
-}
-
-export const SEAFARERS_3_4: BoardVariantConfig = buildSeafarers34();
+export const SEAFARERS_3_4: BoardVariantConfig = {
+  id: 'seafarers-3-4',
+  name: 'Søfarer — Nye Kyster (3-4 spillere)',
+  expansion: 'seafarers',
+  playerRange: [3, 4],
+  // Frame big enough for main island (12 hex) + 4 foreign islands + sea channels
+  hexPositions: generateHexPositions([5, 6, 7, 8, 7, 6, 5]),
+  // Placeholder values — overridden at generation time by island generator
+  terrainCounts: {
+    forest: 4, pasture: 4, fields: 4,
+    hills: 3, mountains: 2, desert: 0,
+    gold_river: 2, sea: 18,
+  },
+  numberTokens: [
+    2, 3, 3, 4, 4, 5, 5, 6, 6,
+    8, 8, 9, 9, 10, 10, 11, 11, 12, 5,
+  ],
+  harborTypes: [
+    '3:1', '3:1', '3:1', '3:1',
+    'lumber', 'wool', 'grain', 'brick', 'ore', '3:1', '3:1',
+  ],
+  defaultVictoryPoints: 12,
+  specialBuildingPhase: false,
+  hasShips: true,
+  hasPirate: true,
+  islandGeneration: {
+    // 4 players × 2 settlements × ~3 hex per spot with distance rule = 12 min
+    mainIslandSize: 12,
+    foreignIslandCount: 4,
+    foreignIslandMinSize: 2,
+    foreignIslandMaxSize: 3,
+    maxPlayers: 4,
+  },
+};
 
 /**
  * Seafarers: Heading for New Shores (5-6 players).
- * Larger frame with main island + 4 foreign islands.
- * Uses a [5,6,7,8,7,6,5] grid = 44 hexes total.
+ * Frame [5,6,7,8,9,8,7,6,5] = 61 hexes.
+ * Main island (~16 hexes) + 5-6 foreign islands (2-4 hexes each).
+ * Procedurally generated.
  */
-function buildSeafarers56(): BoardVariantConfig {
-  const allPositions = generateHexPositions([5, 6, 7, 8, 7, 6, 5]);
-
-  const mainIsland = new Set([
-    '0,-3', '1,-3',
-    '-1,-2', '0,-2', '1,-2', '2,-2',
-    '-1,-1', '0,-1', '1,-1', '2,-1',
-    '-1,0', '0,0', '1,0',
-    '0,1', '-1,1',
-  ]);
-
-  const island1: HexCoord[] = [{ q: 4, r: -3 }, { q: 4, r: -2 }, { q: 3, r: -2 }];
-  const island2: HexCoord[] = [{ q: -3, r: 0 }, { q: -4, r: 1 }, { q: -3, r: 1 }];
-  const island3: HexCoord[] = [{ q: 3, r: 0 }, { q: 3, r: 1 }, { q: 2, r: 1 }];
-  const island4: HexCoord[] = [{ q: -3, r: 2 }, { q: -4, r: 3 }, { q: -3, r: 3 }];
-
-  const landSet = new Set([
-    ...mainIsland,
-    ...[island1, island2, island3, island4].flat().map((c) => `${c.q},${c.r}`),
-  ]);
-
-  const seaPositions = allPositions.filter((p) => !landSet.has(`${p.q},${p.r}`));
-  const landCount = landSet.size; // 27 land hexes
-
-  return {
-    id: 'seafarers-5-6',
-    name: 'Søfarer (5-6 spillere)',
-    expansion: 'seafarers',
-    playerRange: [5, 6],
-    hexPositions: allPositions,
-    seaPositions,
-    terrainCounts: {
-      forest: 6, pasture: 5, fields: 5,
-      hills: 4, mountains: 4, desert: 1,
-      gold_river: 2,
-      sea: seaPositions.length,
-    },
-    // 26 producing hexes (27 land - 1 desert)
-    numberTokens: [
-      2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6,
-      8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12,
-    ],
-    harborTypes: [
-      '3:1', '3:1', '3:1', '3:1', '3:1', '3:1',
-      'lumber', 'wool', 'grain', 'brick', 'ore', '3:1', '3:1',
-    ],
-    defaultVictoryPoints: 12,
-    specialBuildingPhase: true,
-    hasShips: true,
-    hasPirate: true,
-    foreignIslands: [island1, island2, island3, island4],
-  };
-}
-
-export const SEAFARERS_5_6: BoardVariantConfig = buildSeafarers56();
+export const SEAFARERS_5_6: BoardVariantConfig = {
+  id: 'seafarers-5-6',
+  name: 'Søfarer — Nye Kyster (5-6 spillere)',
+  expansion: 'seafarers',
+  playerRange: [5, 6],
+  hexPositions: generateHexPositions([5, 6, 7, 8, 9, 8, 7, 6, 5]),
+  // Placeholder values — overridden at generation time
+  terrainCounts: {
+    forest: 7, pasture: 6, fields: 6,
+    hills: 5, mountains: 4, desert: 2,
+    gold_river: 3, sea: 28,
+  },
+  numberTokens: [
+    2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6,
+    8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12,
+    4, 9, 5,
+  ],
+  harborTypes: [
+    '3:1', '3:1', '3:1', '3:1', '3:1', '3:1',
+    'lumber', 'wool', 'grain', 'brick', 'ore', '3:1', '3:1',
+  ],
+  defaultVictoryPoints: 12,
+  specialBuildingPhase: true,
+  hasShips: true,
+  hasPirate: true,
+  islandGeneration: {
+    mainIslandSize: 16,
+    foreignIslandCount: 6,
+    foreignIslandMinSize: 2,
+    foreignIslandMaxSize: 4,
+    maxPlayers: 6,
+  },
+};
 
 /**
  * Seafarers: Heading for New Shores (7-8 players).
- * Large frame with main island + 5 foreign islands.
- * Uses a [6,7,8,9,8,7,6] grid = 51 hexes total.
+ * Massive frame [7,8,9,10,11,10,9,8,7] = 79 hexes.
+ * Main island (~20 hexes) + 6-8 foreign islands (2-4 hexes each).
+ * Procedurally generated.
  */
-function buildSeafarers78(): BoardVariantConfig {
-  const allPositions = generateHexPositions([6, 7, 8, 9, 8, 7, 6]);
-
-  const mainIsland = new Set([
-    '0,-3', '1,-3', '2,-3',
-    '-1,-2', '0,-2', '1,-2', '2,-2', '3,-2',
-    '-1,-1', '0,-1', '1,-1', '2,-1',
-    '-1,0', '0,0', '1,0', '2,0',
-    '0,1', '-1,1', '1,1',
-  ]);
-
-  const island1: HexCoord[] = [{ q: 5, r: -3 }, { q: 5, r: -2 }, { q: 4, r: -2 }];
-  const island2: HexCoord[] = [{ q: -4, r: 0 }, { q: -4, r: 1 }, { q: -3, r: 1 }];
-  const island3: HexCoord[] = [{ q: 4, r: 0 }, { q: 4, r: 1 }, { q: 3, r: 1 }];
-  const island4: HexCoord[] = [{ q: -4, r: 2 }, { q: -5, r: 3 }, { q: -4, r: 3 }];
-  const island5: HexCoord[] = [{ q: 2, r: 2 }, { q: 1, r: 3 }, { q: 2, r: 1 }];
-
-  const landSet = new Set([
-    ...mainIsland,
-    ...[island1, island2, island3, island4, island5].flat().map((c) => `${c.q},${c.r}`),
-  ]);
-
-  const seaPositions = allPositions.filter((p) => !landSet.has(`${p.q},${p.r}`));
-
-  return {
-    id: 'seafarers-7-8',
-    name: 'Søfarer (7-8 spillere)',
-    expansion: 'seafarers',
-    playerRange: [7, 8],
-    hexPositions: allPositions,
-    seaPositions,
-    terrainCounts: {
-      forest: 7, pasture: 7, fields: 7,
-      hills: 5, mountains: 5, desert: 2,
-      gold_river: 1,
-      sea: seaPositions.length,
-    },
-    // 32 producing hexes (34 land - 2 desert)
-    numberTokens: [
-      2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6,
-      8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 12, 12, 12,
-    ],
-    harborTypes: [
-      '3:1', '3:1', '3:1', '3:1', '3:1', '3:1', '3:1',
-      'lumber', 'wool', 'grain', 'brick', 'ore', 'lumber', 'wool', '3:1',
-    ],
-    defaultVictoryPoints: 14,
-    specialBuildingPhase: true,
-    hasShips: true,
-    hasPirate: true,
-    foreignIslands: [island1, island2, island3, island4, island5],
-  };
-}
-
-export const SEAFARERS_7_8: BoardVariantConfig = buildSeafarers78();
+export const SEAFARERS_7_8: BoardVariantConfig = {
+  id: 'seafarers-7-8',
+  name: 'Søfarer — Nye Kyster (7-8 spillere)',
+  expansion: 'seafarers',
+  playerRange: [7, 8],
+  hexPositions: generateHexPositions([7, 8, 9, 10, 11, 10, 9, 8, 7]),
+  // Placeholder values — overridden at generation time
+  terrainCounts: {
+    forest: 9, pasture: 8, fields: 8,
+    hills: 7, mountains: 6, desert: 3,
+    gold_river: 4, sea: 34,
+  },
+  numberTokens: [
+    2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6,
+    8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12,
+    5, 3, 10, 4, 9,
+  ],
+  harborTypes: [
+    '3:1', '3:1', '3:1', '3:1', '3:1', '3:1', '3:1', '3:1',
+    'lumber', 'wool', 'grain', 'brick', 'ore', 'lumber', 'wool', '3:1',
+  ],
+  defaultVictoryPoints: 14,
+  specialBuildingPhase: true,
+  hasShips: true,
+  hasPirate: true,
+  islandGeneration: {
+    // 8 players × 2 settlements × ~3 hex per spot with distance rule = 24 min
+    mainIslandSize: 24,
+    foreignIslandCount: 8,
+    foreignIslandMinSize: 2,
+    foreignIslandMaxSize: 4,
+    maxPlayers: 8,
+  },
+};
 
 // ─── Variant Registry ────────────────────────────────────────────────────────
 

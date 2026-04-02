@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catan Cards & Mobile UI — Design Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #070d18;
+      color: #c8d8e8;
+      font-family: Georgia, 'Times New Roman', serif;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 28px;
+      color: #e8f0f8;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+    h2 {
+      font-size: 20px;
+      color: #9aa8b8;
+      margin: 40px 0 16px;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #2a3a52;
+      padding-bottom: 8px;
+      width: 100%;
+      max-width: 800px;
+    }
+    h3 {
+      font-size: 14px;
+      color: #607888;
+      margin: 16px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .subtitle {
+      color: #607888;
+      font-size: 14px;
+      margin-bottom: 32px;
+      font-style: italic;
+    }
+    .card-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .card-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-label {
+      font-size: 10px;
+      color: #607888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .card-container img {
+      transition: transform 0.2s;
+    }
+    .card-container img:hover {
+      transform: scale(1.1);
+    }
+    .scale-demo {
+      display: flex;
+      gap: 24px;
+      align-items: flex-end;
+      justify-content: center;
+      margin: 16px 0;
+    }
+    .scale-demo .size-label {
+      font-size: 10px;
+      color: #455a64;
+      text-align: center;
+      margin-top: 4px;
+    }
+    .mobile-frame {
+      width: 375px;
+      background: #0e1a2e;
+      border-radius: 20px;
+      border: 2px solid #2a3a52;
+      overflow: hidden;
+      margin: 16px 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .mobile-frame img,
+    .mobile-frame object {
+      width: 100%;
+      display: block;
+    }
+    .wide-frame {
+      width: 100%;
+      max-width: 375px;
+      margin: 16px auto;
+    }
+    .wide-frame img {
+      width: 100%;
+    }
+    .section-bg {
+      background: #0e1a2e;
+      border-radius: 16px;
+      padding: 24px;
+      margin: 8px 0;
+      width: 100%;
+      max-width: 800px;
+    }
+    .states-row {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .state-group {
+      text-align: center;
+    }
+    .state-group .state-label {
+      font-size: 12px;
+      color: #78909c;
+      margin-bottom: 8px;
+    }
+    .color-swatch-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+    .color-swatch {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<h1>CATAN CARDS & MOBILE UI</h1>
+<p class="subtitle">Agent B Design Deliverables — Card & Mobile Designer</p>
+
+<!-- ========== RESOURCE CARDS ========== -->
+<h2>1. Resource Cards (50 x 70px)</h2>
+
+<div class="section-bg">
+  <h3>All Five Resources</h3>
+  <div class="card-row">
+    <div class="card-container">
+      <img src="card-lumber.svg" width="100" height="140" alt="Lumber">
+      <span class="card-label">Lumber</span>
+    </div>
+    <div class="card-container">
+      <img src="card-brick.svg" width="100" height="140" alt="Brick">
+      <span class="card-label">Brick</span>
+    </div>
+    <div class="card-container">
+      <img src="card-wool.svg" width="100" height="140" alt="Wool">
+      <span class="card-label">Wool</span>
+    </div>
+    <div class="card-container">
+      <img src="card-grain.svg" width="100" height="140" alt="Grain">
+      <span class="card-label">Grain</span>
+    </div>
+    <div class="card-container">
+      <img src="card-ore.svg" width="100" height="140" alt="Ore">
+      <span class="card-label">Ore</span>
+    </div>
+  </div>
+
+  <h3>Scale Test — Readability at Small Sizes</h3>
+  <div class="scale-demo">
+    <div>
+      <img src="card-lumber.svg" width="30" height="42" alt="30px">
+      <div class="size-label">30px</div>
+    </div>
+    <div>
+      <img src="card-lumber.svg" width="50" height="70" alt="50px">
+      <div class="size-label">50px (1x)</div>
+    </div>
+    <div>
+      <img src="card-lumber.svg" width="75" height="105" alt="75px">
+      <div class="size-label">75px</div>
+    </div>
+    <div>
+      <img src="card-lumber.svg" width="100" height="140" alt="100px">
+      <div class="size-label">100px (2x)</div>
+    </div>
+  </div>
+
+  <h3>All Cards at Actual Size (50 x 70px)</h3>
+  <div class="card-row">
+    <img src="card-lumber.svg" width="50" height="70" alt="Lumber">
+    <img src="card-brick.svg" width="50" height="70" alt="Brick">
+    <img src="card-wool.svg" width="50" height="70" alt="Wool">
+    <img src="card-grain.svg" width="50" height="70" alt="Grain">
+    <img src="card-ore.svg" width="50" height="70" alt="Ore">
+  </div>
+</div>
+
+<!-- ========== DEVELOPMENT CARDS ========== -->
+<h2>2. Development Cards (60 x 80px)</h2>
+
+<div class="section-bg">
+  <h3>All Five Types + Back</h3>
+  <div class="card-row">
+    <div class="card-container">
+      <img src="devcard-knight.svg" width="120" height="160" alt="Knight">
+      <span class="card-label">Knight</span>
+    </div>
+    <div class="card-container">
+      <img src="devcard-victory-point.svg" width="120" height="160" alt="Victory Point">
+      <span class="card-label">Victory Point</span>
+    </div>
+    <div class="card-container">
+      <img src="devcard-road-building.svg" width="120" height="160" alt="Road Building">
+      <span class="card-label">Road Building</span>
+    </div>
+    <div class="card-container">
+      <img src="devcard-year-of-plenty.svg" width="120" height="160" alt="Year of Plenty">
+      <span class="card-label">Year of Plenty</span>
+    </div>
+    <div class="card-container">
+      <img src="devcard-monopoly.svg" width="120" height="160" alt="Monopoly">
+      <span class="card-label">Monopoly</span>
+    </div>
+    <div class="card-container">
+      <img src="devcard-back.svg" width="120" height="160" alt="Card Back">
+      <span class="card-label">Card Back</span>
+    </div>
+  </div>
+
+  <h3>Actual Size (60 x 80px)</h3>
+  <div class="card-row">
+    <img src="devcard-knight.svg" width="60" height="80" alt="Knight">
+    <img src="devcard-victory-point.svg" width="60" height="80" alt="VP">
+    <img src="devcard-road-building.svg" width="60" height="80" alt="Road Building">
+    <img src="devcard-year-of-plenty.svg" width="60" height="80" alt="Year of Plenty">
+    <img src="devcard-monopoly.svg" width="60" height="80" alt="Monopoly">
+    <img src="devcard-back.svg" width="60" height="80" alt="Back">
+  </div>
+</div>
+
+<!-- ========== BUILDING COSTS ========== -->
+<h2>3. Building Cost Reference Panel</h2>
+
+<div class="section-bg">
+  <h3>Affordable / Not Affordable States</h3>
+  <p style="color: #607888; font-size: 12px; margin-bottom: 12px;">
+    Green rows with checkmarks = player can afford. Grey rows with locks = cannot afford.
+  </p>
+  <div class="mobile-frame">
+    <img src="building-costs.svg" alt="Building Costs">
+  </div>
+</div>
+
+<!-- ========== PLAYER HAND ========== -->
+<h2>4. Player Hand Layout (Mobile — 375px)</h2>
+
+<div class="section-bg">
+  <h3>Full Mobile View — Red Player</h3>
+  <div class="mobile-frame">
+    <img src="player-hand.svg" alt="Player Hand Layout">
+  </div>
+</div>
+
+<!-- ========== SCOREBOARD ENTRY ========== -->
+<h2>5. Scoreboard Entry</h2>
+
+<div class="section-bg">
+  <h3>Active Player (Glow Border)</h3>
+  <div style="max-width: 350px; margin: 0 auto;">
+    <img src="scoreboard-entry.svg" width="300" height="80" alt="Scoreboard Entry" style="width: 100%; height: auto;">
+  </div>
+
+  <h3>Player Colors Reference</h3>
+  <div class="color-swatch-row">
+    <div class="color-swatch" style="background: #ef4444; color: #fff;">Red</div>
+    <div class="color-swatch" style="background: #3b82f6; color: #fff;">Blue</div>
+    <div class="color-swatch" style="background: #e5e5e5; color: #333;">White</div>
+    <div class="color-swatch" style="background: #f97316; color: #fff;">Orange</div>
+    <div class="color-swatch" style="background: #22c55e; color: #fff;">Green</div>
+    <div class="color-swatch" style="background: #92400e; color: #fff;">Brown</div>
+  </div>
+</div>
+
+<!-- ========== TURN PHASE INDICATOR ========== -->
+<h2>6. Turn Phase Indicator</h2>
+
+<div class="section-bg">
+  <h3>Phase 2 Active (Build & Trade) — Red Player</h3>
+  <div class="mobile-frame">
+    <img src="turn-phase.svg" alt="Turn Phase Indicator">
+  </div>
+</div>
+
+<!-- ========== DESIGN NOTES ========== -->
+<h2>Design Notes</h2>
+
+<div class="section-bg" style="font-size: 13px; line-height: 1.8;">
+  <p><strong>Color Palette:</strong></p>
+  <ul style="margin-left: 20px; margin-bottom: 16px;">
+    <li>Background: <code>#0e1a2e</code> (dark navy)</li>
+    <li>Resource cards match their terrain hex colors</li>
+    <li>Dev cards use purple/magical theme (<code>#4a1a6b</code> to <code>#2a0e40</code>)</li>
+    <li>Accents: <code>#ce93d8</code> (light purple), <code>#ffd54f</code> (gold)</li>
+  </ul>
+
+  <p><strong>Accessibility:</strong></p>
+  <ul style="margin-left: 20px; margin-bottom: 16px;">
+    <li>Each resource card has a unique colorblind pattern at bottom (stripes, cross-hatch, dots, lines, triangles)</li>
+    <li>Icons are distinct in shape, not just color</li>
+    <li>Text labels on every card</li>
+    <li>Building costs uses checkmark/lock icons, not just color for affordable state</li>
+  </ul>
+
+  <p><strong>Typography:</strong> Georgia serif throughout for medieval/premium feel</p>
+  <p><strong>Sizing:</strong> Resource cards 50x70px, Dev cards 60x80px, all panels fit 375px mobile width</p>
+</div>
+
+</body>
+</html>

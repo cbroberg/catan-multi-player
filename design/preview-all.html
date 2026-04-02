@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catan Multiplayer — Design Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0e1a2e;
+      color: #e0e7ef;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 40px 32px 80px;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #f0d78c;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 1rem;
+      color: #7a8ba8;
+    }
+
+    .section {
+      max-width: 1200px;
+      margin: 0 auto 56px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #1e2d45;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #c8d6e5;
+    }
+
+    .section-header span {
+      font-size: 0.85rem;
+      color: #4a5e7a;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .card {
+      background: #152038;
+      border: 1px solid #1e2d45;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: #2e4a6a;
+    }
+
+    .card .label {
+      font-size: 0.75rem;
+      color: #5a7090;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+    }
+
+    .card object {
+      display: block;
+    }
+
+    /* Hex tiles */
+    .card.hex object { width: 120px; height: 140px; }
+
+    /* Tokens & small items */
+    .card.small object { width: 80px; height: 80px; }
+
+    /* Pieces */
+    .card.piece object { width: 60px; height: 80px; }
+
+    /* Dice */
+    .card.dice object { width: 140px; height: 80px; }
+
+    /* Resource cards (shown 2x) */
+    .card.resource-card object { width: 100px; height: 160px; }
+
+    /* Dev cards (shown 2x) */
+    .card.dev-card object { width: 120px; height: 180px; }
+
+    /* Mobile panels */
+    .mobile-frame {
+      background: #152038;
+      border: 1px solid #1e2d45;
+      border-radius: 16px;
+      width: 375px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .mobile-frame::before {
+      content: 'Mobile 375px';
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      background: #0e1a2e;
+      padding: 0 8px;
+      font-size: 0.7rem;
+      color: #4a5e7a;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mobile-frame .label {
+      font-size: 0.75rem;
+      color: #5a7090;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+    }
+
+    .mobile-frame object {
+      width: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Catan Multiplayer</h1>
+    <p>Design System Preview — Board Elements &amp; Mobile Cards</p>
+  </header>
+
+  <!-- ======================= BOARD ELEMENTS ======================= -->
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Hex Tiles</h2>
+      <span>Terrain hexagoner / Terrain hexagons</span>
+    </div>
+    <div class="grid">
+      <div class="card hex">
+        <object data="board/hex-forest.svg" type="image/svg+xml"></object>
+        <span class="label">Forest</span>
+      </div>
+      <div class="card hex">
+        <object data="board/hex-pasture.svg" type="image/svg+xml"></object>
+        <span class="label">Pasture</span>
+      </div>
+      <div class="card hex">
+        <object data="board/hex-fields.svg" type="image/svg+xml"></object>
+        <span class="label">Fields</span>
+      </div>
+      <div class="card hex">
+        <object data="board/hex-hills.svg" type="image/svg+xml"></object>
+        <span class="label">Hills</span>
+      </div>
+      <div class="card hex">
+        <object data="board/hex-mountains.svg" type="image/svg+xml"></object>
+        <span class="label">Mountains</span>
+      </div>
+      <div class="card hex">
+        <object data="board/hex-desert.svg" type="image/svg+xml"></object>
+        <span class="label">Desert</span>
+      </div>
+      <div class="card hex">
+        <object data="board/hex-sea.svg" type="image/svg+xml"></object>
+        <span class="label">Sea</span>
+      </div>
+      <div class="card hex">
+        <object data="board/hex-gold-river.svg" type="image/svg+xml"></object>
+        <span class="label">Gold River</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Tokens &amp; Markers</h2>
+      <span>Nummer-brikker, havne, robber / Number tokens, harbors, robber</span>
+    </div>
+    <div class="grid">
+      <div class="card small">
+        <object data="board/number-token.svg" type="image/svg+xml"></object>
+        <span class="label">Number Token</span>
+      </div>
+      <div class="card small">
+        <object data="board/harbor-marker.svg" type="image/svg+xml"></object>
+        <span class="label">Harbor Marker</span>
+      </div>
+      <div class="card small">
+        <object data="board/robber.svg" type="image/svg+xml"></object>
+        <span class="label">Robber</span>
+      </div>
+      <div class="card small">
+        <object data="board/pirate.svg" type="image/svg+xml"></object>
+        <span class="label">Pirate</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Player Pieces</h2>
+      <span>Spillerbrikker / Player pieces</span>
+    </div>
+    <div class="grid">
+      <div class="card piece">
+        <object data="board/settlement.svg" type="image/svg+xml"></object>
+        <span class="label">Settlement</span>
+      </div>
+      <div class="card piece">
+        <object data="board/city.svg" type="image/svg+xml"></object>
+        <span class="label">City</span>
+      </div>
+      <div class="card piece">
+        <object data="board/road.svg" type="image/svg+xml"></object>
+        <span class="label">Road</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Dice</h2>
+      <span>Terninger / Dice</span>
+    </div>
+    <div class="grid">
+      <div class="card dice">
+        <object data="board/dice.svg" type="image/svg+xml"></object>
+        <span class="label">Dice Pair</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= CARD / MOBILE ELEMENTS ======================= -->
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Resource Cards</h2>
+      <span>Ressourcekort / Resource cards</span>
+    </div>
+    <div class="grid">
+      <div class="card resource-card">
+        <object data="cards/card-lumber.svg" type="image/svg+xml"></object>
+        <span class="label">Lumber</span>
+      </div>
+      <div class="card resource-card">
+        <object data="cards/card-brick.svg" type="image/svg+xml"></object>
+        <span class="label">Brick</span>
+      </div>
+      <div class="card resource-card">
+        <object data="cards/card-wool.svg" type="image/svg+xml"></object>
+        <span class="label">Wool</span>
+      </div>
+      <div class="card resource-card">
+        <object data="cards/card-grain.svg" type="image/svg+xml"></object>
+        <span class="label">Grain</span>
+      </div>
+      <div class="card resource-card">
+        <object data="cards/card-ore.svg" type="image/svg+xml"></object>
+        <span class="label">Ore</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Development Cards</h2>
+      <span>Udviklingskort / Development cards</span>
+    </div>
+    <div class="grid">
+      <div class="card dev-card">
+        <object data="cards/devcard-knight.svg" type="image/svg+xml"></object>
+        <span class="label">Knight</span>
+      </div>
+      <div class="card dev-card">
+        <object data="cards/devcard-victory-point.svg" type="image/svg+xml"></object>
+        <span class="label">Victory Point</span>
+      </div>
+      <div class="card dev-card">
+        <object data="cards/devcard-road-building.svg" type="image/svg+xml"></object>
+        <span class="label">Road Building</span>
+      </div>
+      <div class="card dev-card">
+        <object data="cards/devcard-year-of-plenty.svg" type="image/svg+xml"></object>
+        <span class="label">Year of Plenty</span>
+      </div>
+      <div class="card dev-card">
+        <object data="cards/devcard-monopoly.svg" type="image/svg+xml"></object>
+        <span class="label">Monopoly</span>
+      </div>
+      <div class="card dev-card">
+        <object data="cards/devcard-back.svg" type="image/svg+xml"></object>
+        <span class="label">Card Back</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Mobile Panels</h2>
+      <span>Mobilvisninger / Mobile panel views (375px)</span>
+    </div>
+    <div class="grid">
+      <div class="mobile-frame">
+        <object data="cards/building-costs.svg" type="image/svg+xml"></object>
+        <span class="label">Building Costs</span>
+      </div>
+      <div class="mobile-frame">
+        <object data="cards/player-hand.svg" type="image/svg+xml"></object>
+        <span class="label">Player Hand</span>
+      </div>
+      <div class="mobile-frame">
+        <object data="cards/scoreboard-entry.svg" type="image/svg+xml"></object>
+        <span class="label">Scoreboard Entry</span>
+      </div>
+      <div class="mobile-frame">
+        <object data="cards/turn-phase.svg" type="image/svg+xml"></object>
+        <span class="label">Turn Phase Indicator</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

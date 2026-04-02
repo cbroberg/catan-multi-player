@@ -188,7 +188,7 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
     socket.on('action:roll-dice', (gameId) => {
       const r = withEngine(gm, socket, gameId, (engine, playerId) => {
         const result = engine.rollDice(playerId);
-        if (!result.ok) return result.error;
+        if (!result.ok) return result.error ?? 'Unknown error';
         if (result.dice) {
           io.to(gm.getGameRoom(gameId)).emit('game:dice-result', {
             d1: result.dice[0], d2: result.dice[1], total: result.dice[0] + result.dice[1],

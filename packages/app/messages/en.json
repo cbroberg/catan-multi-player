@@ -1,0 +1,134 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "connecting": "Connecting...",
+    "error": "Error",
+    "waitingForGameData": "Waiting for game data...",
+    "gameStarting": "Game starting...",
+    "joiningGame": "Joining game...",
+    "players": "Players",
+    "cards": "cards"
+  },
+  "home": {
+    "title": "CATAN",
+    "subtitle": "Multiplayer Big Screen + Mobile",
+    "createGame": "Create New Game",
+    "joinGame": "Join Game",
+    "boardPreview": "Board Preview"
+  },
+  "lobby": {
+    "title": "Lobby",
+    "loading": "Loading lobby...",
+    "gameCode": "Game Code",
+    "scanOrVisit": "Scan or visit /join",
+    "players": "Players",
+    "waitingForPlayer": "Waiting for player...",
+    "newBoard": "New Board",
+    "balance": "Balance",
+    "startGame": "Start Game",
+    "waitingForPlayers": "Waiting for players ({ready}/{total} ready)",
+    "ready": "Ready",
+    "notReady": "Not ready",
+    "host": "Host",
+    "game": "Game",
+    "playersCount": "players"
+  },
+  "join": {
+    "title": "Join Catan",
+    "gameCodeLabel": "Game Code",
+    "gameCodePlaceholder": "XXXXX",
+    "codeError": "Code must be 5 characters",
+    "next": "Next",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "nameError": "Enter your name",
+    "colorLabel": "Color",
+    "avatarLabel": "Avatar",
+    "joinGame": "Join Game",
+    "colors": {
+      "red": "Red",
+      "blue": "Blue",
+      "white": "White",
+      "orange": "Orange",
+      "green": "Green",
+      "brown": "Brown"
+    }
+  },
+  "game": {
+    "yourTurn": "Your turn",
+    "playerTurn": "{name}'s turn",
+    "turn": "Turn",
+    "player": "Player",
+    "gameLog": "Game Log",
+    "phase": {
+      "SETUP_ROUND_1": "Setup Round 1",
+      "SETUP_ROUND_2": "Setup Round 2",
+      "PLAYING": "Playing",
+      "GAME_OVER": "Game Over"
+    },
+    "turnPhase": {
+      "PRE_ROLL": "Roll dice",
+      "ROLL_DICE": "Dice roll",
+      "ROBBER_DISCARD": "Discard cards",
+      "ROBBER_MOVE": "Move robber",
+      "ROBBER_STEAL": "Steal resource",
+      "TRADE_BUILD": "Trade & Build",
+      "END_TURN": "End turn"
+    },
+    "setup": {
+      "placeSettlement": "Place your settlement",
+      "placeRoad": "Place your road",
+      "round": "Round {round} — Tap the board",
+      "waitingFor": "Waiting for {name}..."
+    },
+    "actions": {
+      "rollDice": "Roll Dice",
+      "buildSettlement": "Settlement",
+      "buildCity": "City",
+      "buildRoad": "Road",
+      "buyDevCard": "Dev Card",
+      "maritimeTrade": "Maritime 4:1",
+      "endTurn": "End Turn"
+    },
+    "robber": {
+      "chooseHex": "Choose hex for the robber",
+      "stealFrom": "Steal from whom?"
+    },
+    "discard": {
+      "discardCards": "Discard {count} cards"
+    },
+    "resources": {
+      "lumber": "Lumber",
+      "brick": "Brick",
+      "wool": "Wool",
+      "grain": "Grain",
+      "ore": "Ore"
+    },
+    "terrain": {
+      "forest": "Forest",
+      "pasture": "Pasture",
+      "fields": "Fields",
+      "hills": "Hills",
+      "mountains": "Mountains",
+      "desert": "Desert",
+      "sea": "Sea",
+      "gold_river": "Gold"
+    },
+    "harbor": {
+      "3:1": "3:1",
+      "lumber": "2:1 L",
+      "wool": "2:1 W",
+      "grain": "2:1 G",
+      "brick": "2:1 B",
+      "ore": "2:1 O"
+    },
+    "gameOver": {
+      "winner": "{name} wins!",
+      "victoryPoints": "Victory Points"
+    },
+    "readyButton": {
+      "ready": "Ready!",
+      "notReady": "Ready?"
+    }
+  }
+}

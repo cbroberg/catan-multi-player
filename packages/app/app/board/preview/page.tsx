@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { GameBoard, BalanceScore } from '@catan/shared';
 import { BOARD_VARIANTS } from '@catan/shared';
 import { generateRandomBalancedBoard, generateBoardFromArrays, BEGINNER_PRESET } from '@catan/game-engine';
@@ -10,9 +10,11 @@ const variantEntries = Object.values(BOARD_VARIANTS);
 
 export default function BoardPreviewPage() {
   const [variantId, setVariantId] = useState('base-3-4');
-  const [state, setState] = useState<{ board: GameBoard; score: BalanceScore }>(() =>
-    generateRandomBalancedBoard('base-3-4')
-  );
+  const [state, setState] = useState<{ board: GameBoard; score: BalanceScore } | null>(null);
+
+  useEffect(() => {
+    if (!state) setState(generateRandomBalancedBoard('base-3-4'));
+  }, []);
 
   const generateNew = useCallback(() => {
     setState(generateRandomBalancedBoard(variantId));
@@ -35,6 +37,15 @@ export default function BoardPreviewPage() {
   }, []);
 
   const variant = BOARD_VARIANTS[variantId];
+
+  if (!state) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#0e1a2e] text-white/50">
+        Generating board...
+      </div>
+    );
+  }
+
   const hexCount = state.board.hexes.length;
   const landCount = state.board.hexes.filter((h) => h.terrain !== 'sea').length;
   const seaCount = hexCount - landCount;

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80">
+  <defs>
+    <linearGradient id="sb-bg-active" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1a2844"/>
+      <stop offset="100%" stop-color="#162236"/>
+    </linearGradient>
+    <filter id="sb-glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Active player row (with glow border) -->
+  <rect x="2" y="2" width="296" height="76" rx="10" fill="url(#sb-bg-active)" stroke="#ef4444" stroke-width="2" filter="url(#sb-glow)"/>
+  <!-- Active indicator glow -->
+  <rect x="2" y="2" width="296" height="76" rx="10" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.3"/>
+
+  <!-- Player color indicator bar -->
+  <rect x="2" y="2" width="6" height="76" rx="3" fill="#ef4444"/>
+
+  <!-- Player avatar -->
+  <circle cx="36" cy="30" r="16" fill="#ef4444" stroke="#ff6b6b" stroke-width="1.5"/>
+  <text x="36" y="36" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#fff" font-weight="bold">C</text>
+
+  <!-- Player name -->
+  <text x="62" y="28" font-family="Georgia, serif" font-size="13" fill="#fff" font-weight="bold">Christian</text>
+
+  <!-- Active turn label -->
+  <rect x="62" y="34" width="50" height="14" rx="7" fill="#ef4444" opacity="0.2"/>
+  <text x="87" y="45" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#ff8a80" font-weight="bold">PLAYING</text>
+
+  <!-- VP (large) -->
+  <text x="270" y="22" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#607888">VP</text>
+  <text x="270" y="48" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#fff" font-weight="bold">7</text>
+
+  <!-- Stats row -->
+  <g transform="translate(14,58)">
+    <!-- Resource count -->
+    <rect x="0" y="0" width="52" height="18" rx="4" fill="#121c2e" stroke="#2a3a52" stroke-width="0.5"/>
+    <rect x="4" y="4" width="8" height="10" rx="1.5" fill="#2d5a1e" stroke="#3d7a2e" stroke-width="0.4"/>
+    <text x="34" y="13" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#8899aa">9</text>
+
+    <!-- Dev card count -->
+    <rect x="58" y="0" width="52" height="18" rx="4" fill="#121c2e" stroke="#2a3a52" stroke-width="0.5"/>
+    <rect x="62" y="4" width="8" height="10" rx="1.5" fill="#4a1a6b" stroke="#7b3fa0" stroke-width="0.4"/>
+    <text x="92" y="13" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#8899aa">2</text>
+
+    <!-- Road length -->
+    <rect x="116" y="0" width="52" height="18" rx="4" fill="#121c2e" stroke="#2a3a52" stroke-width="0.5"/>
+    <line x1="120" y1="9" x2="132" y2="9" stroke="#a1887f" stroke-width="2" stroke-linecap="round"/>
+    <text x="150" y="13" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#8899aa">5</text>
+
+    <!-- Army size -->
+    <rect x="174" y="0" width="52" height="18" rx="4" fill="#121c2e" stroke="#2a3a52" stroke-width="0.5"/>
+    <text x="182" y="13" font-family="Georgia, serif" font-size="10" fill="#9575cd">&#9876;</text>
+    <text x="208" y="13" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#8899aa">3</text>
+
+    <!-- Longest Road badge -->
+    <rect x="232" y="0" width="52" height="18" rx="9" fill="#5d4037" stroke="#a1887f" stroke-width="0.8"/>
+    <text x="258" y="12" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#d7ccc8" font-weight="bold">LR</text>
+  </g>
+</svg>

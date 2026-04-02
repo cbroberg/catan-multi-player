@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 520" width="375" height="520">
+  <defs>
+    <linearGradient id="ph-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0e1a2e"/>
+      <stop offset="100%" stop-color="#0a1220"/>
+    </linearGradient>
+    <linearGradient id="ph-section" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#162236"/>
+      <stop offset="100%" stop-color="#121c2e"/>
+    </linearGradient>
+    <linearGradient id="btn-build" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2e7d32"/>
+      <stop offset="100%" stop-color="#1b5e20"/>
+    </linearGradient>
+    <linearGradient id="btn-trade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1565c0"/>
+      <stop offset="100%" stop-color="#0d47a1"/>
+    </linearGradient>
+    <linearGradient id="btn-end" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c62828"/>
+      <stop offset="100%" stop-color="#8e0000"/>
+    </linearGradient>
+    <!-- Resource card mini symbols (inline) -->
+    <symbol id="ph-lumber" viewBox="0 0 50 70">
+      <rect x="1" y="1" width="48" height="68" rx="5" fill="#2d5a1e" stroke="#3d7a2e" stroke-width="1.5"/>
+      <rect x="13" y="25" width="22" height="6" rx="3" fill="#a67c2e" stroke="#5a3e0a" stroke-width="0.6"/>
+      <rect x="17" y="32" width="18" height="6" rx="3" fill="#8B6914" stroke="#5a3e0a" stroke-width="0.6"/>
+      <text x="25" y="54" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#c8e6c9" font-weight="bold">LUMBER</text>
+    </symbol>
+    <symbol id="ph-brick" viewBox="0 0 50 70">
+      <rect x="1" y="1" width="48" height="68" rx="5" fill="#7a3318" stroke="#c0623a" stroke-width="1.5"/>
+      <rect x="12" y="26" width="10" height="6" rx="0.5" fill="#d4852e" stroke="#5a3308" stroke-width="0.5"/>
+      <rect x="26" y="26" width="10" height="6" rx="0.5" fill="#d4852e" stroke="#5a3308" stroke-width="0.5"/>
+      <rect x="19" y="33" width="10" height="6" rx="0.5" fill="#d4852e" stroke="#5a3308" stroke-width="0.5"/>
+      <text x="25" y="54" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#ffccbc" font-weight="bold">BRICK</text>
+    </symbol>
+    <symbol id="ph-wool" viewBox="0 0 50 70">
+      <rect x="1" y="1" width="48" height="68" rx="5" fill="#3a6a24" stroke="#7aaa4e" stroke-width="1.5"/>
+      <ellipse cx="25" cy="30" rx="8" ry="7" fill="#f5f5f0"/>
+      <circle cx="20" cy="28" r="3.5" fill="#ede8dc"/>
+      <circle cx="25" cy="25" r="3.5" fill="#f0ebe0"/>
+      <circle cx="30" cy="28" r="3.5" fill="#ede8dc"/>
+      <text x="25" y="54" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#dcedc8" font-weight="bold">WOOL</text>
+    </symbol>
+    <symbol id="ph-grain" viewBox="0 0 50 70">
+      <rect x="1" y="1" width="48" height="68" rx="5" fill="#917518" stroke="#dbb830" stroke-width="1.5"/>
+      <line x1="25" y1="42" x2="25" y2="24" stroke="#8B7355" stroke-width="1.2"/>
+      <ellipse cx="25" cy="23" rx="2" ry="3.5" fill="#fdd835"/>
+      <ellipse cx="22" cy="26" rx="1.5" ry="2.5" fill="#fdd835"/>
+      <ellipse cx="28" cy="26" rx="1.5" ry="2.5" fill="#fdd835"/>
+      <text x="25" y="54" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#fff9c4" font-weight="bold">GRAIN</text>
+    </symbol>
+    <symbol id="ph-ore" viewBox="0 0 50 70">
+      <rect x="1" y="1" width="48" height="68" rx="5" fill="#37474f" stroke="#78909c" stroke-width="1.5"/>
+      <polygon points="25,20 20,32 23,30 25,34 27,30 30,32" fill="#90a4ae" stroke="#607d8b" stroke-width="0.5"/>
+      <polygon points="21,24 17,32 21,30 25,34" fill="#78909c" stroke="#607d8b" stroke-width="0.4"/>
+      <polygon points="29,24 33,32 29,30 25,34" fill="#78909c" stroke="#607d8b" stroke-width="0.4"/>
+      <text x="25" y="54" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#cfd8dc" font-weight="bold">ORE</text>
+    </symbol>
+  </defs>
+
+  <!-- Full screen background -->
+  <rect x="0" y="0" width="375" height="520" fill="url(#ph-bg)"/>
+
+  <!-- Player header bar (uses player color -- shown as red player) -->
+  <rect x="0" y="0" width="375" height="56" fill="#1a0a0a" stroke="#ef4444" stroke-width="0" opacity="0.9"/>
+  <rect x="0" y="54" width="375" height="2" fill="#ef4444" opacity="0.6"/>
+  <!-- Player avatar circle -->
+  <circle cx="32" cy="28" r="18" fill="#ef4444" stroke="#ff6b6b" stroke-width="1.5"/>
+  <text x="32" y="34" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#fff" font-weight="bold">C</text>
+  <!-- Player name -->
+  <text x="58" y="24" font-family="Georgia, serif" font-size="13" fill="#fff" font-weight="bold">Christian</text>
+  <!-- VP display -->
+  <text x="58" y="42" font-family="Georgia, serif" font-size="11" fill="#ff8a80">5 Victory Points</text>
+  <!-- Turn indicator -->
+  <rect x="280" y="12" width="80" height="32" rx="16" fill="#ef4444" opacity="0.2" stroke="#ef4444" stroke-width="1"/>
+  <text x="320" y="33" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#ff8a80" font-weight="bold">YOUR TURN</text>
+
+  <!-- Resource cards section -->
+  <rect x="12" y="68" width="351" height="120" rx="10" fill="url(#ph-section)" stroke="#2a3a52" stroke-width="1"/>
+  <text x="24" y="88" font-family="Georgia, serif" font-size="11" fill="#8899aa" font-weight="bold" letter-spacing="1">RESOURCES</text>
+  <!-- Total count -->
+  <text x="338" y="88" text-anchor="end" font-family="Georgia, serif" font-size="10" fill="#607888">Total: 9</text>
+
+  <!-- 5 resource cards in a row -->
+  <g transform="translate(20,96)">
+    <!-- Lumber card -->
+    <use href="#ph-lumber" x="0" y="0" width="50" height="70"/>
+    <circle cx="41" cy="10" r="9" fill="#1a3a12" stroke="#4caf50" stroke-width="1.2"/>
+    <text x="41" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#e8f5e9" font-weight="bold">3</text>
+
+    <!-- Brick card -->
+    <use href="#ph-brick" x="64" y="0" width="50" height="70"/>
+    <circle cx="105" cy="10" r="9" fill="#5d2906" stroke="#e65100" stroke-width="1.2"/>
+    <text x="105" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#ffe0b2" font-weight="bold">2</text>
+
+    <!-- Wool card -->
+    <use href="#ph-wool" x="128" y="0" width="50" height="70"/>
+    <circle cx="169" cy="10" r="9" fill="#2e5016" stroke="#8bc34a" stroke-width="1.2"/>
+    <text x="169" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#e8f5e9" font-weight="bold">1</text>
+
+    <!-- Grain card -->
+    <use href="#ph-grain" x="192" y="0" width="50" height="70"/>
+    <circle cx="233" cy="10" r="9" fill="#6d5500" stroke="#fdd835" stroke-width="1.2"/>
+    <text x="233" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#fff9c4" font-weight="bold">2</text>
+
+    <!-- Ore card -->
+    <use href="#ph-ore" x="256" y="0" width="50" height="70"/>
+    <circle cx="297" cy="10" r="9" fill="#263238" stroke="#90a4ae" stroke-width="1.2"/>
+    <text x="297" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#eceff1" font-weight="bold">1</text>
+  </g>
+
+  <!-- Development cards section -->
+  <rect x="12" y="200" width="351" height="100" rx="10" fill="url(#ph-section)" stroke="#2a3a52" stroke-width="1"/>
+  <text x="24" y="220" font-family="Georgia, serif" font-size="11" fill="#8899aa" font-weight="bold" letter-spacing="1">DEVELOPMENT CARDS</text>
+  <text x="338" y="220" text-anchor="end" font-family="Georgia, serif" font-size="10" fill="#607888">2 cards</text>
+
+  <!-- Dev cards -->
+  <g transform="translate(20,228)">
+    <!-- Knight card (face up - already played or known) -->
+    <rect x="0" y="0" width="60" height="56" rx="5" fill="#4a1a6b" stroke="#7b3fa0" stroke-width="1"/>
+    <text x="30" y="28" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#ce93d8">&#9876;</text>
+    <text x="30" y="44" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#ce93d8" font-weight="bold">Knight</text>
+
+    <!-- Dev card back (unknown) -->
+    <rect x="70" y="0" width="60" height="56" rx="5" fill="#3a1258" stroke="#7b3fa0" stroke-width="1"/>
+    <circle cx="100" cy="24" r="10" fill="none" stroke="#9c27b0" stroke-width="0.5" opacity="0.4"/>
+    <text x="100" y="30" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#ce93d8" opacity="0.5">?</text>
+    <text x="100" y="48" text-anchor="middle" font-family="Georgia, serif" font-size="5" fill="#7b3fa0">Unplayed</text>
+  </g>
+
+  <!-- Action buttons section -->
+  <rect x="12" y="312" width="351" height="68" rx="10" fill="url(#ph-section)" stroke="#2a3a52" stroke-width="1"/>
+  <text x="24" y="332" font-family="Georgia, serif" font-size="11" fill="#8899aa" font-weight="bold" letter-spacing="1">ACTIONS</text>
+
+  <!-- Build button -->
+  <rect x="24" y="340" width="100" height="32" rx="8" fill="url(#btn-build)" stroke="#4caf50" stroke-width="1"/>
+  <text x="74" y="360" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#fff" font-weight="bold">Build</text>
+
+  <!-- Trade button -->
+  <rect x="136" y="340" width="100" height="32" rx="8" fill="url(#btn-trade)" stroke="#42a5f5" stroke-width="1"/>
+  <text x="186" y="360" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#fff" font-weight="bold">Trade</text>
+
+  <!-- End Turn button -->
+  <rect x="248" y="340" width="100" height="32" rx="8" fill="url(#btn-end)" stroke="#ef5350" stroke-width="1"/>
+  <text x="298" y="360" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#fff" font-weight="bold">End Turn</text>
+
+  <!-- Quick info bar at bottom -->
+  <rect x="0" y="392" width="375" height="128" fill="#0a1220" stroke="#1a2a3e" stroke-width="1"/>
+
+  <!-- Mini board preview area -->
+  <rect x="12" y="400" width="351" height="44" rx="8" fill="#121c2e" stroke="#1e2e44" stroke-width="1"/>
+  <text x="187" y="426" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#455a64" font-style="italic">Mini board preview area</text>
+
+  <!-- Game stats row -->
+  <g transform="translate(12,454)">
+    <!-- Longest road -->
+    <rect x="0" y="0" width="108" height="36" rx="6" fill="#162236" stroke="#2a3a52" stroke-width="0.8"/>
+    <text x="54" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#607888">Longest Road</text>
+    <text x="54" y="30" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#a1887f" font-weight="bold">5</text>
+
+    <!-- Army size -->
+    <rect x="120" y="0" width="108" height="36" rx="6" fill="#162236" stroke="#2a3a52" stroke-width="0.8"/>
+    <text x="174" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#607888">Knights Played</text>
+    <text x="174" y="30" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#9575cd" font-weight="bold">2</text>
+
+    <!-- Remaining pieces -->
+    <rect x="240" y="0" width="108" height="36" rx="6" fill="#162236" stroke="#2a3a52" stroke-width="0.8"/>
+    <text x="294" y="14" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#607888">Settlements</text>
+    <text x="294" y="30" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#e5e5e5" font-weight="bold">3</text>
+  </g>
+
+  <!-- Bottom safe area -->
+  <rect x="0" y="500" width="375" height="20" fill="#0a1220"/>
+</svg>

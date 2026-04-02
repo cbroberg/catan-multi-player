@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 70" width="50" height="70">
+  <defs>
+    <linearGradient id="brick-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#b0522e"/>
+      <stop offset="100%" stop-color="#7a3318"/>
+    </linearGradient>
+    <linearGradient id="brick-face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4852e"/>
+      <stop offset="100%" stop-color="#b0652a"/>
+    </linearGradient>
+    <filter id="brick-shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Card body -->
+  <rect x="1" y="1" width="48" height="68" rx="5" ry="5" fill="url(#brick-bg)" stroke="#c0623a" stroke-width="1.5"/>
+  <!-- Inner border -->
+  <rect x="4" y="4" width="42" height="62" rx="3" ry="3" fill="none" stroke="#c0623a" stroke-width="0.5" opacity="0.5"/>
+  <!-- Background brick pattern -->
+  <g opacity="0.15">
+    <rect x="6" y="56" width="10" height="5" rx="0.5" fill="#fff"/>
+    <rect x="18" y="56" width="10" height="5" rx="0.5" fill="#fff"/>
+    <rect x="30" y="56" width="10" height="5" rx="0.5" fill="#fff"/>
+    <rect x="12" y="50" width="10" height="5" rx="0.5" fill="#fff"/>
+    <rect x="24" y="50" width="10" height="5" rx="0.5" fill="#fff"/>
+  </g>
+  <!-- Brick stack icon -->
+  <g transform="translate(25,28)" filter="url(#brick-shadow)">
+    <!-- Bottom row -->
+    <rect x="-16" y="4" width="14" height="8" rx="1" fill="url(#brick-face)" stroke="#7a3318" stroke-width="0.8"/>
+    <rect x="2" y="4" width="14" height="8" rx="1" fill="url(#brick-face)" stroke="#7a3318" stroke-width="0.8"/>
+    <!-- Middle row (offset) -->
+    <rect x="-9" y="-5" width="14" height="8" rx="1" fill="url(#brick-face)" stroke="#7a3318" stroke-width="0.8"/>
+    <rect x="-9" y="-5" width="14" height="8" rx="1" fill="url(#brick-face)" stroke="#7a3318" stroke-width="0.8"/>
+    <!-- Top brick -->
+    <rect x="-7" y="-14" width="14" height="8" rx="1" fill="url(#brick-face)" stroke="#7a3318" stroke-width="0.8"/>
+    <!-- Brick texture lines -->
+    <line x1="-14" y1="8" x2="-4" y2="8" stroke="#8a4520" stroke-width="0.4" opacity="0.5"/>
+    <line x1="4" y1="8" x2="14" y2="8" stroke="#8a4520" stroke-width="0.4" opacity="0.5"/>
+    <line x1="-7" y1="-1" x2="3" y2="-1" stroke="#8a4520" stroke-width="0.4" opacity="0.5"/>
+    <line x1="-5" y1="-10" x2="5" y2="-10" stroke="#8a4520" stroke-width="0.4" opacity="0.5"/>
+  </g>
+  <!-- Label -->
+  <text x="25" y="54" text-anchor="middle" font-family="Georgia, serif" font-size="6" fill="#ffccbc" font-weight="bold" letter-spacing="0.5">BRICK</text>
+  <!-- Count badge -->
+  <circle cx="41" cy="10" r="7" fill="#5d2906" stroke="#e65100" stroke-width="1"/>
+  <text x="41" y="13" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="#ffe0b2" font-weight="bold">0</text>
+  <!-- Cross-hatch pattern for colorblind -->
+  <line x1="4" y1="62" x2="8" y2="66" stroke="#c0623a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="8" y1="66" x2="12" y2="62" stroke="#c0623a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="12" y1="62" x2="16" y2="66" stroke="#c0623a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="16" y1="66" x2="20" y2="62" stroke="#c0623a" stroke-width="0.5" opacity="0.4"/>
+</svg>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 60" width="375" height="60">
+  <defs>
+    <linearGradient id="tp-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#162236"/>
+      <stop offset="100%" stop-color="#0e1a2e"/>
+    </linearGradient>
+    <linearGradient id="tp-active" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ef4444" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0.1"/>
+    </linearGradient>
+    <filter id="tp-glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background bar -->
+  <rect x="0" y="0" width="375" height="60" fill="url(#tp-bg)" stroke="#2a3a52" stroke-width="0" />
+  <line x1="0" y1="59" x2="375" y2="59" stroke="#2a3a52" stroke-width="1"/>
+
+  <!-- Phase steps container -->
+  <g transform="translate(12,10)">
+    <!-- Step 1: Roll Dice (completed) -->
+    <rect x="0" y="0" width="110" height="40" rx="8" fill="#121c2e" stroke="#455a64" stroke-width="1" opacity="0.6"/>
+    <!-- Checkmark -->
+    <circle cx="18" cy="20" r="8" fill="#1b5e20" stroke="#4caf50" stroke-width="0.8"/>
+    <polyline points="14,20 17,24 23,16" fill="none" stroke="#4caf50" stroke-width="1.5" stroke-linecap="round"/>
+    <text x="64" y="18" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#607888" font-weight="bold">ROLL</text>
+    <text x="64" y="30" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#455a64" font-weight="bold">Rolled 8</text>
+
+    <!-- Connector arrow -->
+    <line x1="114" y1="20" x2="124" y2="20" stroke="#455a64" stroke-width="1.5"/>
+    <polygon points="124,17 130,20 124,23" fill="#455a64"/>
+
+    <!-- Step 2: Build & Trade (ACTIVE) -->
+    <rect x="132" y="0" width="110" height="40" rx="8" fill="url(#tp-active)" stroke="#ef4444" stroke-width="1.5" filter="url(#tp-glow)"/>
+    <!-- Pulsing dot -->
+    <circle cx="150" cy="20" r="6" fill="#ef4444" opacity="0.3"/>
+    <circle cx="150" cy="20" r="4" fill="#ef4444"/>
+    <text x="198" y="18" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#ef4444" font-weight="bold">BUILD</text>
+    <text x="198" y="30" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="#ff8a80" font-weight="bold">&amp; TRADE</text>
+
+    <!-- Connector arrow -->
+    <line x1="246" y1="20" x2="256" y2="20" stroke="#2a3a52" stroke-width="1.5"/>
+    <polygon points="256,17 262,20 256,23" fill="#2a3a52"/>
+
+    <!-- Step 3: End Turn (upcoming) -->
+    <rect x="264" y="0" width="88" height="40" rx="8" fill="#121c2e" stroke="#1e2e44" stroke-width="1" opacity="0.4"/>
+    <circle cx="280" cy="20" r="6" fill="none" stroke="#2a3a52" stroke-width="1"/>
+    <text x="280" y="23" text-anchor="middle" font-family="Georgia, serif" font-size="7" fill="#2a3a52" font-weight="bold">3</text>
+    <text x="324" y="24" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="#2a3a52" font-weight="bold">END</text>
+  </g>
+</svg>
