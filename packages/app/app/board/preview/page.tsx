@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { GameBoard, BalanceScore, PlayerColor } from '@catan/shared';
 import { BOARD_VARIANTS } from '@catan/shared';
 import { generateRandomBalancedBoard, generateBoardFromArrays, BEGINNER_PRESET } from '@catan/game-engine';
@@ -14,6 +14,34 @@ export default function BoardPreviewPage() {
   const [state, setState] = useState<{ board: GameBoard; score: BalanceScore } | null>(null);
   const [showPieces, setShowPieces] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    if (zoom <= 1) return;
+    setDragging(true);
+    dragStart.current = { x: e.clientX, y: e.clientY, panX: pan.x, panY: pan.y };
+  }, [zoom, pan]);
+
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!dragging) return;
+    setPan({
+      x: dragStart.current.panX + (e.clientX - dragStart.current.x),
+      y: dragStart.current.panY + (e.clientY - dragStart.current.y),
+    });
+  }, [dragging]);
+
+  const onMouseUp = useCallback(() => setDragging(false), []);
+
+  const onWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    setZoom(z => {
+      const next = e.deltaY < 0 ? z * 1.15 : z / 1.15;
+      return Math.max(0.25, Math.min(20, next));
+    });
+  }, []);
 
   useEffect(() => {
     if (!state) setState(generateRandomBalancedBoard('base-3-4'));
@@ -120,15 +148,31 @@ export default function BoardPreviewPage() {
         <button onClick={() => setZoom(z => Math.max(0.25, z / 1.5))} className="px-3 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20">−</button>
         <span className="text-white/60 text-sm w-16 text-center">{Math.round(zoom * 100)}%</span>
         <button onClick={() => setZoom(z => z * 1.5)} className="px-3 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20">+</button>
-        <button onClick={() => setZoom(1)} className="px-3 py-1 bg-white/10 text-white/50 rounded cursor-pointer hover:bg-white/20 text-xs">Reset</button>
+        <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="px-3 py-1 bg-white/10 text-white/50 rounded cursor-pointer hover:bg-white/20 text-xs">Reset</button>
       </div>
 
-      {/* Board — scrollable container with infinite zoom */}
-      <div className="w-full overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
-        <div style={{ width: `${Math.max(100, zoom * 100)}%`, margin: '0 auto', transition: 'width 0.2s' }}>
+      {/* Board — pannable & zoomable canvas */}
+      <div
+        ref={containerRef}
+        className="w-full overflow-hidden flex-1"
+        style={{ cursor: zoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'default' }}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+        onWheel={onWheel}
+      >
+        <div
+          className="w-full max-w-3xl mx-auto"
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+            transformOrigin: 'center center',
+            transition: dragging ? 'none' : 'transform 0.15s',
+          }}
+        >
           <HexBoard
             board={state.board}
-            hexSize={50 * zoom}
+            hexSize={50}
             buildings={showPieces ? generateDemoBuildings(state.board) : undefined}
             roads={showPieces ? generateDemoRoads(state.board) : undefined}
           />
