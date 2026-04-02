@@ -119,6 +119,11 @@ export function HexBoard({ board, hexSize = 50, buildings, roads }: HexBoardProp
         );
       })}
 
+      {/* Harbors (behind pieces so roads/buildings overlap them) */}
+      {harborPositions.map((hp, i) => (
+        <HarborMarker key={`harbor-${i}`} cx={hp.x} cy={hp.y} type={hp.type} rotation={hp.rotation} hexSize={hexSize} />
+      ))}
+
       {/* Roads */}
       {roads?.map((road) => {
         const edge = board.edges.find((e) => e.id === road.edgeId);
@@ -137,7 +142,7 @@ export function HexBoard({ board, hexSize = 50, buildings, roads }: HexBoardProp
         );
       })}
 
-      {/* Buildings */}
+      {/* Buildings (topmost layer) */}
       {buildings?.map((b) => {
         const pos = vertexPositions.get(b.vertexId);
         if (!pos) return null;
@@ -147,11 +152,6 @@ export function HexBoard({ board, hexSize = 50, buildings, roads }: HexBoardProp
           <SettlementPiece key={b.vertexId} x={pos.x} y={pos.y} color={COLOR_HEX[b.color]} size={hexSize * 0.3} />
         );
       })}
-
-      {/* Harbors */}
-      {harborPositions.map((hp, i) => (
-        <HarborMarker key={`harbor-${i}`} cx={hp.x} cy={hp.y} type={hp.type} rotation={hp.rotation} hexSize={hexSize} />
-      ))}
     </svg>
   );
 }
