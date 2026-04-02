@@ -14,6 +14,7 @@ export default function BoardPreviewPage() {
   const [state, setState] = useState<{ board: GameBoard; score: BalanceScore } | null>(null);
   const [showPieces, setShowPieces] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
@@ -123,7 +124,9 @@ export default function BoardPreviewPage() {
         <button onClick={() => setZoom(z => Math.max(0.25, z / 1.5))} className="px-2 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20 text-sm">−</button>
         <span className="text-white/50 text-xs w-12 text-center">{Math.round(zoom * 100)}%</span>
         <button onClick={() => setZoom(z => z * 1.5)} className="px-2 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20 text-sm">+</button>
-        <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="px-2 py-1 bg-white/10 text-white/40 rounded cursor-pointer hover:bg-white/20 text-xs">↺</button>
+        <button onClick={() => setRotation(r => r - 30)} className="px-2 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20 text-sm">↶</button>
+        <button onClick={() => setRotation(r => r + 30)} className="px-2 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20 text-sm">↷</button>
+        <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); setRotation(0); }} className="px-2 py-1 bg-white/10 text-white/40 rounded cursor-pointer hover:bg-white/20 text-xs">↺</button>
 
         {/* Divider */}
         <div className="w-px h-6 bg-white/15" />
@@ -158,7 +161,7 @@ export default function BoardPreviewPage() {
         <div
           className="w-full max-w-3xl mx-auto"
           style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom}) rotate(${rotation}deg)`,
             transformOrigin: 'center center',
             transition: dragging ? 'none' : 'transform 0.15s',
           }}
