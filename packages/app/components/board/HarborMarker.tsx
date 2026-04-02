@@ -6,6 +6,8 @@ interface HarborMarkerProps {
   type: HarborType;
   /** Rotation in degrees — sign post points toward land */
   rotation?: number;
+  /** Hex size (radius) — marker width matches hex edge length */
+  hexSize?: number;
 }
 
 const HARBOR_LABELS: Record<HarborType, string> = {
@@ -26,10 +28,10 @@ const HARBOR_ICON: Record<HarborType, string> = {
   ore: '\u25C6',    // diamond = ore
 };
 
-export function HarborMarker({ cx, cy, type, rotation = 0 }: HarborMarkerProps) {
-  // Sized so the sign width roughly matches a hex edge length
-  const w = 40;
-  const h = 32;
+export function HarborMarker({ cx, cy, type, rotation = 0, hexSize = 50 }: HarborMarkerProps) {
+  // Width = hex edge length (= hexSize), height scales proportionally
+  const w = hexSize;
+  const h = hexSize * 0.8;
   const scaleX = w / 50;
   const scaleY = h / 40;
 

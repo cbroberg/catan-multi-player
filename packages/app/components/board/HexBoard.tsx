@@ -124,7 +124,7 @@ export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
 
       {/* Harbors */}
       {harborPositions.map((hp, i) => (
-        <HarborMarker key={`harbor-${i}`} cx={hp.x} cy={hp.y} type={hp.type} rotation={hp.rotation} />
+        <HarborMarker key={`harbor-${i}`} cx={hp.x} cy={hp.y} type={hp.type} rotation={hp.rotation} hexSize={hexSize} />
       ))}
     </svg>
   );
@@ -179,7 +179,7 @@ function computeHarborPositions(
       const dy = midY - nearestY;
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
       // Snap to the coastline — sitting right on the beach
-      const pushDist = hexSize * 0.25;
+      const pushDist = hexSize * 0.4;
 
       // Rotation: sign post points toward land (opposite of push direction)
       const angleDeg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
