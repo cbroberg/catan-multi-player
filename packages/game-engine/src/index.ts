@@ -37,6 +37,11 @@ export {
   distributeHarbors,
 } from './board/harbor-detection';
 
+// Game engine
+export { GameEngine } from './engine/game-engine';
+export type { EngineState, PlayerState, DevCardType, ActionResult, GameLogEntry } from './engine/types';
+export { DEV_CARD_DECK } from './engine/types';
+
 // Presets
 export {
   BEGINNER_PRESET,
