@@ -12,20 +12,20 @@ interface HarborMarkerProps {
 
 const HARBOR_LABELS: Record<HarborType, string> = {
   '3:1': '3:1',
-  lumber: '2:1 L',
-  wool: '2:1 W',
-  grain: '2:1 G',
-  brick: '2:1 B',
-  ore: '2:1 O',
+  lumber: '2:1',
+  wool: '2:1',
+  grain: '2:1',
+  brick: '2:1',
+  ore: '2:1',
 };
 
-const HARBOR_ICON: Record<HarborType, string> = {
-  '3:1': '?',
-  lumber: '\u2663', // club = tree
-  wool: '\u2601',   // cloud = wool
-  grain: '\u2660',  // spade = wheat
-  brick: '\u25A0',  // square = brick
-  ore: '\u25C6',    // diamond = ore
+const HARBOR_RESOURCE: Record<HarborType, string> = {
+  '3:1': '⚓',
+  lumber: '🪵',
+  wool: '🐑',
+  grain: '🌾',
+  brick: '🧱',
+  ore: '⛏️',
 };
 
 export function HarborMarker({ cx, cy, type, rotation = 0, hexSize = 50 }: HarborMarkerProps) {
@@ -65,30 +65,28 @@ export function HarborMarker({ cx, cy, type, rotation = 0, hexSize = 50 }: Harbo
       {/* Sign board */}
       <rect x="6" y="13" width="38" height="22" rx="2" fill="url(#harbor-sign)" stroke="url(#harbor-wood)" strokeWidth="1.5" />
       <rect x="6" y="13" width="38" height="22" rx="2" fill="url(#harbor-grain)" opacity="0.15" />
-      {/* Trade ratio text */}
+      {/* Resource emoji */}
       <text
         x="25"
-        y="25"
+        y="21"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="10"
+      >
+        {HARBOR_RESOURCE[type]}
+      </text>
+      {/* Trade ratio */}
+      <text
+        x="25"
+        y="30"
         textAnchor="middle"
         dominantBaseline="middle"
         fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="10"
+        fontSize="8"
         fontWeight="bold"
         fill="#5a3a1e"
       >
         {HARBOR_LABELS[type]}
-      </text>
-      {/* Resource icon */}
-      <text
-        x="25"
-        y="33"
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontFamily="Georgia, serif"
-        fontSize="6"
-        fill="#8b6914"
-      >
-        {HARBOR_ICON[type]}
       </text>
       {/* Corner nails */}
       <circle cx="10" cy="17" r="1" fill="#a0895e" />
