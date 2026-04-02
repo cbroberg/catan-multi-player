@@ -6,7 +6,7 @@ import type {
   GameBoard,
   BalanceScore,
 } from '@catan/shared';
-import { generateRandomBalancedBoard, generateBoardFromArrays, BEGINNER_PRESET } from '@catan/game-engine';
+import { generateRandomBalancedBoard, generateBoardFromArrays, BEGINNER_PRESET, GameEngine } from '@catan/game-engine';
 import type { GeneratedBoard } from '@catan/game-engine';
 import { randomBytes } from 'crypto';
 
@@ -23,6 +23,8 @@ interface GameSession {
   createdAt: number;
   /** Socket IDs observing this game (big screens) */
   observers: Set<string>;
+  /** Game engine (created when game starts) */
+  engine: GameEngine | null;
 }
 
 // ─── Available Colors ────────────────────────────────────────────────────────
@@ -53,6 +55,7 @@ export class GameManager {
       phase: 'waiting',
       createdAt: Date.now(),
       observers: new Set(),
+      engine: null,
     };
 
     this.games.set(gameId, session);
@@ -166,8 +169,23 @@ export class GameManager {
       .sort((a, b) => b.roll - a.roll)
       .map((p) => p.id);
 
-    session.phase = 'starting';
+    // Create the GameEngine with turn-ordered players
+    const playerDefs = turnOrder.map((pid) => {
+      const p = session.players.get(pid)!;
+      return { id: pid, name: p.name, color: p.color };
+    });
+
+    session.engine = new GameEngine(session.config, session.board, playerDefs);
+    session.phase = 'started';
     return { turnOrder };
+  }
+
+  getEngine(gameId: string): GameEngine | null {
+    return this.games.get(gameId)?.engine ?? null;
+  }
+
+  getPlayerIdForSocket(socketId: string): { gameId: string; playerId: string } | null {
+    return this.socketToPlayer.get(socketId) ?? null;
   }
 
   regenerateBoard(gameId: string): { board: GameBoard; score: BalanceScore } | null {

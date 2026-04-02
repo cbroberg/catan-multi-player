@@ -31,6 +31,7 @@ export function useSocket() {
 export function useLobby(gameId: string | null, mode: 'player' | 'observer') {
   const { socket, connected } = useSocket();
   const [lobby, setLobby] = useState<LobbyState | null>(null);
+  const [gameStarted, setGameStarted] = useState<string | null>(null);
 
   useEffect(() => {
     if (!socket || !connected || !gameId) return;
@@ -41,9 +42,13 @@ export function useLobby(gameId: string | null, mode: 'player' | 'observer') {
         prev ? { ...prev, board: data.board, balanceScore: data.score } : prev
       );
     };
+    const onGameStarting = (data: { gameId: string }) => {
+      setGameStarted(data.gameId);
+    };
 
     socket.on('lobby:state', onLobbyState);
     socket.on('lobby:board-updated', onBoardUpdated);
+    socket.on('game:starting', onGameStarting);
 
     // Observe the game if in observer mode (big screen)
     if (mode === 'observer') {
@@ -57,6 +62,7 @@ export function useLobby(gameId: string | null, mode: 'player' | 'observer') {
     return () => {
       socket.off('lobby:state', onLobbyState);
       socket.off('lobby:board-updated', onBoardUpdated);
+      socket.off('game:starting', onGameStarting);
     };
   }, [socket, connected, gameId, mode]);
 
@@ -75,5 +81,5 @@ export function useLobby(gameId: string | null, mode: 'player' | 'observer') {
     [socket, gameId]
   );
 
-  return { lobby, connected, toggleReady, regenerateBoard, startGame };
+  return { lobby, connected, toggleReady, regenerateBoard, startGame, gameStarted };
 }

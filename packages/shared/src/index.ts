@@ -47,6 +47,18 @@ export {
 
 export type { HarborEdgePosition } from './constants/board';
 
+// Game view types
+export type {
+  DevCardType,
+  PublicPlayer,
+  BoardBuilding,
+  BoardRoad,
+  ValidActions,
+  GameView,
+  GameActionEvents,
+  GameStateEvents,
+} from './types/game-view';
+
 // Lobby types
 export type {
   LobbyPlayer,

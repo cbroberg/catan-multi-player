@@ -1,5 +1,6 @@
 import type { PlayerColor, GameConfig } from './game';
 import type { GameBoard, BalanceScore } from './board';
+import type { GameActionEvents, GameStateEvents } from './game-view';
 
 // ─── Lobby Types ─────────────────────────────────────────────────────────────
 
@@ -49,6 +50,24 @@ export interface ClientToServerEvents {
 
   /** Host regenerates board */
   'game:regenerate-board': (gameId: string) => void;
+
+  // ─── Game Actions (forwarded to GameEngine) ────────────────────────
+  'action:roll-dice': GameActionEvents['action:roll-dice'];
+  'action:build-settlement': GameActionEvents['action:build-settlement'];
+  'action:build-city': GameActionEvents['action:build-city'];
+  'action:build-road': GameActionEvents['action:build-road'];
+  'action:buy-dev-card': GameActionEvents['action:buy-dev-card'];
+  'action:play-knight': GameActionEvents['action:play-knight'];
+  'action:play-monopoly': GameActionEvents['action:play-monopoly'];
+  'action:play-year-of-plenty': GameActionEvents['action:play-year-of-plenty'];
+  'action:play-road-building': GameActionEvents['action:play-road-building'];
+  'action:maritime-trade': GameActionEvents['action:maritime-trade'];
+  'action:move-robber': GameActionEvents['action:move-robber'];
+  'action:discard': GameActionEvents['action:discard'];
+  'action:end-turn': GameActionEvents['action:end-turn'];
+
+  /** Request current game view */
+  'game:request-view': (gameId: string) => void;
 }
 
 // ─── Socket Events: Server → Client ─────────────────────────────────────────
@@ -77,4 +96,9 @@ export interface ServerToClientEvents {
 
   /** Error message */
   'error': (message: string) => void;
+
+  // ─── Game State Updates ────────────────────────────────────────────
+  'game:view': GameStateEvents['game:view'];
+  'game:action-error': GameStateEvents['game:action-error'];
+  'game:dice-result': GameStateEvents['game:dice-result'];
 }
