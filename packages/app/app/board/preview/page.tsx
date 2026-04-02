@@ -1,16 +1,18 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import type { GameBoard, BalanceScore } from '@catan/shared';
+import type { GameBoard, BalanceScore, PlayerColor } from '@catan/shared';
 import { BOARD_VARIANTS } from '@catan/shared';
 import { generateRandomBalancedBoard, generateBoardFromArrays, BEGINNER_PRESET } from '@catan/game-engine';
 import { HexBoard } from '@/components/board/HexBoard';
+import type { BoardBuilding, BoardRoad } from '@catan/shared';
 
 const variantEntries = Object.values(BOARD_VARIANTS);
 
 export default function BoardPreviewPage() {
   const [variantId, setVariantId] = useState('base-3-4');
   const [state, setState] = useState<{ board: GameBoard; score: BalanceScore } | null>(null);
+  const [showPieces, setShowPieces] = useState(false);
 
   useEffect(() => {
     if (!state) setState(generateRandomBalancedBoard('base-3-4'));
@@ -102,9 +104,24 @@ export default function BoardPreviewPage() {
       {/* Balance Score */}
       <ScoreDisplay score={state.score} />
 
+      {/* Demo pieces toggle */}
+      <button
+        onClick={() => setShowPieces((p) => !p)}
+        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+          showPieces ? 'bg-purple-600 text-white' : 'bg-white/10 text-white/70 hover:bg-white/20'
+        }`}
+      >
+        {showPieces ? 'Hide Demo Pieces' : 'Show Demo Pieces'}
+      </button>
+
       {/* Board */}
       <div className="w-full max-w-3xl">
-        <HexBoard board={state.board} hexSize={50} />
+        <HexBoard
+          board={state.board}
+          hexSize={50}
+          buildings={showPieces ? generateDemoBuildings(state.board) : undefined}
+          roads={showPieces ? generateDemoRoads(state.board) : undefined}
+        />
       </div>
     </div>
   );
@@ -119,6 +136,80 @@ function ScoreDisplay({ score }: { score: BalanceScore }) {
       <ScoreBadge label="Spread" value={score.geographicSpread} />
     </div>
   );
+}
+
+const PLAYER_COLORS: PlayerColor[] = ['red', 'blue', 'white', 'orange', 'green', 'brown'];
+const COLOR_HEX: Record<PlayerColor, string> = {
+  red: '#ef4444', blue: '#3b82f6', white: '#e5e5e5',
+  orange: '#f97316', green: '#22c55e', brown: '#92400e',
+};
+
+/** Generate demo buildings: 2 settlements + 1 city per "player" on land vertices */
+function generateDemoBuildings(board: GameBoard): BoardBuilding[] {
+  const landHexKeys = new Set(
+    board.hexes.filter((h) => h.terrain !== 'sea' && h.terrain !== 'desert').map((h) => `${h.coord.q},${h.coord.r}`)
+  );
+  // Find vertices that touch at least one land hex
+  const landVertices = board.vertices.filter((v) => {
+    const hexes = v.id.split('|');
+    return hexes.some((hk) => landHexKeys.has(hk));
+  });
+
+  const used = new Set<string>();
+  const buildings: BoardBuilding[] = [];
+  const players = PLAYER_COLORS.slice(0, 4);
+
+  for (let p = 0; p < players.length; p++) {
+    const color = players[p];
+    let placed = 0;
+    for (const v of landVertices) {
+      if (placed >= 3) break;
+      if (used.has(v.id)) continue;
+      // Distance rule: skip if any neighbor vertex is used
+      const neighborIds = board.edges
+        .filter((e) => e.vertexIds.includes(v.id))
+        .flatMap((e) => e.vertexIds)
+        .filter((vid) => vid !== v.id);
+      if (neighborIds.some((nid) => used.has(nid))) continue;
+
+      used.add(v.id);
+      buildings.push({
+        vertexId: v.id,
+        type: placed === 2 ? 'city' : 'settlement',
+        playerId: `player-${p}`,
+        color,
+      });
+      placed++;
+    }
+  }
+  return buildings;
+}
+
+/** Generate demo roads: connect each player's buildings */
+function generateDemoRoads(board: GameBoard): BoardRoad[] {
+  const buildings = generateDemoBuildings(board);
+  const roads: BoardRoad[] = [];
+  const usedEdges = new Set<string>();
+
+  for (let p = 0; p < 4; p++) {
+    const playerBuildings = buildings.filter((b) => b.playerId === `player-${p}`);
+    for (const building of playerBuildings) {
+      // Find edges connected to this vertex
+      const connectedEdges = board.edges.filter(
+        (e) => e.vertexIds.includes(building.vertexId) && !usedEdges.has(e.id)
+      );
+      if (connectedEdges.length > 0) {
+        const edge = connectedEdges[0];
+        usedEdges.add(edge.id);
+        roads.push({
+          edgeId: edge.id,
+          playerId: `player-${p}`,
+          color: PLAYER_COLORS[p],
+        } as BoardRoad);
+      }
+    }
+  }
+  return roads;
 }
 
 function ScoreBadge({ label, value }: { label: string; value: number }) {

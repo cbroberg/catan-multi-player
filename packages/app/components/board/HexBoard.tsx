@@ -1,19 +1,27 @@
 'use client';
 
-import type { GameBoard, Harbor } from '@catan/shared';
+import type { GameBoard, Harbor, BoardBuilding, BoardRoad, PlayerColor } from '@catan/shared';
 import { vertexPixelPosition } from '@catan/game-engine';
 import { hexToPixel, hexPolygonPoints } from './hex-utils';
 import { TerrainHexSVG } from './TerrainHexSVG';
 import { NumberToken } from './NumberToken';
 import { Robber } from './Robber';
 import { HarborMarker } from './HarborMarker';
+import { SettlementPiece, CityPiece, RoadPiece } from './PlayerPieces';
 
 interface HexBoardProps {
   board: GameBoard;
   hexSize?: number;
+  buildings?: BoardBuilding[];
+  roads?: BoardRoad[];
 }
 
-export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
+const COLOR_HEX: Record<PlayerColor, string> = {
+  red: '#ef4444', blue: '#3b82f6', white: '#e5e5e5',
+  orange: '#f97316', green: '#22c55e', brown: '#92400e',
+};
+
+export function HexBoard({ board, hexSize = 50, buildings, roads }: HexBoardProps) {
   // Compute pixel positions for all hexes
   const hexPixels = board.hexes.map((hex) =>
     hexToPixel(hex.coord.q, hex.coord.r, hexSize)
@@ -119,6 +127,35 @@ export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
               </g>
             )}
           </g>
+        );
+      })}
+
+      {/* Roads */}
+      {roads?.map((road) => {
+        const edge = board.edges.find((e) => e.id === road.edgeId);
+        if (!edge) return null;
+        const vA = vertexPositions.get(edge.vertexIds[0]);
+        const vB = vertexPositions.get(edge.vertexIds[1]);
+        if (!vA || !vB) return null;
+        return (
+          <RoadPiece
+            key={road.edgeId}
+            x1={vA.x} y1={vA.y}
+            x2={vB.x} y2={vB.y}
+            color={COLOR_HEX[road.color]}
+            width={hexSize * 0.12}
+          />
+        );
+      })}
+
+      {/* Buildings */}
+      {buildings?.map((b) => {
+        const pos = vertexPositions.get(b.vertexId);
+        if (!pos) return null;
+        return b.type === 'city' ? (
+          <CityPiece key={b.vertexId} x={pos.x} y={pos.y} color={COLOR_HEX[b.color]} size={hexSize * 0.38} />
+        ) : (
+          <SettlementPiece key={b.vertexId} x={pos.x} y={pos.y} color={COLOR_HEX[b.color]} size={hexSize * 0.3} />
         );
       })}
 
