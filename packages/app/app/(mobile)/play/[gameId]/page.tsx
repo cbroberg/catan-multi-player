@@ -2,6 +2,7 @@
 
 import { use, useState, useCallback } from 'react';
 import { useGame } from '@/lib/use-game';
+import { useLobby } from '@/lib/use-socket';
 import { GameBoardSVG } from '@/components/board/GameBoardSVG';
 import type { ResourceType, HexCoord, GameView } from '@catan/shared';
 
@@ -23,15 +24,49 @@ type UIMode = null | 'build-settlement' | 'build-road' | 'build-city' | 'move-ro
 export default function MobilePlayPage({ params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = use(params);
   const game = useGame(gameId);
+  const lobbyHook = useLobby(gameId, 'player');
   const [uiMode, setUIMode] = useState<UIMode>(null);
   const [pendingRobberHex, setPendingRobberHex] = useState<HexCoord | null>(null);
   const [tradeOffer, setTradeOffer] = useState<Record<ResourceType, number>>({ lumber: 0, brick: 0, wool: 0, grain: 0, ore: 0 });
   const [tradeRequest, setTradeRequest] = useState<Record<ResourceType, number>>({ lumber: 0, brick: 0, wool: 0, grain: 0, ore: 0 });
-  const [resourcePickCallback, setResourcePickCallback] = useState<((res: ResourceType) => void) | null>(null);
 
   const { view, connected, lastDice, error } = game;
 
   if (!connected) return <Screen text="Forbinder..." />;
+
+  // Pre-game lobby: show ready button
+  if (!view && lobbyHook.lobby && lobbyHook.lobby.phase !== 'started') {
+    const playerId = typeof window !== 'undefined' ? sessionStorage.getItem('playerId') : null;
+    const me = lobbyHook.lobby.players.find((p) => p.id === playerId);
+    return (
+      <div className="min-h-screen bg-[#0e1a2e] text-white flex flex-col items-center justify-center p-6 gap-6">
+        <div className="text-3xl">{me?.avatar ?? '🎮'}</div>
+        <h1 className="text-xl font-bold">{me?.name ?? 'Spiller'}</h1>
+        <div className="text-white/50 text-sm">
+          Game: <span className="font-mono text-amber-400">{lobbyHook.lobby.code}</span>
+          <span className="ml-2">{lobbyHook.lobby.players.length}/{lobbyHook.lobby.maxPlayers} spillere</span>
+        </div>
+        <div className="space-y-1 text-sm">
+          {lobbyHook.lobby.players.map((p) => (
+            <div key={p.id} className="flex items-center gap-2 justify-center">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLOR_HEX[p.color] }} />
+              <span className={p.id === playerId ? 'font-bold' : ''}>{p.name}</span>
+              {p.isReady && <span className="text-emerald-400">✓</span>}
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={lobbyHook.toggleReady}
+          className={`px-8 py-3 rounded-xl font-bold text-lg transition-colors cursor-pointer ${
+            me?.isReady ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-white/10 hover:bg-white/20'
+          }`}
+        >
+          {me?.isReady ? '✓ Klar!' : 'Klar?'}
+        </button>
+      </div>
+    );
+  }
+
   if (!view) return <Screen text="Venter på spildata..." />;
 
   const me = view.players.find((p) => p.id === view.myPlayerId);
