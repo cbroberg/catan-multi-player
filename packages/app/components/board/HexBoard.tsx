@@ -40,12 +40,16 @@ export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
     vertexPositions.set(vertex.id, pos);
   }
 
+  // Land hex pixel positions (for harbor push direction)
+  const landHexPixels = board.hexes
+    .filter((h) => h.terrain !== 'sea')
+    .map((h) => hexToPixel(h.coord.q, h.coord.r, hexSize));
+
   // Compute harbor marker positions from board data
   const harborPositions = computeHarborPositions(
     board.harbors,
     vertexPositions,
-    centroidX,
-    centroidY,
+    landHexPixels,
     hexSize
   );
 
@@ -134,13 +138,13 @@ interface HarborPosition {
 
 /**
  * Compute harbor marker positions from board data.
- * Uses vertex positions to find edge midpoints, then pushes outward from centroid.
+ * Finds the edge midpoint between the harbor's two vertices, then pushes
+ * AWAY from the nearest land hex center — so the marker sits on the sea side.
  */
 function computeHarborPositions(
   harbors: Harbor[],
   vertexPositions: Map<string, { x: number; y: number }>,
-  centroidX: number,
-  centroidY: number,
+  landHexPixels: { x: number; y: number }[],
   hexSize: number
 ): HarborPosition[] {
   return harbors
@@ -153,11 +157,26 @@ function computeHarborPositions(
       const midX = (posA.x + posB.x) / 2;
       const midY = (posA.y + posB.y) / 2;
 
-      // Push outward from centroid
-      const dx = midX - centroidX;
-      const dy = midY - centroidY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const pushDist = hexSize * 1.3;
+      // Find the nearest land hex center
+      let nearestDist = Infinity;
+      let nearestX = midX;
+      let nearestY = midY;
+      for (const hp of landHexPixels) {
+        const dx = midX - hp.x;
+        const dy = midY - hp.y;
+        const d = dx * dx + dy * dy;
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearestX = hp.x;
+          nearestY = hp.y;
+        }
+      }
+
+      // Push away from nearest land hex (toward sea)
+      const dx = midX - nearestX;
+      const dy = midY - nearestY;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const pushDist = hexSize * 0.75;
 
       return {
         x: midX + (dx / dist) * pushDist,
