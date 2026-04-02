@@ -32,31 +32,21 @@ interface SettlementPieceProps {
  * The SVG design uses the provided player color with computed light/dark variants.
  */
 export function SettlementPiece({ x, y, color, size = 14 }: SettlementPieceProps) {
-  // The original SVG viewBox is 20x20, we scale to fit `size`
-  const scale = size / 20;
-  const dark = darken(color, 0.7);
-  const darker = darken(color, 0.5);
-  const light = lighten(color, 0.4);
-
+  const s = size * 1.2;
   return (
-    <g transform={`translate(${x - size / 2}, ${y - size / 2}) scale(${scale})`}>
-      {/* House body */}
-      <rect x="4" y="10" width="12" height="8" fill={color} rx="0.5" />
-      {/* Shadow side */}
-      <rect x="10" y="10" width="6" height="8" fill="#000" opacity="0.15" rx="0.5" />
-      {/* Roof */}
-      <polygon points="2,10.5 10,3 18,10.5" fill={dark} stroke={darker} strokeWidth="0.4" />
-      {/* Roof ridge highlight */}
-      <line x1="10" y1="3" x2="10" y2="3.5" stroke={light} strokeWidth="0.5" opacity="0.5" />
-      {/* Door */}
-      <rect x="8" y="13" width="4" height="5" rx="1" fill={darker} opacity="0.5" />
-      {/* Window */}
-      <rect x="5.5" y="11.5" width="2" height="2" rx="0.3" fill="#fef3c7" opacity="0.6" />
-      {/* Chimney */}
-      <rect x="13" y="5" width="2" height="5.5" fill={dark} rx="0.3" />
-      {/* Outlines for visibility */}
-      <polygon points="2,10.5 10,3 18,10.5" fill="none" stroke={light} strokeWidth="0.3" opacity="0.3" />
-      <rect x="4" y="10" width="12" height="8" fill="none" stroke={light} strokeWidth="0.3" opacity="0.2" rx="0.5" />
+    <g>
+      {/* Player color base ring */}
+      <circle cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill={color} opacity="0.9" />
+      <circle cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill="none" stroke={darken(color, 0.6)} strokeWidth="1" />
+      {/* High-res settlement image */}
+      <image
+        href="/tiles/settlement.webp"
+        x={x - s / 2}
+        y={y - s / 2}
+        width={s}
+        height={s}
+        preserveAspectRatio="xMidYMid meet"
+      />
     </g>
   );
 }
@@ -74,42 +64,21 @@ interface CityPieceProps {
  * Renders a styled city piece (castle with tower, battlements, windows).
  */
 export function CityPiece({ x, y, color, size = 18 }: CityPieceProps) {
-  const scale = size / 25;
-  const dark = darken(color, 0.7);
-  const darker = darken(color, 0.5);
-  const light = lighten(color, 0.4);
-
+  const s = size * 1.3;
   return (
-    <g transform={`translate(${x - size / 2}, ${y - size * 0.46}) scale(${scale})`}>
-      {/* Main building body */}
-      <rect x="7" y="12" width="14" height="11" fill={color} rx="0.5" />
-      <rect x="14" y="12" width="7" height="11" fill="#000" opacity="0.15" rx="0.5" />
-      {/* Main roof */}
-      <polygon points="5,12.5 14,6 23,12.5" fill={dark} stroke={darker} strokeWidth="0.4" />
-      {/* Tower */}
-      <rect x="2" y="7" width="7" height="16" fill={color} rx="0.5" />
-      <rect x="5.5" y="7" width="3.5" height="16" fill="#000" opacity="0.12" rx="0.5" />
-      {/* Tower roof */}
-      <polygon points="1,7.5 5.5,1 10,7.5" fill={dark} stroke={darker} strokeWidth="0.4" />
-      {/* Tower windows */}
-      <rect x="3.5" y="9" width="2" height="2.5" rx="0.5" fill="#fef3c7" opacity="0.5" />
-      <rect x="3.5" y="14" width="2" height="2" rx="0.3" fill="#fef3c7" opacity="0.4" />
-      {/* Main building windows */}
-      <rect x="9" y="13.5" width="2" height="2" rx="0.3" fill="#fef3c7" opacity="0.5" />
-      <rect x="15" y="13.5" width="2" height="2" rx="0.3" fill="#fef3c7" opacity="0.4" />
-      {/* Door */}
-      <rect x="12" y="18" width="4" height="5" rx="1.2" fill={darker} opacity="0.5" />
-      {/* Flag pole */}
-      <line x1="5.5" y1="1" x2="5.5" y2="-1" stroke={darker} strokeWidth="0.5" />
-      {/* Battlements */}
-      <g fill={dark}>
-        <rect x="2" y="6" width="1.5" height="2" rx="0.2" />
-        <rect x="5" y="6" width="1.5" height="2" rx="0.2" />
-        <rect x="8" y="6" width="1.5" height="2" rx="0.2" />
-      </g>
-      {/* Outlines */}
-      <rect x="2" y="7" width="7" height="16" fill="none" stroke={light} strokeWidth="0.2" opacity="0.25" rx="0.5" />
-      <rect x="7" y="12" width="14" height="11" fill="none" stroke={light} strokeWidth="0.2" opacity="0.2" rx="0.5" />
+    <g>
+      {/* Player color base ring — slightly larger than settlement */}
+      <circle cx={x} cy={y + s * 0.15} rx={s * 0.55} ry={s * 0.28} fill={color} opacity="0.9" />
+      <circle cx={x} cy={y + s * 0.15} rx={s * 0.55} ry={s * 0.28} fill="none" stroke={darken(color, 0.6)} strokeWidth="1.2" />
+      {/* High-res city image */}
+      <image
+        href="/tiles/city.webp"
+        x={x - s / 2}
+        y={y - s / 2}
+        width={s}
+        height={s}
+        preserveAspectRatio="xMidYMid meet"
+      />
     </g>
   );
 }
