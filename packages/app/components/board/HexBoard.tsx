@@ -157,7 +157,7 @@ function computeHarborPositions(
       const dx = midX - centroidX;
       const dy = midY - centroidY;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const pushDist = hexSize * 0.55;
+      const pushDist = hexSize * 1.3;
 
       return {
         x: midX + (dx / dist) * pushDist,
