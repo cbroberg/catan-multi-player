@@ -7,29 +7,40 @@ import type { LobbyState } from '@catan/shared';
 export function useSocket() {
   const socketRef = useRef<TypedSocket | null>(null);
   const [connected, setConnected] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   useEffect(() => {
     const socket = getSocket();
     socketRef.current = socket;
 
-    const onConnect = () => setConnected(true);
+    const onConnect = () => { setConnected(true); setConnectionError(null); };
     const onDisconnect = () => setConnected(false);
+    const onConnectError = (err: Error) => {
+      setConnectionError(err.message);
+    };
+    const onReconnectFailed = () => {
+      setConnectionError('Could not connect to server after multiple attempts');
+    };
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
+    socket.on('connect_error', onConnectError);
+    socket.io.on('reconnect_failed', onReconnectFailed);
     if (socket.connected) setConnected(true);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
+      socket.off('connect_error', onConnectError);
+      socket.io.off('reconnect_failed', onReconnectFailed);
     };
   }, []);
 
-  return { socket: socketRef.current, connected };
+  return { socket: socketRef.current, connected, connectionError };
 }
 
 export function useLobby(gameId: string | null, mode: 'player' | 'observer') {
-  const { socket, connected } = useSocket();
+  const { socket, connected, connectionError } = useSocket();
   const [lobby, setLobby] = useState<LobbyState | null>(null);
   const [gameStarted, setGameStarted] = useState<string | null>(null);
 
@@ -81,5 +92,5 @@ export function useLobby(gameId: string | null, mode: 'player' | 'observer') {
     [socket, gameId]
   );
 
-  return { lobby, connected, toggleReady, regenerateBoard, startGame, gameStarted };
+  return { lobby, connected, connectionError, toggleReady, regenerateBoard, startGame, gameStarted };
 }

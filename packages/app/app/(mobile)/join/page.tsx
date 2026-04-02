@@ -3,16 +3,18 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { useTranslations } from 'next-intl';
 import type { PlayerColor } from '@catan/shared';
 import { getSocket } from '@/lib/socket';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
-const COLORS: { id: PlayerColor; label: string; hex: string }[] = [
-  { id: 'red', label: 'Rød', hex: '#ef4444' },
-  { id: 'blue', label: 'Blå', hex: '#3b82f6' },
-  { id: 'white', label: 'Hvid', hex: '#f5f5f5' },
-  { id: 'orange', label: 'Orange', hex: '#f97316' },
-  { id: 'green', label: 'Grøn', hex: '#22c55e' },
-  { id: 'brown', label: 'Brun', hex: '#92400e' },
+const COLORS: { id: PlayerColor; hex: string }[] = [
+  { id: 'red', hex: '#ef4444' },
+  { id: 'blue', hex: '#3b82f6' },
+  { id: 'white', hex: '#f5f5f5' },
+  { id: 'orange', hex: '#f97316' },
+  { id: 'green', hex: '#22c55e' },
+  { id: 'brown', hex: '#92400e' },
 ];
 
 const AVATARS = ['⚔️', '🛡️', '🏰', '⛵', '🐑', '🌾', '⛏️', '🪵'];
@@ -20,6 +22,7 @@ const AVATARS = ['⚔️', '🛡️', '🏰', '⛵', '🐑', '🌾', '⛏️', '
 function JoinContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations();
 
   const [step, setStep] = useState<'code' | 'setup' | 'joining'>('code');
   const [code, setCode] = useState(searchParams.get('code') ?? '');
@@ -37,16 +40,16 @@ function JoinContent() {
 
   const handleCodeSubmit = useCallback(() => {
     if (code.length !== 5) {
-      setError('Koden skal være 5 tegn');
+      setError(t('join.codeError'));
       return;
     }
     setError('');
     setStep('setup');
-  }, [code]);
+  }, [code, t]);
 
   const handleJoin = useCallback(() => {
     if (!name.trim()) {
-      setError('Indtast dit navn');
+      setError(t('join.nameError'));
       return;
     }
     setError('');
@@ -68,11 +71,11 @@ function JoinContent() {
         router.push(`/play/${response.gameId}`);
       }
     );
-  }, [code, name, color, avatar, router]);
+  }, [code, name, color, avatar, router, t]);
 
   return (
     <div className="min-h-screen bg-[#0e1a2e] text-white flex flex-col items-center justify-center p-6">
-      <h1 className="text-2xl font-bold mb-8">Join Catan</h1>
+      <h1 className="text-2xl font-bold mb-8">{t('join.title')}</h1>
 
       {error && (
         <div className="mb-4 px-4 py-2 bg-red-900/50 border border-red-700 rounded-lg text-sm text-red-300">
@@ -83,12 +86,12 @@ function JoinContent() {
       {step === 'code' && (
         <div className="w-full max-w-xs space-y-4">
           <div>
-            <label className="text-xs text-white/50 uppercase tracking-wide block mb-1">Game Code</label>
+            <label className="text-xs text-white/50 uppercase tracking-wide block mb-1">{t('join.gameCodeLabel')}</label>
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase().slice(0, 5))}
-              placeholder="XXXXX"
+              placeholder={t('join.gameCodePlaceholder')}
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-center text-2xl font-mono tracking-[0.4em] placeholder:text-white/20 focus:outline-none focus:border-amber-500"
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleCodeSubmit()}
@@ -98,7 +101,7 @@ function JoinContent() {
             onClick={handleCodeSubmit}
             className="w-full py-3 bg-amber-600 hover:bg-amber-700 rounded-xl font-bold transition-colors cursor-pointer"
           >
-            Næste
+            {t('join.next')}
           </button>
         </div>
       )}
@@ -107,12 +110,12 @@ function JoinContent() {
         <div className="w-full max-w-xs space-y-5">
           {/* Name */}
           <div>
-            <label className="text-xs text-white/50 uppercase tracking-wide block mb-1">Navn</label>
+            <label className="text-xs text-white/50 uppercase tracking-wide block mb-1">{t('join.nameLabel')}</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value.slice(0, 20))}
-              placeholder="Dit navn"
+              placeholder={t('join.namePlaceholder')}
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-lg focus:outline-none focus:border-amber-500"
               autoFocus
             />
@@ -120,7 +123,7 @@ function JoinContent() {
 
           {/* Color */}
           <div>
-            <label className="text-xs text-white/50 uppercase tracking-wide block mb-1">Farve</label>
+            <label className="text-xs text-white/50 uppercase tracking-wide block mb-1">{t('join.colorLabel')}</label>
             <div className="flex gap-2 justify-center">
               {COLORS.map((c) => (
                 <button
@@ -130,7 +133,7 @@ function JoinContent() {
                     color === c.id ? 'scale-125 ring-2 ring-amber-400' : 'opacity-60 hover:opacity-100'
                   }`}
                   style={{ backgroundColor: c.hex }}
-                  title={c.label}
+                  title={t(`join.colors.${c.id}`)}
                 />
               ))}
             </div>
@@ -138,7 +141,7 @@ function JoinContent() {
 
           {/* Avatar */}
           <div>
-            <label className="text-xs text-white/50 uppercase tracking-wide block mb-1">Avatar</label>
+            <label className="text-xs text-white/50 uppercase tracking-wide block mb-1">{t('join.avatarLabel')}</label>
             <div className="flex gap-2 justify-center flex-wrap">
               {AVATARS.map((a) => (
                 <button
@@ -160,13 +163,13 @@ function JoinContent() {
             onClick={handleJoin}
             className="w-full py-3 bg-amber-600 hover:bg-amber-700 rounded-xl font-bold transition-colors cursor-pointer"
           >
-            Join Spil
+            {t('join.joinGame')}
           </button>
         </div>
       )}
 
       {step === 'joining' && (
-        <div className="text-white/50 text-lg">Joiner spil...</div>
+        <LoadingSpinner message={t('common.joiningGame')} />
       )}
     </div>
   );

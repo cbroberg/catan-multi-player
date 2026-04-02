@@ -12,6 +12,9 @@ export function getSocket(): TypedSocket {
     socket = io({
       path: '/api/socket',
       autoConnect: true,
+      timeout: 10000,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
   }
   return socket;

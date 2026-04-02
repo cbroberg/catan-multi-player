@@ -1,17 +1,19 @@
 'use client';
 
 import { use, useState, useCallback, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useGame } from '@/lib/use-game';
 import { useLobby } from '@/lib/use-socket';
 import { GameBoardSVG } from '@/components/board/GameBoardSVG';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import type { ResourceType, HexCoord, GameView } from '@catan/shared';
 
-const RESOURCES: { type: ResourceType; label: string; icon: string; color: string }[] = [
-  { type: 'lumber', label: 'Lumber', icon: '🪵', color: '#2d6a30' },
-  { type: 'brick', label: 'Brick', icon: '🧱', color: '#d4852e' },
-  { type: 'wool', label: 'Wool', icon: '🐑', color: '#8bc34a' },
-  { type: 'grain', label: 'Grain', icon: '🌾', color: '#fdd835' },
-  { type: 'ore', label: 'Ore', icon: '⛏️', color: '#78909c' },
+const RESOURCES: { type: ResourceType; icon: string; color: string }[] = [
+  { type: 'lumber', icon: '🪵', color: '#2d6a30' },
+  { type: 'brick', icon: '🧱', color: '#d4852e' },
+  { type: 'wool', icon: '🐑', color: '#8bc34a' },
+  { type: 'grain', icon: '🌾', color: '#fdd835' },
+  { type: 'ore', icon: '⛏️', color: '#78909c' },
 ];
 
 const COLOR_HEX: Record<string, string> = {
@@ -23,6 +25,7 @@ type UIMode = null | 'build-settlement' | 'build-road' | 'build-city' | 'move-ro
 
 export default function MobilePlayPage({ params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = use(params);
+  const t = useTranslations();
   const game = useGame(gameId);
   const lobbyHook = useLobby(gameId, 'player');
   const [uiMode, setUIMode] = useState<UIMode>(null);
@@ -30,7 +33,7 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
   const [tradeOffer, setTradeOffer] = useState<Record<ResourceType, number>>({ lumber: 0, brick: 0, wool: 0, grain: 0, ore: 0 });
   const [tradeRequest, setTradeRequest] = useState<Record<ResourceType, number>>({ lumber: 0, brick: 0, wool: 0, grain: 0, ore: 0 });
 
-  const { view, connected, lastDice, error } = game;
+  const { view, connected, connectionError, lastDice, error, loadFailed } = game;
 
   // Derived state — safe even when view is null
   const me = view?.players.find((p) => p.id === view.myPlayerId) ?? null;
@@ -103,7 +106,20 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
 
   // ═══ RENDER ═══════════════════════════════════════════════════════════
 
-  if (!connected) return <Screen text="Forbinder..." />;
+  if (!connected) {
+    return (
+      <Screen>
+        {connectionError ? (
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-red-400 text-sm">{t('common.connectionFailed')}</p>
+            <button onClick={() => window.location.reload()} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm cursor-pointer">{t('common.retry')}</button>
+          </div>
+        ) : (
+          <LoadingSpinner message={t('common.connecting')} />
+        )}
+      </Screen>
+    );
+  }
 
   // Pre-game lobby waiting room
   if (!view && lobbyHook.lobby && !lobbyHook.gameStarted) {
@@ -112,10 +128,10 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
     return (
       <div className="min-h-screen bg-[#0e1a2e] text-white flex flex-col items-center justify-center p-6 gap-6">
         <div className="text-3xl">{lobbyMe?.avatar ?? '🎮'}</div>
-        <h1 className="text-xl font-bold">{lobbyMe?.name ?? 'Spiller'}</h1>
+        <h1 className="text-xl font-bold">{lobbyMe?.name ?? t('game.player')}</h1>
         <div className="text-white/50 text-sm">
-          Game: <span className="font-mono text-amber-400">{lobbyHook.lobby.code}</span>
-          <span className="ml-2">{lobbyHook.lobby.players.length}/{lobbyHook.lobby.maxPlayers} spillere</span>
+          {t('lobby.game')}: <span className="font-mono text-amber-400">{lobbyHook.lobby.code}</span>
+          <span className="ml-2">{lobbyHook.lobby.players.length}/{lobbyHook.lobby.maxPlayers} {t('lobby.playersCount')}</span>
         </div>
         <div className="space-y-1 text-sm">
           {lobbyHook.lobby.players.map((p) => (
@@ -128,13 +144,24 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
         </div>
         <button data-action="ready" onClick={lobbyHook.toggleReady}
           className={`px-8 py-3 rounded-xl font-bold text-lg cursor-pointer ${lobbyMe?.isReady ? 'bg-emerald-600' : 'bg-white/10 hover:bg-white/20'}`}>
-          {lobbyMe?.isReady ? '✓ Klar!' : 'Klar?'}
+          {lobbyMe?.isReady ? `✓ ${t('game.readyButton.ready')}` : t('game.readyButton.notReady')}
         </button>
       </div>
     );
   }
 
-  if (!view || !va) return <Screen text="Spillet starter..." />;
+  if (loadFailed) {
+    return (
+      <Screen>
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-red-400 text-sm">{t('game.loadingFailed')}</p>
+          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm cursor-pointer">{t('common.retry')}</button>
+        </div>
+      </Screen>
+    );
+  }
+
+  if (!view || !va) return <Screen><LoadingSpinner message={t('common.gameStarting')} /></Screen>;
 
   const currentPlayer = view.players.find((p) => p.id === view.currentPlayerId);
   const isMyTurn = view.currentPlayerId === view.myPlayerId;
@@ -147,11 +174,11 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
           {currentPlayer && (
             <>
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLOR_HEX[currentPlayer.color] }} />
-              <span className="text-sm font-medium">{isMyTurn ? 'Din tur' : `${currentPlayer.name}s tur`}</span>
+              <span className="text-sm font-medium">{isMyTurn ? t('game.yourTurn') : t('game.playerTurn', { name: currentPlayer.name })}</span>
             </>
           )}
         </div>
-        <div className="text-xs text-white/40">Tur {view.turnNumber} · {me?.vp ?? 0} VP</div>
+        <div className="text-xs text-white/40">{t('game.turn')} {view.turnNumber} · {me?.vp ?? 0} VP</div>
       </div>
 
       {/* Mini board */}
@@ -176,11 +203,11 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
           <div className="text-center py-2" data-phase="setup">
             {isMySetupTurn ? (
               <div className="text-amber-400 font-bold">
-                {va.canBuildSettlement ? '🏠 Placér din settlement' : '🛤️ Placér din road'}
-                <div className="text-xs text-white/50 mt-1">Runde {view.setupInfo?.round} — Tryk på boardet</div>
+                {va.canBuildSettlement ? `🏠 ${t('game.setup.placeSettlement')}` : `🛤️ ${t('game.setup.placeRoad')}`}
+                <div className="text-xs text-white/50 mt-1">{t('game.setup.round', { round: view.setupInfo?.round ?? 1 })}</div>
               </div>
             ) : (
-              <div className="text-white/40">Venter på {view.setupInfo?.currentPlayerName}...</div>
+              <div className="text-white/40">{t('game.setup.waitingFor', { name: view.setupInfo?.currentPlayerName ?? '' })}</div>
             )}
           </div>
         )}
@@ -189,25 +216,25 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
         {va.mustDiscard && (
           <button data-action="discard" onClick={() => game.discardCards(autoDiscard(view.myResources))}
             className="w-full py-3 bg-red-600 hover:bg-red-700 rounded-xl font-bold cursor-pointer">
-            🗑️ Kassér {Math.floor(Object.values(view.myResources).reduce((a, b) => a + b, 0) / 2)} kort
+            🗑️ {t('game.discard.discardCards', { count: Math.floor(Object.values(view.myResources).reduce((a, b) => a + b, 0) / 2) })}
           </button>
         )}
 
         {/* Robber */}
         {va.mustMoveRobber && uiMode !== 'steal-select' && (
-          <div className="text-center text-amber-400 font-medium py-1">👤 Vælg hex for røveren</div>
+          <div className="text-center text-amber-400 font-medium py-1">👤 {t('game.robber.chooseHex')}</div>
         )}
 
         {/* Steal picker */}
         {uiMode === 'steal-select' && pendingRobberHex && (
           <div className="space-y-2">
-            <div className="text-center text-sm text-amber-400">Stjæl fra hvem?</div>
+            <div className="text-center text-sm text-amber-400">{t('game.robber.stealFrom')}</div>
             {view.players.filter((p) => p.id !== view.myPlayerId && p.resourceCount > 0).map((p) => (
               <button key={p.id} data-action="steal" data-player-id={p.id}
                 onClick={() => { game.moveRobber(pendingRobberHex, p.id); setUIMode(null); setPendingRobberHex(null); }}
                 className="w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg flex items-center gap-2 px-3 cursor-pointer">
                 <div className="w-4 h-4 rounded-full" style={{ backgroundColor: COLOR_HEX[p.color] }} />
-                <span>{p.name}</span><span className="text-white/40 text-xs ml-auto">{p.resourceCount} kort</span>
+                <span>{p.name}</span><span className="text-white/40 text-xs ml-auto">{p.resourceCount} {t('common.cards')}</span>
               </button>
             ))}
           </div>
@@ -217,7 +244,7 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
         {va.canRollDice && (
           <button data-action="roll-dice" onClick={game.rollDice}
             className="w-full py-4 bg-amber-600 hover:bg-amber-700 rounded-xl font-bold text-lg cursor-pointer">
-            🎲 Kast Terninger
+            🎲 {t('game.actions.rollDice')}
           </button>
         )}
 
@@ -238,19 +265,19 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
         {va.canEndTurn && (
           <>
             <div className="grid grid-cols-2 gap-2">
-              <Btn action="build-settlement" label="🏠 Settlement" enabled={va.canBuildSettlement}
+              <Btn action="build-settlement" label={`🏠 ${t('game.actions.buildSettlement')}`} enabled={va.canBuildSettlement}
                 active={uiMode === 'build-settlement'}
                 onClick={() => setUIMode(uiMode === 'build-settlement' ? null : 'build-settlement')} />
-              <Btn action="build-city" label="🏙️ City" enabled={va.canBuildCity}
+              <Btn action="build-city" label={`🏙️ ${t('game.actions.buildCity')}`} enabled={va.canBuildCity}
                 active={uiMode === 'build-city'}
                 onClick={() => setUIMode(uiMode === 'build-city' ? null : 'build-city')} />
-              <Btn action="build-road" label="🛤️ Road" enabled={va.canBuildRoad}
+              <Btn action="build-road" label={`🛤️ ${t('game.actions.buildRoad')}`} enabled={va.canBuildRoad}
                 active={uiMode === 'build-road'}
                 onClick={() => setUIMode(uiMode === 'build-road' ? null : 'build-road')} />
-              <Btn action="buy-dev-card" label="🃏 Dev Card" enabled={va.canBuyDevCard} onClick={game.buyDevCard} />
-              <Btn action="maritime-trade" label="🚢 Maritime 4:1" enabled={va.canMaritimeTrade}
+              <Btn action="buy-dev-card" label={`🃏 ${t('game.actions.buyDevCard')}`} enabled={va.canBuyDevCard} onClick={game.buyDevCard} />
+              <Btn action="maritime-trade" label={`🚢 ${t('game.actions.maritimeTrade')}`} enabled={va.canMaritimeTrade}
                 onClick={() => quickTrade(game, view.myResources)} />
-              <Btn action="end-turn" label="⏭️ Afslut tur" enabled={va.canEndTurn} onClick={game.endTurn} accent />
+              <Btn action="end-turn" label={`⏭️ ${t('game.actions.endTurn')}`} enabled={va.canEndTurn} onClick={game.endTurn} accent />
             </div>
           </>
         )}
@@ -261,7 +288,7 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-[#0a1525] rounded-2xl p-8 text-center">
             <div className="text-5xl mb-3">👑</div>
-            <div className="text-2xl font-bold text-amber-400">{view.winnerName} vinder!</div>
+            <div className="text-2xl font-bold text-amber-400">{t('game.gameOver.winner', { name: view.winnerName })}</div>
           </div>
         </div>
       )}
@@ -269,8 +296,8 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
   );
 }
 
-function Screen({ text }: { text: string }) {
-  return <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center"><span className="text-white/50">{text}</span></div>;
+function Screen({ children }: { children: React.ReactNode }) {
+  return <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center">{children}</div>;
 }
 
 function Die({ value }: { value: number }) {

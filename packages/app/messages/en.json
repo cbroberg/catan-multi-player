@@ -7,7 +7,10 @@
     "gameStarting": "Game starting...",
     "joiningGame": "Joining game...",
     "players": "Players",
-    "cards": "cards"
+    "cards": "cards",
+    "connectionError": "Connection error",
+    "connectionFailed": "Could not connect to server",
+    "retry": "Try again"
   },
   "home": {
     "title": "CATAN",
@@ -129,6 +132,27 @@
     "readyButton": {
       "ready": "Ready!",
       "notReady": "Ready?"
-    }
+    },
+    "loadingFailed": "Failed to load game data"
+  },
+  "create": {
+    "title": "New Game",
+    "board": "Board",
+    "baseGame": "Base Game",
+    "seafarers": "Seafarers",
+    "boardGeneration": "Board Generation",
+    "randomBalanced": "Random Balanced",
+    "beginner": "Beginner",
+    "victoryPoints": "Victory Points",
+    "turnTimer": "Turn Timer",
+    "off": "Off",
+    "rules": "Rules",
+    "friendlyRobber": "Friendly Robber",
+    "friendlyRobberDesc": "Robber cannot target players with 2 VP or less",
+    "tradeWithInactive": "Trade with inactive",
+    "tradeWithInactiveDesc": "All players can trade, not just the active one",
+    "players": "players",
+    "creating": "Creating...",
+    "createGame": "Create Game"
   }
 }

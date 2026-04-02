@@ -1,41 +1,53 @@
 'use client';
 
 import { use } from 'react';
+import { useTranslations } from 'next-intl';
 import { useGame } from '@/lib/use-game';
 import { GameBoardSVG } from '@/components/board/GameBoardSVG';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 const COLOR_HEX: Record<string, string> = {
   red: '#ef4444', blue: '#3b82f6', white: '#e5e5e5',
   orange: '#f97316', green: '#22c55e', brown: '#92400e',
 };
 
-const PHASE_LABELS: Record<string, string> = {
-  SETUP_ROUND_1: 'Setup Runde 1',
-  SETUP_ROUND_2: 'Setup Runde 2',
-  PLAYING: 'Spiller',
-  GAME_OVER: 'Spil Slut',
-};
-
-const TURN_PHASE_LABELS: Record<string, string> = {
-  PRE_ROLL: 'Kast terninger',
-  ROLL_DICE: 'Terningkast',
-  ROBBER_DISCARD: 'Kassér kort',
-  ROBBER_MOVE: 'Flyt røver',
-  ROBBER_STEAL: 'Stjæl kort',
-  TRADE_BUILD: 'Handel & Byg',
-  END_TURN: 'Afslut tur',
-};
-
 export default function BigScreenGamePage({ params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = use(params);
-  const { view, connected, lastDice } = useGame(gameId);
+  const { view, connected, connectionError, lastDice, loadFailed } = useGame(gameId);
+  const t = useTranslations();
 
   if (!connected) {
-    return <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center"><span className="text-white/50">Forbinder...</span></div>;
+    return (
+      <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center">
+        {connectionError ? (
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-red-400 text-sm">{t('common.connectionFailed')}</p>
+            <button onClick={() => window.location.reload()} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm cursor-pointer">{t('common.retry')}</button>
+          </div>
+        ) : (
+          <LoadingSpinner message={t('common.connecting')} />
+        )}
+      </div>
+    );
+  }
+
+  if (loadFailed) {
+    return (
+      <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-red-400 text-sm">{t('game.loadingFailed')}</p>
+          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm cursor-pointer">{t('common.retry')}</button>
+        </div>
+      </div>
+    );
   }
 
   if (!view) {
-    return <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center"><span className="text-white/50">Venter på spildata...</span></div>;
+    return (
+      <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center">
+        <LoadingSpinner message={t('common.waitingForGameData')} />
+      </div>
+    );
   }
 
   const currentPlayer = view.players.find((p) => p.id === view.currentPlayerId);
@@ -54,17 +66,17 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
           {view.phase === 'GAME_OVER' && view.winnerName ? (
             <div>
               <div className="text-3xl mb-1">👑</div>
-              <div className="text-xl font-bold text-amber-400">{view.winnerName} vinder!</div>
-              <div className="text-sm text-white/50">{view.victoryPoints} Victory Points</div>
+              <div className="text-xl font-bold text-amber-400">{t('game.gameOver.winner', { name: view.winnerName })}</div>
+              <div className="text-sm text-white/50">{view.victoryPoints} {t('game.gameOver.victoryPoints')}</div>
             </div>
           ) : (
             <>
               <div className="text-xs text-white/40 uppercase tracking-wide">
-                Tur {view.turnNumber} · {PHASE_LABELS[view.phase] ?? view.phase}
+                {t('game.turn')} {view.turnNumber} · {t(`game.phase.${view.phase}`)}
               </div>
               {view.turnPhase && (
                 <div className="text-xs text-white/30 mt-0.5">
-                  {TURN_PHASE_LABELS[view.turnPhase] ?? view.turnPhase}
+                  {t(`game.turnPhase.${view.turnPhase}`)}
                 </div>
               )}
               {currentPlayer && (
@@ -88,7 +100,7 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
 
         {/* Scoreboard */}
         <div className="flex-1 p-3 overflow-y-auto">
-          <div className="text-xs text-white/40 uppercase tracking-wide mb-2">Spillere</div>
+          <div className="text-xs text-white/40 uppercase tracking-wide mb-2">{t('common.players')}</div>
           <div className="space-y-1.5">
             {view.players.map((p) => {
               const isCurrent = p.id === view.currentPlayerId;
@@ -107,7 +119,7 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
                       {p.hasLargestArmy && <span className="text-amber-400 text-xs ml-1">⚔️</span>}
                     </div>
                     <div className="text-xs text-white/30">
-                      {p.settlements.length}s {p.cities.length}c {p.roads.length}r · {p.resourceCount} kort · {p.knightsPlayed}k
+                      {p.settlements.length}s {p.cities.length}c {p.roads.length}r · {p.resourceCount} {t('common.cards')} · {p.knightsPlayed}k
                     </div>
                   </div>
                   <div className="text-xl font-bold" style={{ color: COLOR_HEX[p.color] }}>
@@ -121,7 +133,7 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
 
         {/* Log */}
         <div className="h-48 border-t border-white/10 overflow-y-auto p-3">
-          <div className="text-xs text-white/40 uppercase tracking-wide mb-1">Game Log</div>
+          <div className="text-xs text-white/40 uppercase tracking-wide mb-1">{t('game.gameLog')}</div>
           <div className="space-y-0.5">
             {view.recentLog.map((entry, i) => (
               <div key={i} className="text-xs text-white/50">

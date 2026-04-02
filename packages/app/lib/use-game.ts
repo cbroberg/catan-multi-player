@@ -1,24 +1,31 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSocket } from './use-socket';
 import type { GameView, ResourceType, HexCoord } from '@catan/shared';
 
+const MAX_VIEW_RETRIES = 10;
+
 export function useGame(gameId: string | null) {
-  const { socket, connected } = useSocket();
+  const { socket, connected, connectionError } = useSocket();
   const [view, setView] = useState<GameView | null>(null);
   const [lastDice, setLastDice] = useState<{ d1: number; d2: number; total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const retryCountRef = useRef(0);
 
   useEffect(() => {
     if (!socket || !connected || !gameId) return;
+    retryCountRef.current = 0;
+    setLoadFailed(false);
 
-    const onView = (v: GameView) => { setView(v); setError(null); };
+    const onView = (v: GameView) => { setView(v); setError(null); retryCountRef.current = 0; setLoadFailed(false); };
     const onError = (msg: string) => setError(msg);
     const onDice = (d: { d1: number; d2: number; total: number }) => setLastDice(d);
 
     const onGameStarting = () => {
-      // Game just started — request the first view
+      retryCountRef.current = 0;
+      setLoadFailed(false);
       setTimeout(() => socket.emit('game:request-view', gameId), 500);
     };
 
@@ -27,10 +34,18 @@ export function useGame(gameId: string | null) {
     socket.on('game:dice-result', onDice);
     socket.on('game:starting', onGameStarting);
 
-    // Request current view — retry periodically until we get one
+    // Request current view — retry periodically until we get one or hit max
     socket.emit('game:request-view', gameId);
     const retryInterval = setInterval(() => {
-      if (!view) socket.emit('game:request-view', gameId);
+      if (!view) {
+        retryCountRef.current += 1;
+        if (retryCountRef.current >= MAX_VIEW_RETRIES) {
+          setLoadFailed(true);
+          clearInterval(retryInterval);
+          return;
+        }
+        socket.emit('game:request-view', gameId);
+      }
     }, 2000);
 
     return () => {
@@ -54,8 +69,10 @@ export function useGame(gameId: string | null) {
   return {
     view,
     connected,
+    connectionError,
     lastDice,
     error,
+    loadFailed,
     setupSettlement: useCallback((vertexId: string) => emit('action:setup-settlement', vertexId), [emit]),
     setupRoad: useCallback((edgeId: string) => emit('action:setup-road', edgeId), [emit]),
     rollDice: useCallback(() => emit('action:roll-dice'), [emit]),

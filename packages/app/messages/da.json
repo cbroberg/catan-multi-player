@@ -7,7 +7,10 @@
     "gameStarting": "Spillet starter...",
     "joiningGame": "Joiner spil...",
     "players": "Spillere",
-    "cards": "kort"
+    "cards": "kort",
+    "connectionError": "Forbindelsesfejl",
+    "connectionFailed": "Kunne ikke oprette forbindelse til serveren",
+    "retry": "Prøv igen"
   },
   "home": {
     "title": "CATAN",
@@ -129,6 +132,27 @@
     "readyButton": {
       "ready": "Klar!",
       "notReady": "Klar?"
-    }
+    },
+    "loadingFailed": "Kunne ikke indlæse spildata"
+  },
+  "create": {
+    "title": "Nyt Spil",
+    "board": "Board",
+    "baseGame": "Base Game",
+    "seafarers": "Seafarers",
+    "boardGeneration": "Board Generation",
+    "randomBalanced": "Random Balanced",
+    "beginner": "Beginner",
+    "victoryPoints": "Sejrspoint",
+    "turnTimer": "Turn Timer",
+    "off": "Off",
+    "rules": "Regler",
+    "friendlyRobber": "Friendly Robber",
+    "friendlyRobberDesc": "Robber kan ikke placeres på spillere med 2 VP eller mindre",
+    "tradeWithInactive": "Handel med inaktive",
+    "tradeWithInactiveDesc": "Alle spillere kan handle, ikke kun den aktive",
+    "players": "spillere",
+    "creating": "Opretter...",
+    "createGame": "Opret Spil"
   }
 }

@@ -2,9 +2,11 @@
 
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useLobby } from '@/lib/use-socket';
 import { HexBoard } from '@/components/board/HexBoard';
 import { QRCodeSVG } from '@/components/lobby/QRCode';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import type { LobbyPlayer } from '@catan/shared';
 
 const COLOR_HEX: Record<string, string> = {
@@ -19,7 +21,8 @@ const COLOR_HEX: Record<string, string> = {
 export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = use(params);
   const router = useRouter();
-  const { lobby, connected, regenerateBoard, startGame, gameStarted } = useLobby(gameId, 'observer');
+  const t = useTranslations();
+  const { lobby, connected, connectionError, regenerateBoard, startGame, gameStarted } = useLobby(gameId, 'observer');
 
   // Redirect to game view when game starts
   useEffect(() => {
@@ -36,7 +39,14 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
   if (!connected) {
     return (
       <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center">
-        <div className="text-white/50 text-lg">Forbinder...</div>
+        {connectionError ? (
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-red-400 text-sm">{t('common.connectionFailed')}</p>
+            <button onClick={() => window.location.reload()} className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm cursor-pointer">{t('common.retry')}</button>
+          </div>
+        ) : (
+          <LoadingSpinner message={t('common.connecting')} />
+        )}
       </div>
     );
   }
@@ -44,7 +54,7 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
   if (!lobby) {
     return (
       <div className="min-h-screen bg-[#0e1a2e] text-white flex items-center justify-center">
-        <div className="text-white/50 text-lg">Indlæser lobby...</div>
+        <LoadingSpinner message={t('lobby.loading')} />
       </div>
     );
   }
@@ -65,11 +75,11 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
             onClick={regenerateBoard}
             className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm cursor-pointer transition-colors"
           >
-            Nyt Board
+            {t('lobby.newBoard')}
           </button>
           {lobby.balanceScore && (
             <span className="px-4 py-2 text-sm text-white/50">
-              Balance: {lobby.balanceScore.total}/100
+              {t('lobby.balance')}: {lobby.balanceScore.total}/100
             </span>
           )}
         </div>
@@ -81,20 +91,20 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
         <div className="flex-1 overflow-y-auto p-6 pb-2">
         {/* Game code + QR */}
         <div className="text-center mb-6">
-          <div className="text-xs text-white/40 uppercase tracking-widest mb-1">Game Code</div>
+          <div className="text-xs text-white/40 uppercase tracking-widest mb-1">{t('lobby.gameCode')}</div>
           <div data-testid="game-code" className="text-5xl font-mono font-bold tracking-[0.3em] text-amber-400">
             {lobby.code}
           </div>
           <div className="mt-4 flex justify-center">
             {joinUrl && <QRCodeSVG url={joinUrl} size={160} />}
           </div>
-          <div className="mt-2 text-xs text-white/30">Scan eller gå til /join</div>
+          <div className="mt-2 text-xs text-white/30">{t('lobby.scanOrVisit')}</div>
         </div>
 
         {/* Player list */}
         <div className="flex-1">
           <div className="text-xs text-white/40 uppercase tracking-wide mb-3">
-            Spillere ({lobby.players.length}/{lobby.maxPlayers})
+            {t('lobby.players')} ({lobby.players.length}/{lobby.maxPlayers})
           </div>
           <div className="space-y-2">
             {lobby.players.map((player) => (
@@ -107,7 +117,7 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
                 className="flex items-center gap-3 px-3 py-2 rounded-lg border border-dashed border-white/10"
               >
                 <div className="w-8 h-8 rounded-full bg-white/5" />
-                <span className="text-white/20 text-sm">Venter på spiller...</span>
+                <span className="text-white/20 text-sm">{t('lobby.waitingForPlayer')}</span>
               </div>
             ))}
           </div>
@@ -129,7 +139,7 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
                 : 'bg-white/5 text-white/20 cursor-not-allowed'
             }`}
           >
-            {canStart ? 'Start Spil' : `Venter på spillere (${lobby.players.filter(p => p.isReady).length}/${lobby.players.length} klar)`}
+            {canStart ? t('lobby.startGame') : t('lobby.waitingForPlayers', { ready: lobby.players.filter(p => p.isReady).length, total: lobby.players.length })}
           </button>
         </div>
       </div>
@@ -138,6 +148,7 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
 }
 
 function PlayerCard({ player }: { player: LobbyPlayer }) {
+  const t = useTranslations('lobby');
   return (
     <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5">
       <div
@@ -149,7 +160,7 @@ function PlayerCard({ player }: { player: LobbyPlayer }) {
       <div className="flex-1">
         <div className="text-sm font-medium">{player.name}</div>
         <div className="text-xs text-white/40">
-          {player.isHost ? 'Host' : player.isReady ? 'Klar' : 'Ikke klar'}
+          {player.isHost ? t('host') : player.isReady ? t('ready') : t('notReady')}
         </div>
       </div>
       {player.isReady && (

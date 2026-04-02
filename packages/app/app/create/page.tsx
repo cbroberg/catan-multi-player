@@ -2,15 +2,18 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import type { GameConfig, BoardType } from '@catan/shared';
 import { BOARD_VARIANTS } from '@catan/shared';
 import { getSocket } from '@/lib/socket';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 const baseVariants = Object.values(BOARD_VARIANTS).filter((v) => v.expansion === 'base');
 const seafarerVariants = Object.values(BOARD_VARIANTS).filter((v) => v.expansion === 'seafarers');
 
 export default function CreateGamePage() {
   const router = useRouter();
+  const t = useTranslations();
   const [creating, setCreating] = useState(false);
 
   const [config, setConfig] = useState<GameConfig>({
@@ -55,13 +58,13 @@ export default function CreateGamePage() {
 
   return (
     <div className="min-h-screen bg-[#0e1a2e] text-white flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold mb-8">Nyt Spil</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('create.title')}</h1>
 
       <div className="w-full max-w-md space-y-6">
         {/* Board Variant */}
-        <Section title="Board">
+        <Section title={t('create.board')}>
           <div className="space-y-2">
-            <label className="text-xs text-white/50 uppercase tracking-wide">Base Game</label>
+            <label className="text-xs text-white/50 uppercase tracking-wide">{t('create.baseGame')}</label>
             <div className="flex flex-wrap gap-2">
               {baseVariants.map((v) => (
                 <VariantButton
@@ -72,7 +75,7 @@ export default function CreateGamePage() {
                 />
               ))}
             </div>
-            <label className="text-xs text-white/50 uppercase tracking-wide mt-3 block">Seafarers</label>
+            <label className="text-xs text-white/50 uppercase tracking-wide mt-3 block">{t('create.seafarers')}</label>
             <div className="flex flex-wrap gap-2">
               {seafarerVariants.map((v) => (
                 <VariantButton
@@ -87,12 +90,12 @@ export default function CreateGamePage() {
         </Section>
 
         {/* Board Type */}
-        <Section title="Board Generation">
+        <Section title={t('create.boardGeneration')}>
           <div className="flex gap-2">
             {(['random-balanced', 'beginner'] as BoardType[]).map((bt) => (
               <OptionButton
                 key={bt}
-                label={bt === 'random-balanced' ? 'Random Balanced' : 'Beginner'}
+                label={bt === 'random-balanced' ? t('create.randomBalanced') : t('create.beginner')}
                 selected={config.boardType === bt}
                 onClick={() => updateConfig('boardType', bt)}
               />
@@ -101,7 +104,7 @@ export default function CreateGamePage() {
         </Section>
 
         {/* Victory Points */}
-        <Section title="Sejrspoint">
+        <Section title={t('create.victoryPoints')}>
           <div className="flex gap-2">
             {[10, 12, 14, 15].map((vp) => (
               <OptionButton
@@ -115,31 +118,31 @@ export default function CreateGamePage() {
         </Section>
 
         {/* Turn Timer */}
-        <Section title="Turn Timer">
+        <Section title={t('create.turnTimer')}>
           <div className="flex flex-wrap gap-2">
-            {[null, 60, 90, 120, 180].map((t) => (
+            {[null, 60, 90, 120, 180].map((timer) => (
               <OptionButton
-                key={t ?? 'off'}
-                label={t === null ? 'Off' : `${t}s`}
-                selected={config.turnTimerSeconds === t}
-                onClick={() => updateConfig('turnTimerSeconds', t)}
+                key={timer ?? 'off'}
+                label={timer === null ? t('create.off') : `${timer}s`}
+                selected={config.turnTimerSeconds === timer}
+                onClick={() => updateConfig('turnTimerSeconds', timer)}
               />
             ))}
           </div>
         </Section>
 
         {/* Friendly Robber */}
-        <Section title="Regler">
+        <Section title={t('create.rules')}>
           <div className="space-y-2">
             <ToggleOption
-              label="Friendly Robber"
-              description="Robber kan ikke placeres på spillere med 2 VP eller mindre"
+              label={t('create.friendlyRobber')}
+              description={t('create.friendlyRobberDesc')}
               checked={config.friendlyRobber}
               onChange={(v) => updateConfig('friendlyRobber', v)}
             />
             <ToggleOption
-              label="Handel med inaktive"
-              description="Alle spillere kan handle, ikke kun den aktive"
+              label={t('create.tradeWithInactive')}
+              description={t('create.tradeWithInactiveDesc')}
               checked={config.tradeWithInactive}
               onChange={(v) => updateConfig('tradeWithInactive', v)}
             />
@@ -149,7 +152,7 @@ export default function CreateGamePage() {
         {/* Info */}
         {selectedVariant && (
           <div className="text-xs text-white/40 text-center">
-            {selectedVariant.playerRange[0]}-{selectedVariant.playerRange[1]} spillere
+            {selectedVariant.playerRange[0]}-{selectedVariant.playerRange[1]} {t('create.players')}
             {selectedVariant.specialBuildingPhase && ' · Special Building Phase'}
             {selectedVariant.hasShips && ' · Ships'}
             {selectedVariant.hasPirate && ' · Pirate'}
@@ -162,7 +165,12 @@ export default function CreateGamePage() {
           disabled={creating}
           className="w-full py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-800 text-white font-bold rounded-xl text-lg transition-colors cursor-pointer"
         >
-          {creating ? 'Opretter...' : 'Opret Spil'}
+          {creating ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-4 h-4 border-2 border-white/20 border-t-white/80 rounded-full animate-spin" />
+              {t('create.creating')}
+            </span>
+          ) : t('create.createGame')}
         </button>
       </div>
     </div>
