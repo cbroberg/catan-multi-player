@@ -101,8 +101,8 @@ function placeTerrains(
     groupStart = groupEnd;
   }
 
-  // Terrains exempt from adjacency constraint
-  const exemptTerrains = new Set(['desert', 'sea', 'gold_river']);
+  // Terrains exempt from adjacency constraint (gold_river IS constrained — too valuable to cluster)
+  const exemptTerrains = new Set(['desert', 'sea']);
 
   let nodesVisited = 0;
   const maxNodes = hexCount * 5000; // Safety limit to avoid infinite search
