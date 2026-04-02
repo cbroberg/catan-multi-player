@@ -28,14 +28,14 @@ const HARBOR_RESOURCE: Record<HarborType, string> = {
   ore: '⛏️',
 };
 
-// Terrain-matching colors for resource harbor backgrounds
-const HARBOR_BG: Record<HarborType, string> = {
-  '3:1': '#4a5568',    // neutral grey
-  lumber: '#2d6a30',   // forest green
-  wool: '#5a9e2a',     // pasture green
-  grain: '#d4952a',    // golden amber
-  brick: '#b85c2a',    // terracotta
-  ore: '#546e7a',      // slate grey
+// Terrain tile images used as harbor marker backgrounds
+const HARBOR_TILE: Record<HarborType, string> = {
+  '3:1': '/tiles/sea.webp',
+  lumber: '/tiles/forest.webp',
+  wool: '/tiles/pasture.webp',
+  grain: '/tiles/fields.webp',
+  brick: '/tiles/hills.webp',
+  ore: '/tiles/mountains.webp',
 };
 
 export function HarborMarker({ cx, cy, type, rotation = 0, hexSize = 50 }: HarborMarkerProps) {
@@ -45,12 +45,29 @@ export function HarborMarker({ cx, cy, type, rotation = 0, hexSize = 50 }: Harbo
   const scaleX = w / 50;
   const scaleY = h / 40;
 
-  const bg = HARBOR_BG[type];
+  const clipId = `harbor-clip-${Math.round(cx)}-${Math.round(cy)}`;
 
   return (
     <g transform={`translate(${cx}, ${cy}) rotate(${rotation}) translate(${-w / 2}, ${-h / 2}) scale(${scaleX}, ${scaleY})`}>
-      {/* Colored sign board with rounded corners */}
-      <rect x="2" y="2" width="46" height="36" rx="4" fill={bg} stroke="#fff" strokeWidth="1.5" opacity="0.95" />
+      <defs>
+        <clipPath id={clipId}>
+          <rect x="2" y="2" width="46" height="36" rx="4" />
+        </clipPath>
+      </defs>
+      {/* Terrain image cropped into the sign shape */}
+      <image
+        href={HARBOR_TILE[type]}
+        x="-10"
+        y="-10"
+        width="70"
+        height="56"
+        preserveAspectRatio="xMidYMid slice"
+        clipPath={`url(#${clipId})`}
+      />
+      {/* Dark overlay for text readability */}
+      <rect x="2" y="2" width="46" height="36" rx="4" fill="black" opacity="0.35" />
+      {/* White border */}
+      <rect x="2" y="2" width="46" height="36" rx="4" fill="none" stroke="#fff" strokeWidth="1.5" />
       {/* Resource emoji */}
       <text
         x="25"
@@ -61,7 +78,7 @@ export function HarborMarker({ cx, cy, type, rotation = 0, hexSize = 50 }: Harbo
       >
         {HARBOR_RESOURCE[type]}
       </text>
-      {/* Trade ratio — white text */}
+      {/* Trade ratio — white text with shadow */}
       <text
         x="25"
         y="30"
