@@ -6,7 +6,76 @@ import { buildGameView } from './game-view-builder';
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
 type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>;
 
+const TURN_DURATION_MS = 90_000;
+const SETUP_TURN_DURATION_MS = 120_000;
+const TIMER_SYNC_INTERVAL_MS = 5_000;
+
 export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
+
+  // ─── Timer helpers (shared across all sockets) ───────────────────────
+
+  function getTimerDuration(gameId: string): number {
+    const engine = gm.getEngine(gameId);
+    if (!engine) return TURN_DURATION_MS;
+    const phase = engine.getState().phase;
+    return (phase === 'SETUP_ROUND_1' || phase === 'SETUP_ROUND_2')
+      ? SETUP_TURN_DURATION_MS
+      : TURN_DURATION_MS;
+  }
+
+  function onTimerExpire(gameId: string) {
+    const engine = gm.getEngine(gameId);
+    if (!engine) return;
+
+    const state = engine.getState();
+    if (state.phase === 'GAME_OVER') return;
+
+    const currentPlayer = engine.currentPlayer();
+    console.log(`[Timer] Expired for ${currentPlayer.name} in game ${gameId}`);
+
+    // Auto-end turn (only in PLAYING phase)
+    if (state.phase === 'PLAYING') {
+      engine.endTurn();
+    }
+
+    // Emit timer-expired event
+    io.to(gm.getGameRoom(gameId)).emit('game:timer-expired', { playerId: currentPlayer.id });
+
+    // Broadcast new state and start next timer
+    broadcastGameView(io, gm, gameId);
+    startTimerForCurrentTurn(gameId);
+  }
+
+  function startTimerForCurrentTurn(gameId: string) {
+    const engine = gm.getEngine(gameId);
+    if (!engine) return;
+
+    const state = engine.getState();
+    if (state.phase === 'GAME_OVER') {
+      gm.clearTurnTimer(gameId);
+      return;
+    }
+
+    const duration = getTimerDuration(gameId);
+    gm.startTurnTimer(gameId, onTimerExpire, duration);
+
+    // Set up periodic sync
+    const syncInterval = setInterval(() => {
+      const remaining = gm.getTimerRemaining(gameId);
+      if (remaining == null) { clearInterval(syncInterval); return; }
+      const currentEngine = gm.getEngine(gameId);
+      if (!currentEngine) { clearInterval(syncInterval); return; }
+      io.to(gm.getGameRoom(gameId)).emit('game:timer-sync', {
+        remainingMs: remaining,
+        playerId: currentEngine.currentPlayer().id,
+      });
+    }, TIMER_SYNC_INTERVAL_MS);
+
+    gm.setTimerSyncInterval(gameId, syncInterval);
+  }
+
+  // ─── Socket connections ──────────────────────────────────────────────
+
   io.on('connection', (socket: TypedSocket) => {
     console.log(`[Socket] Connected: ${socket.id}`);
 
@@ -37,7 +106,8 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
       // If game is already started, send game view
       const engine = gm.getEngine(gameId);
       if (engine) {
-        socket.emit('game:view', buildGameView(engine, gameId, null));
+        const timerRemaining = gm.getTimerRemaining(gameId);
+        socket.emit('game:view', buildGameView(engine, gameId, null, null, timerRemaining));
       }
     });
 
@@ -62,8 +132,9 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
       callback({ success: true });
       io.to(gm.getGameRoom(gameId)).emit('game:starting', { gameId, turnOrder: result.turnOrder });
 
-      // Send initial game view to all players
+      // Send initial game view to all players and start the timer
       broadcastGameView(io, gm, gameId);
+      startTimerForCurrentTurn(gameId);
     });
 
     socket.on('game:leave', (gameId) => {
@@ -83,9 +154,23 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
     });
 
     socket.on('action:setup-road', (gameId, edgeId) => {
+      const engineBefore = gm.getEngine(gameId);
+      const prevSetupIdx = engineBefore?.getState().setupPlayerIndex;
+      const prevPhase = engineBefore?.getState().phase;
+
       runAction(io, gm, socket, gameId, (engine, pid) =>
         engine.placeInitialRoad(pid, edgeId)
       );
+
+      // After a road is placed in setup, the turn advances — restart timer
+      const engineAfter = gm.getEngine(gameId);
+      if (engineAfter) {
+        const stateAfter = engineAfter.getState();
+        // If setup player index changed or phase changed, a new setup turn started
+        if (stateAfter.setupPlayerIndex !== prevSetupIdx || stateAfter.phase !== prevPhase) {
+          startTimerForCurrentTurn(gameId);
+        }
+      }
     });
 
     // ─── Trade Actions ──────────────────────────────────────────────────
@@ -182,7 +267,8 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
       const mapping = gm.getPlayerIdForSocket(socket.id);
       console.log(`[game:request-view] Sending view to ${mapping?.playerId ?? 'observer'} (phase: ${engine.getState().phase})`);
       const trade = (gm.getSession(gameId) as any)?.activeTrade ?? null;
-      socket.emit('game:view', buildGameView(engine, gameId, mapping?.playerId ?? null, trade));
+      const timerRemaining = gm.getTimerRemaining(gameId);
+      socket.emit('game:view', buildGameView(engine, gameId, mapping?.playerId ?? null, trade, timerRemaining));
     });
 
     socket.on('action:roll-dice', (gameId) => {
@@ -197,7 +283,14 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
         return null;
       });
       if (r) socket.emit('game:action-error', r);
-      else broadcastGameView(io, gm, gameId);
+      else {
+        broadcastGameView(io, gm, gameId);
+        // Pause timer if robber discard phase started (rolled 7)
+        const engine = gm.getEngine(gameId);
+        if (engine && engine.getState().turnPhase === 'ROBBER_DISCARD') {
+          gm.pauseTurnTimer(gameId);
+        }
+      }
     });
 
     socket.on('action:build-settlement', (gameId, vertexId) => {
@@ -248,10 +341,18 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
       const result = engine.discardCards(mapping.playerId, cards);
       if (!result.ok) { socket.emit('game:action-error', result.error ?? 'Failed'); return; }
       broadcastGameView(io, gm, gameId);
+
+      // Resume timer when all discards are complete (no longer in ROBBER_DISCARD)
+      const state = engine.getState();
+      if (state.turnPhase !== 'ROBBER_DISCARD' && gm.getSession(gameId)?.timerPausedAt != null) {
+        gm.resumeTurnTimer(gameId, onTimerExpire);
+      }
     });
 
     socket.on('action:end-turn', (gameId) => {
       runAction(io, gm, socket, gameId, (engine, pid) => engine.endTurn(pid));
+      // Start timer for the next player's turn
+      startTimerForCurrentTurn(gameId);
     });
 
     // ─── Disconnect ────────────────────────────────────────────────────
@@ -308,6 +409,7 @@ function broadcastGameView(io: TypedServer, gm: GameManager, gameId: string) {
 
   const session = gm.getSession(gameId);
   const activeTrade = (session as any)?.activeTrade ?? null;
+  const timerRemaining = gm.getTimerRemaining(gameId);
 
   const room = gm.getGameRoom(gameId);
   const sockets = io.sockets.adapter.rooms.get(room);
@@ -318,7 +420,7 @@ function broadcastGameView(io: TypedServer, gm: GameManager, gameId: string) {
     const s = io.sockets.sockets.get(socketId);
     if (!s) continue;
     const mapping = gm.getPlayerIdForSocket(socketId);
-    const view = buildGameView(engine, gameId, mapping?.playerId ?? null, activeTrade);
+    const view = buildGameView(engine, gameId, mapping?.playerId ?? null, activeTrade, timerRemaining);
     s.emit('game:view', view);
   }
 }

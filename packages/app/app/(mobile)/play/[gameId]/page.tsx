@@ -1,8 +1,9 @@
 'use client';
 
-import { use, useState, useCallback, useMemo } from 'react';
+import { use, useState, useCallback, useMemo, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useGame } from '@/lib/use-game';
+import { useTimer } from '@/lib/use-timer';
 import { useLobby } from '@/lib/use-socket';
 import { GameBoardSVG } from '@/components/board/GameBoardSVG';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -34,6 +35,16 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
   const [tradeRequest, setTradeRequest] = useState<Record<ResourceType, number>>({ lumber: 0, brick: 0, wool: 0, grain: 0, ore: 0 });
 
   const { view, connected, connectionError, lastDice, error, loadFailed } = game;
+  const timer = useTimer(view?.turnTimeRemaining ?? null, view?.currentPlayerId ?? null);
+
+  // Vibrate at 10 seconds if it's your turn
+  useEffect(() => {
+    if (timer.isCritical && timer.remainingSeconds === 10 && view?.currentPlayerId === view?.myPlayerId) {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+    }
+  }, [timer.isCritical, timer.remainingSeconds, view?.currentPlayerId, view?.myPlayerId]);
 
   // Derived state — safe even when view is null
   const me = view?.players.find((p) => p.id === view.myPlayerId) ?? null;
@@ -178,7 +189,12 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
             </>
           )}
         </div>
-        <div className="text-xs text-white/40">{t('game.turn')} {view.turnNumber} · {me?.vp ?? 0} VP</div>
+        <div className="flex items-center gap-2">
+          {view.phase !== 'GAME_OVER' && timer.remainingSeconds != null && (
+            <MobileTimer seconds={timer.remainingSeconds} isLow={timer.isLow} isCritical={timer.isCritical} />
+          )}
+          <div className="text-xs text-white/40">{t('game.turn')} {view.turnNumber} · {me?.vp ?? 0} VP</div>
+        </div>
       </div>
 
       {/* Mini board */}
@@ -329,6 +345,18 @@ function autoDiscard(resources: Record<ResourceType, number>): Partial<Record<Re
     if (d > 0) { result[res] = d; rem -= d; }
   }
   return result;
+}
+
+function MobileTimer({ seconds, isLow, isCritical }: { seconds: number; isLow: boolean; isCritical: boolean }) {
+  const color = isCritical ? '#ef4444' : isLow ? '#eab308' : '#22c55e';
+  return (
+    <span
+      className={`text-sm font-bold tabular-nums ${isCritical ? 'animate-pulse' : ''}`}
+      style={{ color }}
+    >
+      {seconds}s
+    </span>
+  );
 }
 
 function quickTrade(game: ReturnType<typeof useGame>, resources: Record<ResourceType, number>) {

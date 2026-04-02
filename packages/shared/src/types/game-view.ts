@@ -103,6 +103,9 @@ export interface GameView {
     round: 1 | 2;
   } | null;
 
+  /** Turn timer: milliseconds remaining, null = no timer */
+  turnTimeRemaining: number | null;
+
   /** Winner ID (if game over) */
   winner: string | null;
   winnerName: string | null;
@@ -162,4 +165,6 @@ export interface GameStateEvents {
   'game:view': (view: GameView) => void;
   'game:action-error': (error: string) => void;
   'game:dice-result': (data: { d1: number; d2: number; total: number }) => void;
+  'game:timer-sync': (data: { remainingMs: number; playerId: string }) => void;
+  'game:timer-expired': (data: { playerId: string }) => void;
 }

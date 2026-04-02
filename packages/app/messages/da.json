@@ -125,6 +125,11 @@
       "brick": "2:1 M",
       "ore": "2:1 M"
     },
+    "timer": {
+      "seconds": "{seconds}s",
+      "expired": "Tiden er udlobet!",
+      "paused": "Pauset"
+    },
     "gameOver": {
       "winner": "{name} vinder!",
       "victoryPoints": "Victory Points"

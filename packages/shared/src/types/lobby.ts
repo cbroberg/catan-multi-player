@@ -108,4 +108,6 @@ export interface ServerToClientEvents {
   'game:view': GameStateEvents['game:view'];
   'game:action-error': GameStateEvents['game:action-error'];
   'game:dice-result': GameStateEvents['game:dice-result'];
+  'game:timer-sync': GameStateEvents['game:timer-sync'];
+  'game:timer-expired': GameStateEvents['game:timer-expired'];
 }

@@ -73,7 +73,7 @@ export function GameBoardSVG({
     <div ref={containerRef} className="relative w-full h-full">
       {/* SVG Board */}
       <svg ref={svgRef} viewBox={`${minX} ${minY} ${vbW} ${vbH}`} className="w-full h-full">
-        <rect x={minX} y={minY} width={vbW} height={vbH} fill="#0d47a1" rx={8} />
+        <rect x={minX} y={minY} width={vbW} height={vbH} fill="#0e1a2e" rx={8} />
 
         {/* Hexes */}
         {board.hexes.map((hex, i) => {

@@ -12,7 +12,8 @@ export function buildGameView(
   engine: GameEngine,
   gameId: string,
   playerId: string | null,
-  activeTrade?: TradeOffer | null
+  activeTrade?: TradeOffer | null,
+  turnTimeRemaining?: number | null
 ): GameView {
   const state = engine.getState();
   const currentPlayer = engine.currentPlayer();
@@ -100,6 +101,7 @@ export function buildGameView(
     recentLog,
     activeTrade: activeTrade ?? null,
     setupInfo: buildSetupInfo(state),
+    turnTimeRemaining: turnTimeRemaining ?? null,
     winner,
     winnerName: winnerPlayer?.name ?? null,
     victoryPoints: state.config.victoryPoints,

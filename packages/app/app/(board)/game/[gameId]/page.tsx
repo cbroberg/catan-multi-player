@@ -3,6 +3,7 @@
 import { use } from 'react';
 import { useTranslations } from 'next-intl';
 import { useGame } from '@/lib/use-game';
+import { useTimer } from '@/lib/use-timer';
 import { GameBoardSVG } from '@/components/board/GameBoardSVG';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
@@ -50,6 +51,7 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
     );
   }
 
+  const timer = useTimer(view?.turnTimeRemaining ?? null, view?.currentPlayerId ?? null);
   const currentPlayer = view.players.find((p) => p.id === view.currentPlayerId);
 
   return (
@@ -88,6 +90,13 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
             </>
           )}
         </div>
+
+        {/* Timer */}
+        {view.phase !== 'GAME_OVER' && timer.remainingSeconds != null && (
+          <div className="px-4 py-3 border-b border-white/10">
+            <TurnTimer seconds={timer.remainingSeconds} isLow={timer.isLow} isCritical={timer.isCritical} />
+          </div>
+        )}
 
         {/* Dice */}
         {lastDice && (
@@ -141,6 +150,40 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TurnTimer({ seconds, isLow, isCritical }: { seconds: number; isLow: boolean; isCritical: boolean }) {
+  const radius = 28;
+  const circumference = 2 * Math.PI * radius;
+  const maxSeconds = 120;
+  const progress = Math.min(seconds / maxSeconds, 1);
+  const strokeDashoffset = circumference * (1 - progress);
+
+  const color = isCritical ? '#ef4444' : isLow ? '#eab308' : '#22c55e';
+
+  return (
+    <div className="flex items-center justify-center">
+      <div className="relative w-[68px] h-[68px]">
+        <svg width="68" height="68" className="transform -rotate-90">
+          <circle cx="34" cy="34" r={radius} fill="none" stroke="white" strokeOpacity={0.1} strokeWidth={4} />
+          <circle
+            cx="34" cy="34" r={radius} fill="none"
+            stroke={color} strokeWidth={4}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            className="transition-[stroke-dashoffset] duration-1000 ease-linear"
+          />
+        </svg>
+        <div
+          className={`absolute inset-0 flex items-center justify-center text-2xl font-bold tabular-nums ${isCritical ? 'animate-pulse' : ''}`}
+          style={{ color }}
+        >
+          {seconds}
         </div>
       </div>
     </div>

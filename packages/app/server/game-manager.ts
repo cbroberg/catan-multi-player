@@ -25,6 +25,13 @@ interface GameSession {
   observers: Set<string>;
   /** Game engine (created when game starts) */
   engine: GameEngine | null;
+  /** Turn timer state */
+  turnTimer: ReturnType<typeof setTimeout> | null;
+  turnSyncInterval: ReturnType<typeof setInterval> | null;
+  turnStartedAt: number | null;
+  turnDuration: number; // ms
+  timerPausedAt: number | null;
+  remainingWhenPaused: number | null;
 }
 
 // ─── Available Colors ────────────────────────────────────────────────────────
@@ -56,6 +63,12 @@ export class GameManager {
       createdAt: Date.now(),
       observers: new Set(),
       engine: null,
+      turnTimer: null,
+      turnSyncInterval: null,
+      turnStartedAt: null,
+      turnDuration: 90_000,
+      timerPausedAt: null,
+      remainingWhenPaused: null,
     };
 
     this.games.set(gameId, session);
@@ -224,6 +237,7 @@ export class GameManager {
 
     // Clean up empty games
     if (session.players.size === 0 && session.observers.size === 0) {
+      this.clearTurnTimer(session.id);
       this.games.delete(session.id);
       this.codeToGameId.delete(session.code);
     }
@@ -254,6 +268,105 @@ export class GameManager {
     if (!session) return ALL_COLORS;
     const taken = new Set([...session.players.values()].map((p) => p.color));
     return ALL_COLORS.filter((c) => !taken.has(c));
+  }
+
+  // ─── Timer Management ────────────────────────────────────────────────────
+
+  /**
+   * Start (or restart) the turn timer for a game.
+   * @param durationMs Override duration; defaults to session's turnDuration.
+   * @param onExpire Callback when time runs out.
+   */
+  startTurnTimer(
+    gameId: string,
+    onExpire: (gameId: string) => void,
+    durationMs?: number
+  ): void {
+    const session = this.games.get(gameId);
+    if (!session) return;
+
+    this.clearTurnTimer(gameId);
+
+    const duration = durationMs ?? session.turnDuration;
+    session.turnStartedAt = Date.now();
+    session.turnDuration = duration;
+    session.timerPausedAt = null;
+    session.remainingWhenPaused = null;
+
+    session.turnTimer = setTimeout(() => {
+      onExpire(gameId);
+    }, duration);
+  }
+
+  pauseTurnTimer(gameId: string): void {
+    const session = this.games.get(gameId);
+    if (!session || !session.turnStartedAt || session.timerPausedAt) return;
+
+    const elapsed = Date.now() - session.turnStartedAt;
+    const remaining = Math.max(0, session.turnDuration - elapsed);
+
+    session.timerPausedAt = Date.now();
+    session.remainingWhenPaused = remaining;
+
+    if (session.turnTimer) {
+      clearTimeout(session.turnTimer);
+      session.turnTimer = null;
+    }
+  }
+
+  resumeTurnTimer(gameId: string, onExpire: (gameId: string) => void): void {
+    const session = this.games.get(gameId);
+    if (!session || !session.timerPausedAt || session.remainingWhenPaused == null) return;
+
+    const remaining = session.remainingWhenPaused;
+    session.turnStartedAt = Date.now();
+    session.turnDuration = remaining;
+    session.timerPausedAt = null;
+    session.remainingWhenPaused = null;
+
+    session.turnTimer = setTimeout(() => {
+      onExpire(gameId);
+    }, remaining);
+  }
+
+  clearTurnTimer(gameId: string): void {
+    const session = this.games.get(gameId);
+    if (!session) return;
+
+    if (session.turnTimer) {
+      clearTimeout(session.turnTimer);
+      session.turnTimer = null;
+    }
+    if (session.turnSyncInterval) {
+      clearInterval(session.turnSyncInterval);
+      session.turnSyncInterval = null;
+    }
+    session.turnStartedAt = null;
+    session.timerPausedAt = null;
+    session.remainingWhenPaused = null;
+  }
+
+  /** Get remaining ms on the turn timer; null if no active timer. */
+  getTimerRemaining(gameId: string): number | null {
+    const session = this.games.get(gameId);
+    if (!session) return null;
+
+    if (session.timerPausedAt != null && session.remainingWhenPaused != null) {
+      return session.remainingWhenPaused;
+    }
+
+    if (session.turnStartedAt == null) return null;
+
+    const elapsed = Date.now() - session.turnStartedAt;
+    return Math.max(0, session.turnDuration - elapsed);
+  }
+
+  /** Store the sync interval handle so it can be cleared. */
+  setTimerSyncInterval(gameId: string, interval: ReturnType<typeof setInterval>): void {
+    const session = this.games.get(gameId);
+    if (!session) return;
+    if (session.turnSyncInterval) clearInterval(session.turnSyncInterval);
+    session.turnSyncInterval = interval;
   }
 
   // ─── Private ─────────────────────────────────────────────────────────────

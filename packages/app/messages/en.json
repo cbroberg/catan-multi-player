@@ -125,6 +125,11 @@
       "brick": "2:1 B",
       "ore": "2:1 O"
     },
+    "timer": {
+      "seconds": "{seconds}s",
+      "expired": "Time's up!",
+      "paused": "Paused"
+    },
     "gameOver": {
       "winner": "{name} wins!",
       "victoryPoints": "Victory Points"

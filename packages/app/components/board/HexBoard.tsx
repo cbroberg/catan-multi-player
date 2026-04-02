@@ -56,7 +56,7 @@ export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
       style={{ aspectRatio: `${maxX - minX} / ${maxY - minY}` }}
     >
       {/* Ocean background */}
-      <rect x={minX} y={minY} width={maxX - minX} height={maxY - minY} fill="#0d47a1" rx={12} />
+      <rect x={minX} y={minY} width={maxX - minX} height={maxY - minY} fill="#0e1a2e" rx={12} />
 
       {/* Hex tiles */}
       {board.hexes.map((hex, i) => {
