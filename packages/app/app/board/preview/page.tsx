@@ -82,73 +82,66 @@ export default function BoardPreviewPage() {
   const seaCount = hexCount - landCount;
 
   return (
-    <div className="flex flex-col items-center gap-6 p-6 min-h-screen bg-[#0e1a2e]">
-      <h1 className="text-2xl font-bold text-white">Catan Board Preview</h1>
-
-      {/* Variant selector */}
-      <div className="flex flex-wrap gap-2 justify-center">
-        {variantEntries.map((v) => (
-          <button
-            key={v.id}
-            onClick={() => switchVariant(v.id)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-              variantId === v.id
-                ? 'bg-amber-600 text-white'
-                : 'bg-white/10 text-white/70 hover:bg-white/20'
-            }`}
-          >
-            {v.name}
-          </button>
-        ))}
-      </div>
-
-      {/* Controls */}
-      <div className="flex gap-3">
-        <button
-          onClick={generateNew}
-          className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg transition-colors cursor-pointer"
+    <div className="flex flex-col min-h-screen bg-[#0e1a2e]">
+      {/* ── Compact toolbar — one line ── */}
+      <div className="flex items-center gap-3 px-4 py-2 bg-[#132038] border-b border-white/10 flex-wrap">
+        {/* Variant dropdown */}
+        <select
+          value={variantId}
+          onChange={(e) => switchVariant(e.target.value)}
+          className="bg-amber-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg cursor-pointer appearance-none"
         >
-          Generate New Board
+          {variantEntries.map((v) => (
+            <option key={v.id} value={v.id}>{v.name}</option>
+          ))}
+        </select>
+
+        {/* Generate */}
+        <button onClick={generateNew} className="px-3 py-1.5 bg-white/10 text-white text-sm rounded-lg cursor-pointer hover:bg-white/20">
+          🎲 Nyt board
         </button>
         {variantId === 'base-3-4' && (
-          <button
-            onClick={loadBeginner}
-            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-lg transition-colors cursor-pointer"
-          >
-            Beginner Layout
+          <button onClick={loadBeginner} className="px-3 py-1.5 bg-white/10 text-white text-sm rounded-lg cursor-pointer hover:bg-white/20">
+            📐 Begynder
           </button>
         )}
-      </div>
 
-      {/* Board info */}
-      <div className="flex gap-6 text-xs text-white/50">
-        <span>{hexCount} hexes{seaCount > 0 ? ` (${landCount} land, ${seaCount} sea)` : ''}</span>
-        <span>{state.board.vertices.length} vertices</span>
-        <span>{state.board.edges.length} edges</span>
-        <span>{state.board.harbors.length} harbors</span>
-        <span>{variant?.playerRange[0]}-{variant?.playerRange[1]} players</span>
-        <span>{variant?.defaultVictoryPoints} VP</span>
-      </div>
+        {/* Demo pieces */}
+        <button
+          onClick={() => setShowPieces((p) => !p)}
+          className={`px-3 py-1.5 text-sm rounded-lg cursor-pointer ${
+            showPieces ? 'bg-purple-600 text-white' : 'bg-white/10 text-white/70 hover:bg-white/20'
+          }`}
+        >
+          🏠 Brikker
+        </button>
 
-      {/* Balance Score */}
-      <ScoreDisplay score={state.score} />
+        {/* Divider */}
+        <div className="w-px h-6 bg-white/15" />
 
-      {/* Demo pieces toggle */}
-      <button
-        onClick={() => setShowPieces((p) => !p)}
-        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-          showPieces ? 'bg-purple-600 text-white' : 'bg-white/10 text-white/70 hover:bg-white/20'
-        }`}
-      >
-        {showPieces ? 'Hide Demo Pieces' : 'Show Demo Pieces'}
-      </button>
+        {/* Zoom */}
+        <button onClick={() => setZoom(z => Math.max(0.25, z / 1.5))} className="px-2 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20 text-sm">−</button>
+        <span className="text-white/50 text-xs w-12 text-center">{Math.round(zoom * 100)}%</span>
+        <button onClick={() => setZoom(z => z * 1.5)} className="px-2 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20 text-sm">+</button>
+        <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="px-2 py-1 bg-white/10 text-white/40 rounded cursor-pointer hover:bg-white/20 text-xs">↺</button>
 
-      {/* Zoom controls */}
-      <div className="flex items-center gap-3">
-        <button onClick={() => setZoom(z => Math.max(0.25, z / 1.5))} className="px-3 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20">−</button>
-        <span className="text-white/60 text-sm w-16 text-center">{Math.round(zoom * 100)}%</span>
-        <button onClick={() => setZoom(z => z * 1.5)} className="px-3 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20">+</button>
-        <button onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} className="px-3 py-1 bg-white/10 text-white/50 rounded cursor-pointer hover:bg-white/20 text-xs">Reset</button>
+        {/* Divider */}
+        <div className="w-px h-6 bg-white/15" />
+
+        {/* Stats */}
+        <div className="flex gap-3 text-xs text-white/40">
+          <span>{hexCount} hex{seaCount > 0 ? ` (${landCount}+${seaCount})` : ''}</span>
+          <span>{state.board.harbors.length} havne</span>
+          <span>{variant?.defaultVictoryPoints} VP</span>
+        </div>
+
+        {/* Balance scores */}
+        <div className="flex gap-2 text-xs ml-auto">
+          <ScorePill label="Bal" value={state.score.total} />
+          <ScorePill label="EV" value={state.score.resourceEV} />
+          <ScorePill label="Int" value={state.score.intersectionBalance} />
+          <ScorePill label="Spr" value={state.score.geographicSpread} />
+        </div>
       </div>
 
       {/* Board — pannable & zoomable canvas */}
@@ -182,16 +175,7 @@ export default function BoardPreviewPage() {
   );
 }
 
-function ScoreDisplay({ score }: { score: BalanceScore }) {
-  return (
-    <div className="flex gap-4 text-sm text-white/80">
-      <ScoreBadge label="Balance" value={score.total} />
-      <ScoreBadge label="Resource EV" value={score.resourceEV} />
-      <ScoreBadge label="Intersections" value={score.intersectionBalance} />
-      <ScoreBadge label="Spread" value={score.geographicSpread} />
-    </div>
-  );
-}
+// ScoreDisplay removed — scores shown inline in toolbar
 
 const PLAYER_COLORS: PlayerColor[] = ['red', 'blue', 'white', 'orange', 'green', 'brown'];
 const COLOR_HEX: Record<PlayerColor, string> = {
@@ -268,14 +252,12 @@ function generateDemoRoads(board: GameBoard): BoardRoad[] {
   return roads;
 }
 
-function ScoreBadge({ label, value }: { label: string; value: number }) {
-  const color =
-    value >= 75 ? 'text-emerald-400' : value >= 50 ? 'text-amber-400' : 'text-red-400';
-
+function ScorePill({ label, value }: { label: string; value: number }) {
+  const color = value >= 75 ? 'text-emerald-400' : value >= 50 ? 'text-amber-400' : 'text-red-400';
   return (
-    <div className="flex flex-col items-center gap-0.5">
-      <span className="text-xs text-white/50">{label}</span>
-      <span className={`text-lg font-bold ${color}`}>{value}</span>
-    </div>
+    <span className="flex items-center gap-1">
+      <span className="text-white/40">{label}</span>
+      <span className={`font-bold ${color}`}>{value}</span>
+    </span>
   );
 }
