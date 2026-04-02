@@ -124,7 +124,7 @@ export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
 
       {/* Harbors */}
       {harborPositions.map((hp, i) => (
-        <HarborMarker key={`harbor-${i}`} cx={hp.x} cy={hp.y} type={hp.type} />
+        <HarborMarker key={`harbor-${i}`} cx={hp.x} cy={hp.y} type={hp.type} rotation={hp.rotation} />
       ))}
     </svg>
   );
@@ -134,6 +134,8 @@ interface HarborPosition {
   x: number;
   y: number;
   type: Harbor['type'];
+  /** Rotation in degrees — sign post points toward land */
+  rotation: number;
 }
 
 /**
@@ -178,10 +180,14 @@ function computeHarborPositions(
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
       const pushDist = hexSize * 0.75;
 
+      // Rotation: sign post points toward land (opposite of push direction)
+      const angleDeg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
       return {
         x: midX + (dx / dist) * pushDist,
         y: midY + (dy / dist) * pushDist,
         type: harbor.type,
+        rotation: angleDeg,
       };
     })
     .filter((h): h is HarborPosition => h !== null);

@@ -4,6 +4,8 @@ interface HarborMarkerProps {
   cx: number;
   cy: number;
   type: HarborType;
+  /** Rotation in degrees — sign post points toward land */
+  rotation?: number;
 }
 
 const HARBOR_LABELS: Record<HarborType, string> = {
@@ -24,17 +26,15 @@ const HARBOR_ICON: Record<HarborType, string> = {
   ore: '\u25C6',    // diamond = ore
 };
 
-export function HarborMarker({ cx, cy, type }: HarborMarkerProps) {
-  // Original SVG viewBox 50x40, we render at ~28x22 to match previous sizing
-  const w = 28;
-  const h = 22;
+export function HarborMarker({ cx, cy, type, rotation = 0 }: HarborMarkerProps) {
+  // Sized so the sign width roughly matches a hex edge length
+  const w = 40;
+  const h = 32;
   const scaleX = w / 50;
   const scaleY = h / 40;
-  const offsetX = cx - w / 2;
-  const offsetY = cy - h / 2;
 
   return (
-    <g transform={`translate(${offsetX}, ${offsetY}) scale(${scaleX}, ${scaleY})`}>
+    <g transform={`translate(${cx}, ${cy}) rotate(${rotation}) translate(${-w / 2}, ${-h / 2}) scale(${scaleX}, ${scaleY})`}>
       <defs>
         <linearGradient id="harbor-wood" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#8b6914" />
