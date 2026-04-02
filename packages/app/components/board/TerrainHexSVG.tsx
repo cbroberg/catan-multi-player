@@ -9,6 +9,10 @@ interface TerrainHexSVGProps {
   size: number;
 }
 
+// ─── Config flags ─────────────────────────────────────────────────────────
+const SHOW_HEX_BORDER = false;    // Golden metallic border around each hex
+const SHOW_FALLBACK_FILL = true;  // Solid color behind image (covers gaps)
+
 // Flat-top hex polygon in 100x86.6 viewBox, centered at (50, 43.3), radius 50
 const HEX_POINTS = '100,43.3 75,86.6 25,86.6 0,43.3 25,0 75,0';
 
@@ -65,25 +69,21 @@ export function TerrainHexSVG({ terrain, x, y, size }: TerrainHexSVGProps) {
           </clipPath>
         </defs>
         {/* Solid color fill behind image to cover any gaps */}
-        <polygon points={HEX_POINTS} fill={TERRAIN_FILL[terrain]} />
+        {SHOW_FALLBACK_FILL && <polygon points={HEX_POINTS} fill={TERRAIN_FILL[terrain]} />}
         {/* High-res terrain image clipped to hex shape */}
         <image
           href={TILE_URLS[terrain]}
-          x="-10"
-          y="-10"
-          width="120"
-          height="106.6"
+          x="-18"
+          y="-18"
+          width="136"
+          height="122.6"
           preserveAspectRatio="xMidYMid slice"
           clipPath={`url(#${clipId})`}
         />
-        {/* Subtle golden border */}
-        <polygon
-          points={HEX_POINTS}
-          fill="none"
-          stroke="#b8963a"
-          strokeWidth="1"
-          opacity="0.6"
-        />
+        {/* Golden border (toggle via SHOW_HEX_BORDER) */}
+        {SHOW_HEX_BORDER && (
+          <polygon points={HEX_POINTS} fill="none" stroke="#b8963a" strokeWidth="1" opacity="0.6" />
+        )}
       </svg>
     </g>
   );
