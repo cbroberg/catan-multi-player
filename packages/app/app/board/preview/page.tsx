@@ -150,9 +150,10 @@ function generateDemoBuildings(board: GameBoard): BoardBuilding[] {
     board.hexes.filter((h) => h.terrain !== 'sea' && h.terrain !== 'desert').map((h) => `${h.coord.q},${h.coord.r}`)
   );
   // Find vertices that touch at least one land hex
+  // Vertex ID format: "v:q1,r1:q2,r2:q3,r3" — extract hex coords
   const landVertices = board.vertices.filter((v) => {
-    const hexes = v.id.split('|');
-    return hexes.some((hk) => landHexKeys.has(hk));
+    const parts = v.id.slice(2).split(':'); // remove "v:" prefix, split by ":"
+    return parts.some((hk) => landHexKeys.has(hk));
   });
 
   const used = new Set<string>();
