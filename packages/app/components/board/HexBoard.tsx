@@ -51,7 +51,7 @@ export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
   return (
     <svg
       viewBox={viewBox}
-      className="w-full h-full max-w-[900px] max-h-[900px]"
+      className="w-full h-full"
       style={{ aspectRatio: `${maxX - minX} / ${maxY - minY}` }}
     >
       {/* Ocean background */}

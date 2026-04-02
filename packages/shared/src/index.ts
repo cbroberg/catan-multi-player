@@ -47,6 +47,14 @@ export {
 
 export type { HarborEdgePosition } from './constants/board';
 
+// Lobby types
+export type {
+  LobbyPlayer,
+  LobbyState,
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from './types/lobby';
+
 // Board variants
 export type { BoardVariantConfig, ExpansionType } from './constants/board-variants';
 
