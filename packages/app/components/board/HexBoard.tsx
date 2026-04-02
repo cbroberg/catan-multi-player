@@ -94,7 +94,7 @@ export function HexBoard({ board, hexSize = 50 }: HexBoardProps) {
             )}
             {/* Robber */}
             {hex.hasRobber && (
-              <Robber cx={center.x} cy={center.y} size={hexSize * 0.48} />
+              <Robber cx={center.x} cy={center.y} size={hexSize * 0.36} />
             )}
             {/* Pirate */}
             {hex.hasPirate && (
