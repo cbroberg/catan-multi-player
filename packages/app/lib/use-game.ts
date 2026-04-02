@@ -17,17 +17,28 @@ export function useGame(gameId: string | null) {
     const onError = (msg: string) => setError(msg);
     const onDice = (d: { d1: number; d2: number; total: number }) => setLastDice(d);
 
+    const onGameStarting = () => {
+      // Game just started — request the first view
+      setTimeout(() => socket.emit('game:request-view', gameId), 500);
+    };
+
     socket.on('game:view', onView);
     socket.on('game:action-error', onError);
     socket.on('game:dice-result', onDice);
+    socket.on('game:starting', onGameStarting);
 
-    // Request current view
+    // Request current view — retry periodically until we get one
     socket.emit('game:request-view', gameId);
+    const retryInterval = setInterval(() => {
+      if (!view) socket.emit('game:request-view', gameId);
+    }, 2000);
 
     return () => {
+      clearInterval(retryInterval);
       socket.off('game:view', onView);
       socket.off('game:action-error', onError);
       socket.off('game:dice-result', onDice);
+      socket.off('game:starting', onGameStarting);
     };
   }, [socket, connected, gameId]);
 

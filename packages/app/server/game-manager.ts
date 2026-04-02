@@ -153,12 +153,16 @@ export class GameManager {
 
   startGame(gameId: string, socketId: string): { turnOrder: string[] } | { error: string } {
     const session = this.games.get(gameId);
-    const mapping = this.socketToPlayer.get(socketId);
     if (!session) return { error: 'Game not found' };
-    if (!mapping) return { error: 'Not a player' };
 
-    const player = session.players.get(mapping.playerId);
-    if (!player?.isHost) return { error: 'Only host can start' };
+    // Allow start from either a host player OR an observer (big screen)
+    const mapping = this.socketToPlayer.get(socketId);
+    if (mapping) {
+      const player = session.players.get(mapping.playerId);
+      if (!player?.isHost) return { error: 'Only host can start' };
+    } else if (!session.observers.has(socketId)) {
+      return { error: 'Not authorized' };
+    }
 
     if (session.players.size < 2) return { error: 'Need at least 2 players' };
 

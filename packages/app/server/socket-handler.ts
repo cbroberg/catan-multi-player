@@ -175,9 +175,14 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
 
     socket.on('game:request-view', (gameId) => {
       const engine = gm.getEngine(gameId);
-      if (!engine) return;
+      if (!engine) {
+        console.log(`[game:request-view] No engine for ${gameId} (socket ${socket.id})`);
+        return;
+      }
       const mapping = gm.getPlayerIdForSocket(socket.id);
-      socket.emit('game:view', buildGameView(engine, gameId, mapping?.playerId ?? null));
+      console.log(`[game:request-view] Sending view to ${mapping?.playerId ?? 'observer'} (phase: ${engine.getState().phase})`);
+      const trade = (gm.getSession(gameId) as any)?.activeTrade ?? null;
+      socket.emit('game:view', buildGameView(engine, gameId, mapping?.playerId ?? null, trade));
     });
 
     socket.on('action:roll-dice', (gameId) => {
@@ -296,7 +301,10 @@ function runAction(
  */
 function broadcastGameView(io: TypedServer, gm: GameManager, gameId: string) {
   const engine = gm.getEngine(gameId);
-  if (!engine) return;
+  if (!engine) {
+    console.log(`[broadcast] No engine for ${gameId}`);
+    return;
+  }
 
   const session = gm.getSession(gameId);
   const activeTrade = (session as any)?.activeTrade ?? null;
@@ -305,6 +313,7 @@ function broadcastGameView(io: TypedServer, gm: GameManager, gameId: string) {
   const sockets = io.sockets.adapter.rooms.get(room);
   if (!sockets) return;
 
+  console.log(`[broadcast] Sending to ${sockets.size} sockets (phase: ${engine.getState().phase})`);
   for (const socketId of sockets) {
     const s = io.sockets.sockets.get(socketId);
     if (!s) continue;

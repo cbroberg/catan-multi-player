@@ -75,12 +75,14 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
         </div>
       </div>
 
-      {/* Right: Lobby info */}
-      <div className="w-96 bg-[#0a1525] border-l border-white/10 flex flex-col p-6">
+      {/* Right: Lobby info — max height = viewport, scroll if needed */}
+      <div className="w-96 bg-[#0a1525] border-l border-white/10 flex flex-col max-h-screen overflow-hidden">
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto p-6 pb-2">
         {/* Game code + QR */}
         <div className="text-center mb-6">
           <div className="text-xs text-white/40 uppercase tracking-widest mb-1">Game Code</div>
-          <div className="text-5xl font-mono font-bold tracking-[0.3em] text-amber-400">
+          <div data-testid="game-code" className="text-5xl font-mono font-bold tracking-[0.3em] text-amber-400">
             {lobby.code}
           </div>
           <div className="mt-4 flex justify-center">
@@ -111,20 +113,25 @@ export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: s
           </div>
         </div>
 
-        {/* Start button */}
-        <button
-          onClick={() => startGame((res) => {
-            if ('error' in res) console.error(res.error);
-          })}
-          disabled={!canStart}
-          className={`w-full py-3 rounded-xl font-bold text-lg transition-colors cursor-pointer mt-4 ${
-            canStart
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-              : 'bg-white/5 text-white/20 cursor-not-allowed'
-          }`}
-        >
-          {canStart ? 'Start Spil' : `Venter på spillere (${lobby.players.filter(p => p.isReady).length}/${lobby.players.length} klar)`}
-        </button>
+        </div>{/* end scrollable */}
+
+        {/* Start button — pinned at bottom, above dock */}
+        <div className="p-4 pt-2 pb-8 border-t border-white/10">
+          <button
+            data-action="start-game"
+            onClick={() => startGame((res) => {
+              if ('error' in res) console.error(res.error);
+            })}
+            disabled={!canStart}
+            className={`w-full py-3 rounded-xl font-bold text-lg transition-colors cursor-pointer ${
+              canStart
+                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                : 'bg-white/5 text-white/20 cursor-not-allowed'
+            }`}
+          >
+            {canStart ? 'Start Spil' : `Venter på spillere (${lobby.players.filter(p => p.isReady).length}/${lobby.players.length} klar)`}
+          </button>
+        </div>
       </div>
     </div>
   );
