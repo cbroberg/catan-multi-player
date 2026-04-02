@@ -179,7 +179,7 @@ function computeHarborPositions(
       const dy = midY - nearestY;
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
       // Snap to the coastline — sitting right on the beach
-      const pushDist = hexSize * 0.5;
+      const pushDist = hexSize * 0.4;
 
       // Rotation: sign post points toward land (opposite of push direction)
       const angleDeg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
