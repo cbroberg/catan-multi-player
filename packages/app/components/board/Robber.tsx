@@ -5,46 +5,17 @@ interface RobberProps {
 }
 
 export function Robber({ cx, cy, size = 12 }: RobberProps) {
-  // Original SVG viewBox is 30x40; we scale so the height maps to size * 2
-  const scale = (size * 2) / 40;
-  // Offset so the base of the robber sits at cy
-  const offsetX = cx - 15 * scale;
-  const offsetY = cy - 24 * scale;
+  const w = size * 2.2;
+  const h = size * 2.2;
 
   return (
-    <g transform={`translate(${offsetX}, ${offsetY}) scale(${scale})`}>
-      <defs>
-        <linearGradient id="robber-body" x1="0" y1="0" x2="0.3" y2="1">
-          <stop offset="0%" stopColor="#3a3a3a" />
-          <stop offset="100%" stopColor="#1a1a1a" />
-        </linearGradient>
-        <linearGradient id="robber-cloak" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#4a4040" />
-          <stop offset="100%" stopColor="#2a2020" />
-        </linearGradient>
-      </defs>
-      {/* Base/feet */}
-      <ellipse cx="15" cy="37" rx="8" ry="2.5" fill="#1a1a1a" />
-      {/* Body/cloak */}
-      <path d="M7,36 Q5,22 10,14 L15,10 L20,14 Q25,22 23,36 Z" fill="url(#robber-cloak)" />
-      {/* Cloak details */}
-      <path d="M9,30 Q12,28 15,30 Q18,28 21,30" fill="none" stroke="#1a1a1a" strokeWidth="0.5" opacity="0.4" />
-      <path d="M8,34 Q12,32 15,34 Q18,32 22,34" fill="none" stroke="#1a1a1a" strokeWidth="0.4" opacity="0.3" />
-      {/* Head */}
-      <circle cx="15" cy="9" r="5.5" fill="url(#robber-body)" />
-      {/* Hood */}
-      <path d="M9.5,9 Q10,3 15,2 Q20,3 20.5,9" fill="#3a3535" stroke="#2a2020" strokeWidth="0.5" />
-      {/* Face shadow */}
-      <ellipse cx="15" cy="10" rx="3.5" ry="2.5" fill="#0a0a0a" opacity="0.6" />
-      {/* Eyes (glowing menace) */}
-      <ellipse cx="13" cy="9.5" rx="1" ry="0.6" fill="#c0392b" opacity="0.7" />
-      <ellipse cx="17" cy="9.5" rx="1" ry="0.6" fill="#c0392b" opacity="0.7" />
-      {/* Belt/sash */}
-      <rect x="9" y="22" width="12" height="2" rx="0.5" fill="#5a4030" />
-      <rect x="14" y="21.5" width="3" height="3" rx="0.5" fill="#8b7a5e" stroke="#5a4030" strokeWidth="0.3" />
-      {/* Dagger hilt */}
-      <rect x="21" y="23" width="1.5" height="4" rx="0.3" fill="#8b7a5e" transform="rotate(15,21,23)" />
-      <rect x="20" y="22.5" width="3.5" height="1.5" rx="0.3" fill="#5a4030" transform="rotate(15,21,23)" />
-    </g>
+    <image
+      href="/tiles/robber.webp"
+      x={cx - w / 2}
+      y={cy - h / 2}
+      width={w}
+      height={h}
+      preserveAspectRatio="xMidYMid meet"
+    />
   );
 }

@@ -106,25 +106,14 @@ export function HexBoard({ board, hexSize = 50, buildings, roads }: HexBoardProp
             )}
             {/* Pirate */}
             {hex.hasPirate && (
-              <g>
-                <ellipse
-                  cx={center.x}
-                  cy={center.y + hexSize * 0.04}
-                  rx={hexSize * 0.11}
-                  ry={hexSize * 0.16}
-                  fill="#4a148c"
-                  stroke="#7b1fa2"
-                  strokeWidth={0.8}
-                />
-                <circle
-                  cx={center.x}
-                  cy={center.y - hexSize * 0.13}
-                  r={hexSize * 0.07}
-                  fill="#4a148c"
-                  stroke="#7b1fa2"
-                  strokeWidth={0.8}
-                />
-              </g>
+              <image
+                href="/tiles/pirate.webp"
+                x={center.x - hexSize * 0.4}
+                y={center.y - hexSize * 0.4}
+                width={hexSize * 0.8}
+                height={hexSize * 0.8}
+                preserveAspectRatio="xMidYMid meet"
+              />
             )}
           </g>
         );

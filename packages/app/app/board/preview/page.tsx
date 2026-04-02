@@ -13,6 +13,7 @@ export default function BoardPreviewPage() {
   const [variantId, setVariantId] = useState('base-3-4');
   const [state, setState] = useState<{ board: GameBoard; score: BalanceScore } | null>(null);
   const [showPieces, setShowPieces] = useState(false);
+  const [zoom, setZoom] = useState(1);
 
   useEffect(() => {
     if (!state) setState(generateRandomBalancedBoard('base-3-4'));
@@ -114,14 +115,24 @@ export default function BoardPreviewPage() {
         {showPieces ? 'Hide Demo Pieces' : 'Show Demo Pieces'}
       </button>
 
-      {/* Board */}
-      <div className="w-full max-w-3xl">
-        <HexBoard
-          board={state.board}
-          hexSize={50}
-          buildings={showPieces ? generateDemoBuildings(state.board) : undefined}
-          roads={showPieces ? generateDemoRoads(state.board) : undefined}
-        />
+      {/* Zoom controls */}
+      <div className="flex items-center gap-3">
+        <button onClick={() => setZoom(z => Math.max(0.25, z / 1.5))} className="px-3 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20">−</button>
+        <span className="text-white/60 text-sm w-16 text-center">{Math.round(zoom * 100)}%</span>
+        <button onClick={() => setZoom(z => z * 1.5)} className="px-3 py-1 bg-white/10 text-white rounded cursor-pointer hover:bg-white/20">+</button>
+        <button onClick={() => setZoom(1)} className="px-3 py-1 bg-white/10 text-white/50 rounded cursor-pointer hover:bg-white/20 text-xs">Reset</button>
+      </div>
+
+      {/* Board — scrollable container with infinite zoom */}
+      <div className="w-full overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
+        <div style={{ width: `${Math.max(100, zoom * 100)}%`, margin: '0 auto', transition: 'width 0.2s' }}>
+          <HexBoard
+            board={state.board}
+            hexSize={50 * zoom}
+            buildings={showPieces ? generateDemoBuildings(state.board) : undefined}
+            roads={showPieces ? generateDemoRoads(state.board) : undefined}
+          />
+        </div>
       </div>
     </div>
   );
