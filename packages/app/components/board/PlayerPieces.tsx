@@ -166,3 +166,55 @@ export function RoadPiece({ x1, y1, x2, y2, color, width = 4 }: RoadPieceProps) 
     </g>
   );
 }
+
+// ─── Ship ───────────────────────────────────────────────────────────────────
+
+interface ShipPieceProps {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  color: string;
+  size?: number;
+}
+
+/**
+ * Renders a ship piece on a sea edge, rotated to align with the edge direction.
+ * Uses the hires ship image with player color tint.
+ */
+export function ShipPiece({ x1, y1, x2, y2, color, size = 16 }: ShipPieceProps) {
+  const { r, g, b } = hexToRgb(color);
+  const mx = (x1 + x2) / 2;
+  const my = (y1 + y2) / 2;
+  const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+  const filterId = `tint-ship-${Math.round(mx)}-${Math.round(my)}`;
+
+  return (
+    <g>
+      <defs>
+        <filter id={filterId}>
+          <feColorMatrix type="matrix" values={`
+            ${0.2 + r / 255 * 0.8} ${0.05 * (1 - r / 255)} 0 0 ${r / 255 * 0.25}
+            ${0.05 * (1 - g / 255)} ${0.2 + g / 255 * 0.8} 0 0 ${g / 255 * 0.25}
+            ${0.05 * (1 - b / 255)} 0 ${0.2 + b / 255 * 0.8} 0 ${b / 255 * 0.25}
+            0 0 0 1 0
+          `} />
+        </filter>
+      </defs>
+      {/* Player color base */}
+      <ellipse cx={mx} cy={my} rx={size * 0.55} ry={size * 0.28} fill={color} opacity="0.8"
+        transform={`rotate(${angle}, ${mx}, ${my})`} />
+      {/* Ship image, rotated to match edge */}
+      <image
+        href="/tiles/ship.webp"
+        x={mx - size / 2}
+        y={my - size / 2 - size * 0.1}
+        width={size}
+        height={size}
+        preserveAspectRatio="xMidYMid meet"
+        filter={`url(#${filterId})`}
+        transform={`rotate(${angle}, ${mx}, ${my})`}
+      />
+    </g>
+  );
+}

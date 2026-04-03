@@ -7,13 +7,14 @@ import { TerrainHexSVG } from './TerrainHexSVG';
 import { NumberToken } from './NumberToken';
 import { Robber } from './Robber';
 import { HarborMarker } from './HarborMarker';
-import { SettlementPiece, CityPiece, RoadPiece } from './PlayerPieces';
+import { SettlementPiece, CityPiece, RoadPiece, ShipPiece } from './PlayerPieces';
 
 interface HexBoardProps {
   board: GameBoard;
   hexSize?: number;
   buildings?: BoardBuilding[];
   roads?: BoardRoad[];
+  ships?: { edgeId: string; color: PlayerColor }[];
 }
 
 const COLOR_HEX: Record<PlayerColor, string> = {
@@ -21,7 +22,7 @@ const COLOR_HEX: Record<PlayerColor, string> = {
   orange: '#FF940F', green: '#003224', brown: '#461E00', purple: '#8b5cf6', cyan: '#06b6d4',
 };
 
-export function HexBoard({ board, hexSize = 50, buildings, roads }: HexBoardProps) {
+export function HexBoard({ board, hexSize = 50, buildings, roads, ships }: HexBoardProps) {
   // Compute pixel positions for all hexes
   const hexPixels = board.hexes.map((hex) =>
     hexToPixel(hex.coord.q, hex.coord.r, hexSize)
@@ -138,6 +139,24 @@ export function HexBoard({ board, hexSize = 50, buildings, roads }: HexBoardProp
             x2={vB.x} y2={vB.y}
             color={COLOR_HEX[road.color]}
             width={hexSize * 0.12}
+          />
+        );
+      })}
+
+      {/* Ships */}
+      {ships?.map((ship) => {
+        const edge = board.edges.find((e) => e.id === ship.edgeId);
+        if (!edge) return null;
+        const vA = vertexPositions.get(edge.vertexIds[0]);
+        const vB = vertexPositions.get(edge.vertexIds[1]);
+        if (!vA || !vB) return null;
+        return (
+          <ShipPiece
+            key={`ship-${ship.edgeId}`}
+            x1={vA.x} y1={vA.y}
+            x2={vB.x} y2={vB.y}
+            color={COLOR_HEX[ship.color]}
+            size={hexSize * 0.35}
           />
         );
       })}

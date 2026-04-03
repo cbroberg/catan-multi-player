@@ -248,6 +248,7 @@ export default function BoardPreviewPage() {
             hexSize={50}
             buildings={showPieces ? generateDemoBuildings(state.board) : undefined}
             roads={showPieces ? generateDemoRoads(state.board) : undefined}
+            ships={showPieces ? generateDemoShips(state.board) : undefined}
           />
         </div>
       </div>
@@ -330,6 +331,32 @@ function generateDemoRoads(board: GameBoard): BoardRoad[] {
     }
   }
   return roads;
+}
+
+/** Generate demo ships on coastal/sea edges for Seafarers boards */
+function generateDemoShips(board: GameBoard): { edgeId: string; color: PlayerColor }[] {
+  // Only generate ships if there are sea hexes
+  const hasSea = board.hexes.some(h => h.terrain === 'sea');
+  if (!hasSea) return [];
+
+  const seaEdges = board.edges.filter(e => e.edgeType === 'coastal' || e.edgeType === 'sea');
+  if (seaEdges.length === 0) return [];
+
+  const ships: { edgeId: string; color: PlayerColor }[] = [];
+  const used = new Set<string>();
+
+  // Place 2 ships per player on sea/coastal edges
+  for (let p = 0; p < Math.min(PLAYER_COLORS.length, 4); p++) {
+    let placed = 0;
+    for (const edge of seaEdges) {
+      if (placed >= 2) break;
+      if (used.has(edge.id)) continue;
+      used.add(edge.id);
+      ships.push({ edgeId: edge.id, color: PLAYER_COLORS[p] });
+      placed++;
+    }
+  }
+  return ships;
 }
 
 function ScorePill({ label, value }: { label: string; value: number }) {
