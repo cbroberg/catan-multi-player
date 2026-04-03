@@ -61,11 +61,11 @@ export function SettlementPiece({ x, y, color, size = 14 }: SettlementPieceProps
       {/* Player color base ring */}
       <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill={color} opacity="0.9" />
       <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill="none" stroke={darken(color, 0.6)} strokeWidth="1" />
-      {/* Tinted settlement image */}
+      {/* Tinted settlement image — nudged down to sit on base */}
       <image
         href="/tiles/settlement.webp"
         x={x - s / 2}
-        y={y - s / 2}
+        y={y - s / 2 + s * 0.08}
         width={s}
         height={s}
         preserveAspectRatio="xMidYMid meet"
@@ -107,11 +107,11 @@ export function CityPiece({ x, y, color, size = 18 }: CityPieceProps) {
       {/* Player color base ring */}
       <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.55} ry={s * 0.28} fill={color} opacity="0.9" />
       <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.55} ry={s * 0.28} fill="none" stroke={darken(color, 0.6)} strokeWidth="1.2" />
-      {/* Tinted city image */}
+      {/* Tinted city image — nudged down to sit on base */}
       <image
         href="/tiles/city.webp"
         x={x - s / 2}
-        y={y - s / 2}
+        y={y - s / 2 + s * 0.15}
         width={s}
         height={s}
         preserveAspectRatio="xMidYMid meet"
