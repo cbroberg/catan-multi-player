@@ -30,8 +30,12 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased notranslate`}
+      translate="no"
     >
+      <head>
+        <meta name="google" content="notranslate" />
+      </head>
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider messages={messages}>
           {children}
