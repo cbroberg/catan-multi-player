@@ -202,7 +202,7 @@ export function ShipPiece({ x1, y1, x2, y2, color, size = 16 }: ShipPieceProps) 
       </defs>
       {/* Player color base */}
       <ellipse cx={mx} cy={my + size * 0.12} rx={size * 0.5} ry={size * 0.22} fill={color} opacity="0.8" />
-      {/* Ship image — always upright, no rotation */}
+      {/* Ship image — always upright, mirrored when sailing left */}
       <image
         href="/tiles/ship.webp"
         x={mx - size / 2}
@@ -211,6 +211,7 @@ export function ShipPiece({ x1, y1, x2, y2, color, size = 16 }: ShipPieceProps) 
         height={size}
         preserveAspectRatio="xMidYMid meet"
         filter={`url(#${filterId})`}
+        transform={x2 < x1 ? `scale(-1,1) translate(${-mx * 2}, 0)` : undefined}
       />
     </g>
   );
