@@ -62,7 +62,12 @@ function logTurn(turn, player, action, details) {
 async function launchWindow(x, y, w, h) {
   const browser = await chromium.launch({
     headless: false,
-    args: [`--window-position=${x},${y}`, `--window-size=${w},${h}`],
+    args: [
+      `--window-position=${x},${y}`,
+      `--window-size=${w},${h}`,
+      '--disable-features=TranslateUI',
+      '--lang=da',
+    ],
   });
   const ctx = await browser.newContext({ viewport: { width: w - 16, height: h - 80 } });
   const page = await ctx.newPage();
@@ -152,14 +157,15 @@ async function main() {
 
   console.log('\nLaunching browser windows...');
 
-  const H = 900;
+  // 3440x1440 ultrawide: host gets ~1720px, 3 players split the rest
+  const H = 1440;
   const hostW = 1720;
-  const playerW = 573;
+  const playerW = Math.floor((3440 - hostW) / 3); // ~573px each
 
-  const host = await launchWindow(0, 25, hostW, H);
-  const p1 = await launchWindow(hostW, 25, playerW, H);
-  const p2 = await launchWindow(hostW + playerW, 25, playerW, H);
-  const p3 = await launchWindow(hostW + playerW * 2, 25, playerW, H);
+  const host = await launchWindow(0, 0, hostW, H);
+  const p1 = await launchWindow(hostW, 0, playerW, H);
+  const p2 = await launchWindow(hostW + playerW, 0, playerW, H);
+  const p3 = await launchWindow(hostW + playerW * 2, 0, playerW, H);
 
   // Minimize terminal
   try { execSync(`osascript -e 'tell application "System Events" to tell application process "Ghostty" to set miniaturized of every window to true'`); } catch {}
