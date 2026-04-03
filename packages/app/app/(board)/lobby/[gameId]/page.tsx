@@ -10,12 +10,12 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import type { LobbyPlayer } from '@catan/shared';
 
 const COLOR_HEX: Record<string, string> = {
-  red: '#ef4444',
-  blue: '#3b82f6',
+  red: '#AE0100',
+  blue: '#071C8F',
   white: '#f5f5f5',
-  orange: '#f97316',
+  orange: '#FFC32B',
   green: '#22c55e',
-  brown: '#92400e', purple: '#8b5cf6', cyan: '#06b6d4',
+  brown: '#461E00', purple: '#8b5cf6', cyan: '#06b6d4',
 };
 
 export default function BoardLobbyPage({ params }: { params: Promise<{ gameId: string }> }) {
