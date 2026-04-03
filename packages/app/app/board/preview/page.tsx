@@ -44,13 +44,25 @@ export default function BoardPreviewPage() {
     });
   }, []);
 
+  const fetchBoard = useCallback(async (vid: string) => {
+    setState(null);
+    try {
+      const res = await fetch(`/api/board?variant=${vid}`);
+      const data = await res.json();
+      setState(data);
+    } catch {
+      // Fallback to client-side generation
+      setState(generateRandomBalancedBoard(vid));
+    }
+  }, []);
+
   useEffect(() => {
-    if (!state) setState(generateRandomBalancedBoard('base-3-4'));
+    if (!state) fetchBoard('base-3-4');
   }, []);
 
   const generateNew = useCallback(() => {
-    setState(generateRandomBalancedBoard(variantId));
-  }, [variantId]);
+    fetchBoard(variantId);
+  }, [variantId, fetchBoard]);
 
   const loadBeginner = useCallback(() => {
     setState(
@@ -65,8 +77,8 @@ export default function BoardPreviewPage() {
 
   const switchVariant = useCallback((id: string) => {
     setVariantId(id);
-    setState(generateRandomBalancedBoard(id));
-  }, []);
+    fetchBoard(id);
+  }, [fetchBoard]);
 
   const variant = BOARD_VARIANTS[variantId];
 
