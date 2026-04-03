@@ -53,7 +53,9 @@ export default function CreateGamePage() {
   const handleCreate = useCallback(() => {
     setCreating(true);
     const socket = getSocket();
-    socket.emit('game:create', config, (response) => {
+
+    const doCreate = () => {
+      socket.emit('game:create', config, (response) => {
       if ('error' in response) {
         setCreating(false);
         return;
@@ -81,6 +83,15 @@ export default function CreateGamePage() {
 
       addNextBot();
     });
+    };
+
+    if (socket.connected) {
+      doCreate();
+    } else {
+      socket.once('connect', doCreate);
+      // Timeout after 5s
+      setTimeout(() => { if (!socket.connected) setCreating(false); }, 5000);
+    }
   }, [config, router, botCount, botThinkTimeMs, simulationMode]);
 
   return (
