@@ -18,7 +18,7 @@ export interface GameConfig {
 
 // ─── Player ──────────────────────────────────────────────────────────────────
 
-export type PlayerColor = 'red' | 'blue' | 'white' | 'orange' | 'green' | 'brown';
+export type PlayerColor = 'red' | 'blue' | 'white' | 'orange' | 'green' | 'brown' | 'purple' | 'cyan';
 
 export interface Player {
   id: string;

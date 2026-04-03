@@ -10,7 +10,7 @@ import { runSimulation, type SimulationResult, type ReplayFrame } from '@/lib/ru
 
 const COLOR_HEX: Record<string, string> = {
   red: '#ef4444', blue: '#3b82f6', white: '#e5e5e5',
-  orange: '#f97316', green: '#22c55e', brown: '#92400e',
+  orange: '#f97316', green: '#22c55e', brown: '#92400e', purple: '#8b5cf6', cyan: '#06b6d4',
 };
 
 const ACTION_ICONS: Record<string, string> = {

@@ -15,6 +15,8 @@ const COLORS: { id: PlayerColor; hex: string }[] = [
   { id: 'orange', hex: '#f97316' },
   { id: 'green', hex: '#22c55e' },
   { id: 'brown', hex: '#92400e' },
+  { id: 'purple', hex: '#8b5cf6' },
+  { id: 'cyan', hex: '#06b6d4' },
 ];
 
 const AVATARS = ['⚔️', '🛡️', '🏰', '⛵', '🐑', '🌾', '⛏️', '🪵'];

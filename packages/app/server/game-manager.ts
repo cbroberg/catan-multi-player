@@ -36,7 +36,7 @@ interface GameSession {
 
 // ─── Available Colors ────────────────────────────────────────────────────────
 
-const ALL_COLORS: PlayerColor[] = ['red', 'blue', 'white', 'orange', 'green', 'brown'];
+const ALL_COLORS: PlayerColor[] = ['red', 'blue', 'white', 'orange', 'green', 'brown', 'purple', 'cyan'];
 
 // ─── Game Manager ────────────────────────────────────────────────────────────
 
