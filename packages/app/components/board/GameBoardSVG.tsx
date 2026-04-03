@@ -1,15 +1,16 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import type { GameView, HexCoord } from '@catan/shared';
+import type { GameView, HexCoord, PlayerColor } from '@catan/shared';
 import { vertexPixelPosition } from '@catan/game-engine';
 import { hexToPixel, hexPolygonPoints } from './hex-utils';
 import { TerrainHexSVG } from './TerrainHexSVG';
 import { NumberToken } from './NumberToken';
+import { Robber } from './Robber';
 import { HarborMarker } from './HarborMarker';
-import { SettlementPiece, CityPiece, RoadPiece } from './PlayerPieces';
+import { SettlementPiece, CityPiece, RoadPiece, ShipPiece } from './PlayerPieces';
 
-const COLOR_HEX: Record<string, string> = {
+const COLOR_HEX: Record<PlayerColor, string> = {
   red: '#AE0100', blue: '#071C8F', white: '#e5e5e5',
   orange: '#FF940F', green: '#003224', brown: '#461E00', purple: '#8b5cf6', cyan: '#06b6d4',
 };
@@ -49,14 +50,16 @@ export function GameBoardSVG({
   const vertexPos = new Map<string, { x: number; y: number }>();
   for (const v of board.vertices) vertexPos.set(v.id, vertexPixelPosition(v, hexSize));
 
-  const centroidX = allX.reduce((a, b) => a + b, 0) / allX.length;
-  const centroidY = allY.reduce((a, b) => a + b, 0) / allY.length;
-
   const highlightVSet = new Set(highlightVertices);
   const highlightESet = new Set(highlightEdges);
   const highlightHSet = new Set(highlightHexes.map((h) => `${h.q},${h.r}`));
   const roadMap = new Map(view.roads.map((r) => [r.edgeId, r]));
   const buildingMap = new Map(view.buildings.map((b) => [b.vertexId, b]));
+
+  // Land hex pixels for harbor push direction
+  const landHexPixels = board.hexes
+    .filter((h) => h.terrain !== 'sea')
+    .map((h) => hexToPixel(h.coord.q, h.coord.r, hexSize));
 
   // Force overlay re-render when SVG resizes
   useEffect(() => { setOverlayReady(true); }, []);
@@ -68,6 +71,44 @@ export function GameBoardSVG({
       top: `${((svgY - minY) / vbH) * 100}%`,
     };
   }
+
+  // Compute harbor positions (push away from nearest land hex)
+  const harborPositions = board.harbors.map((harbor, i) => {
+    const a = vertexPos.get(harbor.vertexIds[0]);
+    const b = vertexPos.get(harbor.vertexIds[1]);
+    if (!a || !b) return null;
+
+    const midX = (a.x + b.x) / 2;
+    const midY = (a.y + b.y) / 2;
+
+    // Find nearest land hex
+    let nearestDist = Infinity;
+    let nearestX = midX;
+    let nearestY = midY;
+    for (const hp of landHexPixels) {
+      const dx = midX - hp.x;
+      const dy = midY - hp.y;
+      const d = dx * dx + dy * dy;
+      if (d < nearestDist) {
+        nearestDist = d;
+        nearestX = hp.x;
+        nearestY = hp.y;
+      }
+    }
+
+    const dx = midX - nearestX;
+    const dy = midY - nearestY;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const pushDist = hexSize * 0.4;
+    const angleDeg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
+    return {
+      x: midX + (dx / dist) * pushDist,
+      y: midY + (dy / dist) * pushDist,
+      type: harbor.type,
+      rotation: angleDeg,
+    };
+  }).filter(Boolean) as { x: number; y: number; type: any; rotation: number }[];
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
@@ -82,14 +123,7 @@ export function GameBoardSVG({
           const isHL = highlightHSet.has(`${hex.coord.q},${hex.coord.r}`);
           return (
             <g key={`h${i}`}>
-              {/* Textured terrain SVG */}
-              <TerrainHexSVG
-                terrain={hex.terrain}
-                x={c.x}
-                y={c.y}
-                size={hexSize}
-              />
-              {/* Transparent clickable overlay with highlight support */}
+              <TerrainHexSVG terrain={hex.terrain} x={c.x} y={c.y} size={hexSize} />
               <polygon
                 points={hexPolygonPoints(c, hexSize)}
                 fill="transparent"
@@ -98,20 +132,25 @@ export function GameBoardSVG({
                 opacity={isSea ? 0.5 : 1}
               />
               {hex.number != null && <NumberToken cx={c.x} cy={c.y} number={hex.number} radius={hexSize * 0.24} />}
+              {/* Pirate on sea hex */}
+              {hex.hasPirate && (
+                <image
+                  href="/tiles/pirate.webp"
+                  x={c.x - hexSize * 0.4}
+                  y={c.y - hexSize * 0.4}
+                  width={hexSize * 0.8}
+                  height={hexSize * 0.8}
+                  preserveAspectRatio="xMidYMid meet"
+                />
+              )}
             </g>
           );
         })}
 
-        {/* Harbors */}
-        {board.harbors.map((h, i) => {
-          const a = vertexPos.get(h.vertexIds[0]);
-          const b = vertexPos.get(h.vertexIds[1]);
-          if (!a || !b) return null;
-          const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-          const dx = mx - centroidX, dy = my - centroidY;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          return <HarborMarker key={`hb${i}`} cx={mx + (dx / d) * hexSize * 0.55} cy={my + (dy / d) * hexSize * 0.55} type={h.type} />;
-        })}
+        {/* Harbors (behind pieces) */}
+        {harborPositions.map((hp, i) => (
+          <HarborMarker key={`hb${i}`} cx={hp.x} cy={hp.y} type={hp.type} rotation={hp.rotation} hexSize={hexSize} />
+        ))}
 
         {/* Roads */}
         {board.edges.map((edge) => {
@@ -122,7 +161,7 @@ export function GameBoardSVG({
           if (!a || !b) return null;
           if (road) {
             const fill = COLOR_HEX[road.color] ?? '#888';
-            return <RoadPiece key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} color={fill} width={3.5} />;
+            return <RoadPiece key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} color={fill} width={hexSize * 0.1} />;
           }
           if (isHL) {
             return <line key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y}
@@ -131,7 +170,9 @@ export function GameBoardSVG({
           return null;
         })}
 
-        {/* Buildings */}
+        {/* TODO: Ships would go here when Seafarers gameplay is wired */}
+
+        {/* Buildings (topmost layer) */}
         {board.vertices.map((v) => {
           const building = buildingMap.get(v.id);
           const isHL = highlightVSet.has(v.id);
@@ -150,47 +191,17 @@ export function GameBoardSVG({
           return null;
         })}
 
-        {/* Robber */}
-        {(() => {
-          const rp = hexToPixel(view.robberPosition.q, view.robberPosition.r, hexSize);
-          return (
-            <g>
-              <defs>
-                <linearGradient id="robber-body" x1="0" y1="0" x2="0.3" y2="1">
-                  <stop offset="0%" stopColor="#3a3a3a" />
-                  <stop offset="100%" stopColor="#1a1a1a" />
-                </linearGradient>
-                <linearGradient id="robber-cloak" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#4a4040" />
-                  <stop offset="100%" stopColor="#2a2020" />
-                </linearGradient>
-              </defs>
-              {/* Base/feet */}
-              <ellipse cx={rp.x} cy={rp.y + 5} rx={5} ry={1.5} fill="#1a1a1a" />
-              {/* Body/cloak */}
-              <path d={`M${rp.x - 5},${rp.y + 4} Q${rp.x - 6},${rp.y - 5} ${rp.x - 3},${rp.y - 9} L${rp.x},${rp.y - 12} L${rp.x + 3},${rp.y - 9} Q${rp.x + 6},${rp.y - 5} ${rp.x + 5},${rp.y + 4} Z`}
-                fill="url(#robber-cloak)" />
-              {/* Head */}
-              <circle cx={rp.x} cy={rp.y - 13} r={3.5} fill="url(#robber-body)" />
-              {/* Hood */}
-              <path d={`M${rp.x - 3.5},${rp.y - 13} Q${rp.x - 3},${rp.y - 17} ${rp.x},${rp.y - 17.5} Q${rp.x + 3},${rp.y - 17} ${rp.x + 3.5},${rp.y - 13}`}
-                fill="#3a3535" stroke="#2a2020" strokeWidth="0.3" />
-              {/* Face shadow */}
-              <ellipse cx={rp.x} cy={rp.y - 12.5} rx={2.2} ry={1.5} fill="#0a0a0a" opacity="0.6" />
-              {/* Eyes */}
-              <ellipse cx={rp.x - 1.2} cy={rp.y - 12.8} rx={0.6} ry={0.35} fill="#c0392b" opacity="0.7" />
-              <ellipse cx={rp.x + 1.2} cy={rp.y - 12.8} rx={0.6} ry={0.35} fill="#c0392b" opacity="0.7" />
-              {/* Belt */}
-              <rect x={rp.x - 4} y={rp.y - 3} width={8} height={1.2} rx={0.3} fill="#5a4030" />
-            </g>
-          );
-        })()}
+        {/* Robber (hires WebP) */}
+        <Robber
+          cx={hexToPixel(view.robberPosition.q, view.robberPosition.r, hexSize).x}
+          cy={hexToPixel(view.robberPosition.q, view.robberPosition.r, hexSize).y}
+          size={hexSize * 0.36}
+        />
       </svg>
 
       {/* ─── HTML Overlay: invisible click targets for Playwright ─── */}
       {overlayReady && (
         <div className="absolute inset-0 pointer-events-none" data-testid="board-overlay">
-          {/* Vertex click targets */}
           {highlightVertices.map((vId) => {
             const pos = vertexPos.get(vId);
             if (!pos) return null;
@@ -201,12 +212,11 @@ export function GameBoardSVG({
                 onClick={() => onVertexClick?.(vId)}
                 className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer opacity-0"
                 style={{ left, top }}
-                aria-label={`Place on vertex`}
+                aria-label="Place on vertex"
               />
             );
           })}
 
-          {/* Edge click targets */}
           {highlightEdges.map((eId) => {
             const edge = board.edges.find((e) => e.id === eId);
             if (!edge) return null;
@@ -222,12 +232,11 @@ export function GameBoardSVG({
                 onClick={() => onEdgeClick?.(eId)}
                 className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer opacity-0"
                 style={{ left, top }}
-                aria-label={`Place road`}
+                aria-label="Place road"
               />
             );
           })}
 
-          {/* Hex click targets */}
           {highlightHexes.map((hc) => {
             const pixel = hexToPixel(hc.q, hc.r, hexSize);
             const { left, top } = svgToPercent(pixel.x, pixel.y);
@@ -237,7 +246,7 @@ export function GameBoardSVG({
                 onClick={() => onHexClick?.(hc)}
                 className="absolute w-8 h-8 -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer opacity-0"
                 style={{ left, top }}
-                aria-label={`Place robber`}
+                aria-label="Place robber"
               />
             );
           })}
