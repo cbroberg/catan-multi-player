@@ -9,12 +9,12 @@ import { GameBoardSVG } from '@/components/board/GameBoardSVG';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import type { ResourceType, HexCoord, GameView } from '@catan/shared';
 
-const RESOURCES: { type: ResourceType; icon: string; color: string }[] = [
-  { type: 'lumber', icon: '🪵', color: '#2d6a30' },
-  { type: 'brick', icon: '🧱', color: '#d4852e' },
-  { type: 'wool', icon: '🐑', color: '#8bc34a' },
-  { type: 'grain', icon: '🌾', color: '#fdd835' },
-  { type: 'ore', icon: '⛏️', color: '#78909c' },
+const RESOURCES: { type: ResourceType; icon: string; color: string; card: string }[] = [
+  { type: 'lumber', icon: '🪵', color: '#2d6a30', card: '/tiles/card-lumber.webp' },
+  { type: 'brick', icon: '🧱', color: '#d4852e', card: '/tiles/card-brick.webp' },
+  { type: 'wool', icon: '🐑', color: '#8bc34a', card: '/tiles/card-wool.webp' },
+  { type: 'grain', icon: '🌾', color: '#fdd835', card: '/tiles/card-grain.webp' },
+  { type: 'ore', icon: '⛏️', color: '#78909c', card: '/tiles/card-ore.webp' },
 ];
 
 const COLOR_HEX: Record<string, string> = {
@@ -264,16 +264,27 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
           </button>
         )}
 
-        {/* Resources */}
+        {/* Resources — hires card images with count badge */}
         {view.phase === 'PLAYING' && !isSetup && (
-          <div className="flex justify-center gap-1">
-            {RESOURCES.map((r) => (
-              <div key={r.type} className="w-11 h-14 rounded-lg flex flex-col items-center justify-center text-xs"
-                style={{ backgroundColor: r.color + '33', borderColor: r.color, borderWidth: 1 }}>
-                <span className="text-lg">{r.icon}</span>
-                <span className="font-bold">{view.myResources[r.type]}</span>
-              </div>
-            ))}
+          <div className="flex justify-center gap-1.5">
+            {RESOURCES.map((r) => {
+              const count = view.myResources[r.type];
+              return (
+                <div key={r.type} className="relative w-12 h-16">
+                  <img
+                    src={r.card}
+                    alt={r.type}
+                    className="w-full h-full rounded-md object-cover"
+                    style={{ border: `2px solid ${count > 0 ? r.color : '#333'}`, opacity: count > 0 ? 1 : 0.4 }}
+                  />
+                  {/* Count badge */}
+                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
+                    style={{ backgroundColor: count > 0 ? r.color : '#555', color: '#fff' }}>
+                    {count}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -317,7 +328,7 @@ function Screen({ children }: { children: React.ReactNode }) {
 }
 
 function Die({ value }: { value: number }) {
-  return <div className="w-8 h-8 bg-white rounded flex items-center justify-center text-black font-bold text-sm shadow">{value}</div>;
+  return <img src={`/tiles/dice-${value}.webp`} alt={`${value}`} className="w-10 h-10 rounded shadow" />;
 }
 
 function Btn({ action, label, enabled, active, accent, onClick }: {

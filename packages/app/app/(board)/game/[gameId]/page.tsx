@@ -192,8 +192,6 @@ function TurnTimer({ seconds, isLow, isCritical }: { seconds: number; isLow: boo
 
 function Die({ value }: { value: number }) {
   return (
-    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-black font-bold text-xl shadow-lg">
-      {value}
-    </div>
+    <img src={`/tiles/dice-${value}.webp`} alt={`${value}`} className="w-14 h-14 rounded-lg shadow-lg" />
   );
 }
