@@ -1,7 +1,8 @@
 'use client';
 
-import { use, useState, useCallback, useMemo, useEffect } from 'react';
+import { use, useState, useCallback, useMemo, useEffect, Suspense } from 'react';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { useGame } from '@/lib/use-game';
 import { useTimer } from '@/lib/use-timer';
 import { useLobby } from '@/lib/use-socket';
@@ -26,8 +27,19 @@ type UIMode = null | 'build-settlement' | 'build-road' | 'build-city' | 'move-ro
 
 export default function MobilePlayPage({ params }: { params: Promise<{ gameId: string }> }) {
   const { gameId } = use(params);
+  return (
+    <Suspense fallback={<Screen><LoadingSpinner message="Loading..." /></Screen>}>
+      <MobilePlayContent gameId={gameId} />
+    </Suspense>
+  );
+}
+
+function MobilePlayContent({ gameId }: { gameId: string }) {
   const t = useTranslations();
-  const game = useGame(gameId);
+  const searchParams = useSearchParams();
+  const botPlayerId = searchParams.get('bot');
+  const isBotObserver = !!botPlayerId;
+  const game = useGame(gameId, botPlayerId);
   const lobbyHook = useLobby(gameId, 'player');
   const [uiMode, setUIMode] = useState<UIMode>(null);
   const [pendingRobberHex, setPendingRobberHex] = useState<HexCoord | null>(null);
@@ -132,8 +144,8 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
     );
   }
 
-  // Pre-game lobby waiting room
-  if (!view && lobbyHook.lobby && !lobbyHook.gameStarted) {
+  // Pre-game lobby waiting room (skip for bot observers)
+  if (!isBotObserver && !view && lobbyHook.lobby && !lobbyHook.gameStarted) {
     const playerId = typeof window !== 'undefined' ? sessionStorage.getItem('playerId') : null;
     const lobbyMe = lobbyHook.lobby.players.find((p) => p.id === playerId);
     return (
@@ -175,19 +187,25 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
   if (!view || !va) return <Screen><LoadingSpinner message={t('common.gameStarting')} /></Screen>;
 
   const currentPlayer = view.players.find((p) => p.id === view.currentPlayerId);
-  const isMyTurn = view.currentPlayerId === view.myPlayerId;
+  const isMyTurn = !isBotObserver && view.currentPlayerId === view.myPlayerId;
+  const botPlayer = isBotObserver ? view.players.find((p) => p.id === view.myPlayerId) : null;
 
   return (
     <div className="min-h-screen bg-[#0e1a2e] text-white flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 bg-[#0a1525] border-b border-white/10">
         <div className="flex items-center gap-2">
-          {currentPlayer && (
+          {isBotObserver && botPlayer ? (
+            <>
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLOR_HEX[botPlayer.color] }} />
+              <span className="text-sm font-medium text-cyan-400">BOT {botPlayer.name}</span>
+            </>
+          ) : currentPlayer ? (
             <>
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLOR_HEX[currentPlayer.color] }} />
               <span className="text-sm font-medium">{isMyTurn ? t('game.yourTurn') : t('game.playerTurn', { name: currentPlayer.name })}</span>
             </>
-          )}
+          ) : null}
         </div>
         <div className="flex items-center gap-2">
           {view.phase !== 'GAME_OVER' && timer.remainingSeconds != null && (
@@ -200,8 +218,12 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
       {/* Mini board */}
       <div className="h-52 flex-shrink-0 p-1 overflow-hidden">
         <GameBoardSVG view={view} hexSize={20}
-          onVertexClick={onVertexClick} onEdgeClick={onEdgeClick} onHexClick={onHexClick}
-          highlightVertices={highlightVertices} highlightEdges={highlightEdges} highlightHexes={highlightHexes} />
+          onVertexClick={isBotObserver ? undefined : onVertexClick}
+          onEdgeClick={isBotObserver ? undefined : onEdgeClick}
+          onHexClick={isBotObserver ? undefined : onHexClick}
+          highlightVertices={isBotObserver ? [] : highlightVertices}
+          highlightEdges={isBotObserver ? [] : highlightEdges}
+          highlightHexes={isBotObserver ? [] : highlightHexes} />
       </div>
 
       {error && <div className="mx-3 px-3 py-1.5 bg-red-900/50 border border-red-700 rounded text-xs text-red-300">{error}</div>}
@@ -214,8 +236,15 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
       )}
 
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+        {/* Bot observer indicator */}
+        {isBotObserver && (
+          <div className="text-center text-xs text-cyan-400/60 py-1">
+            {currentPlayer?.id === view.myPlayerId ? 'Bot is thinking...' : `Waiting for ${currentPlayer?.name ?? '...'}`}
+          </div>
+        )}
+
         {/* Setup */}
-        {isSetup && (
+        {isSetup && !isBotObserver && (
           <div className="text-center py-2" data-phase="setup">
             {isMySetupTurn ? (
               <div className="text-amber-400 font-bold">
@@ -229,7 +258,7 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
         )}
 
         {/* Discard */}
-        {va.mustDiscard && (
+        {!isBotObserver && va.mustDiscard && (
           <button data-action="discard" onClick={() => game.discardCards(autoDiscard(view.myResources))}
             className="w-full py-3 bg-red-600 hover:bg-red-700 rounded-xl font-bold cursor-pointer">
             🗑️ {t('game.discard.discardCards', { count: Math.floor(Object.values(view.myResources).reduce((a, b) => a + b, 0) / 2) })}
@@ -237,12 +266,12 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
         )}
 
         {/* Robber */}
-        {va.mustMoveRobber && uiMode !== 'steal-select' && (
+        {!isBotObserver && va.mustMoveRobber && uiMode !== 'steal-select' && (
           <div className="text-center text-amber-400 font-medium py-1">👤 {t('game.robber.chooseHex')}</div>
         )}
 
         {/* Steal picker */}
-        {uiMode === 'steal-select' && pendingRobberHex && (
+        {!isBotObserver && uiMode === 'steal-select' && pendingRobberHex && (
           <div className="space-y-2">
             <div className="text-center text-sm text-amber-400">{t('game.robber.stealFrom')}</div>
             {view.players.filter((p) => p.id !== view.myPlayerId && p.resourceCount > 0).map((p) => (
@@ -257,7 +286,7 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
         )}
 
         {/* Roll dice */}
-        {va.canRollDice && (
+        {!isBotObserver && va.canRollDice && (
           <button data-action="roll-dice" onClick={game.rollDice}
             className="w-full py-4 bg-amber-600 hover:bg-amber-700 rounded-xl font-bold text-lg cursor-pointer">
             🎲 {t('game.actions.rollDice')}
@@ -288,8 +317,8 @@ export default function MobilePlayPage({ params }: { params: Promise<{ gameId: s
           </div>
         )}
 
-        {/* Actions */}
-        {va.canEndTurn && (
+        {/* Actions — hidden in bot observer mode */}
+        {!isBotObserver && va.canEndTurn && (
           <>
             <div className="grid grid-cols-2 gap-2">
               <Btn action="build-settlement" label={`🏠 ${t('game.actions.buildSettlement')}`} enabled={va.canBuildSettlement}

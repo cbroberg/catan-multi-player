@@ -6,18 +6,20 @@ import type { GameView, ResourceType, HexCoord } from '@catan/shared';
 
 const MAX_VIEW_RETRIES = 10;
 
-export function useGame(gameId: string | null) {
+export function useGame(gameId: string | null, botPlayerId?: string | null) {
   const { socket, connected, connectionError } = useSocket();
   const [view, setView] = useState<GameView | null>(null);
   const [lastDice, setLastDice] = useState<{ d1: number; d2: number; total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const retryCountRef = useRef(0);
+  const botObserveInitiated = useRef(false);
 
   useEffect(() => {
     if (!socket || !connected || !gameId) return;
     retryCountRef.current = 0;
     setLoadFailed(false);
+    botObserveInitiated.current = false;
 
     const onView = (v: GameView) => { setView(v); setError(null); retryCountRef.current = 0; setLoadFailed(false); };
     const onError = (msg: string) => setError(msg);
@@ -26,7 +28,14 @@ export function useGame(gameId: string | null) {
     const onGameStarting = () => {
       retryCountRef.current = 0;
       setLoadFailed(false);
-      setTimeout(() => socket.emit('game:request-view', gameId), 500);
+      if (botPlayerId) {
+        // Re-register bot observer after game starts
+        setTimeout(() => {
+          socket.emit('game:observe-bot', gameId, botPlayerId, () => {});
+        }, 500);
+      } else {
+        setTimeout(() => socket.emit('game:request-view', gameId), 500);
+      }
     };
 
     socket.on('game:view', onView);
@@ -34,8 +43,19 @@ export function useGame(gameId: string | null) {
     socket.on('game:dice-result', onDice);
     socket.on('game:starting', onGameStarting);
 
-    // Request current view — retry periodically until we get one or hit max
-    socket.emit('game:request-view', gameId);
+    // Bot observer mode: emit observe-bot instead of request-view
+    if (botPlayerId) {
+      socket.emit('game:observe-bot', gameId, botPlayerId, (response: { success?: boolean; error?: string }) => {
+        if ('error' in response && response.error) {
+          setError(response.error);
+          setLoadFailed(true);
+        }
+        botObserveInitiated.current = true;
+      });
+    } else {
+      socket.emit('game:request-view', gameId);
+    }
+
     const retryInterval = setInterval(() => {
       if (!view) {
         retryCountRef.current += 1;
@@ -44,7 +64,12 @@ export function useGame(gameId: string | null) {
           clearInterval(retryInterval);
           return;
         }
-        socket.emit('game:request-view', gameId);
+        if (botPlayerId) {
+          // For bot observer, use request-view (server knows we're a bot observer)
+          socket.emit('game:request-view', gameId);
+        } else {
+          socket.emit('game:request-view', gameId);
+        }
       }
     }, 2000);
 
@@ -55,7 +80,7 @@ export function useGame(gameId: string | null) {
       socket.off('game:dice-result', onDice);
       socket.off('game:starting', onGameStarting);
     };
-  }, [socket, connected, gameId]);
+  }, [socket, connected, gameId, botPlayerId]);
 
   const emit = useCallback(
     (event: string, ...args: unknown[]) => {

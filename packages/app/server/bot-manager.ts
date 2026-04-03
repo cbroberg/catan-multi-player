@@ -161,7 +161,7 @@ export class BotManager {
       const action = ai.getNextAction();
       if (!action) return;
 
-      const result = this.executeAction(engine, playerId, action);
+      const result = this.executeAction(gameId, engine, playerId, action);
       if (!result) return;
 
       // Broadcast updated game view to all real players
@@ -197,6 +197,7 @@ export class BotManager {
   }
 
   private executeAction(
+    gameId: string,
     engine: GameEngine,
     playerId: string,
     action: { type: string; params: unknown[] },
@@ -216,9 +217,20 @@ export class BotManager {
       case 'setup-road':
         run(engine.placeInitialRoad(playerId, action.params[0] as string));
         break;
-      case 'roll-dice':
-        run(engine.rollDice(playerId));
+      case 'roll-dice': {
+        const rollResult = engine.rollDice(playerId);
+        run(rollResult);
+        // Emit dice result to all clients (same as human roll)
+        if (rollResult.ok && rollResult.dice) {
+          const room = this.gm.getGameRoom(gameId);
+          this.io.to(room).emit('game:dice-result', {
+            d1: rollResult.dice[0],
+            d2: rollResult.dice[1],
+            total: rollResult.dice[0] + rollResult.dice[1],
+          });
+        }
         break;
+      }
       case 'auto-discard':
         run(engine.autoDiscard(playerId));
         break;

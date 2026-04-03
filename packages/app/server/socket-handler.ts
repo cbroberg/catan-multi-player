@@ -11,6 +11,9 @@ const TURN_DURATION_MS = 90_000;
 const SETUP_TURN_DURATION_MS = 120_000;
 const TIMER_SYNC_INTERVAL_MS = 5_000;
 
+/** Tracks sockets observing a specific bot player's hand */
+const botObservers = new Map<string, { socketId: string; botPlayerId: string; gameId: string }>();
+
 export function registerSocketHandlers(io: TypedServer, gm: GameManager, botManager?: BotManager) {
 
   // ─── Timer helpers (shared across all sockets) ───────────────────────
@@ -346,11 +349,46 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager, botMana
         console.log(`[game:request-view] No engine for ${gameId} (socket ${socket.id})`);
         return;
       }
+
+      // Check if this socket is a bot observer — send bot-perspective view
+      const botObs = botObservers.get(socket.id);
+      if (botObs && botObs.gameId === gameId) {
+        const trade = (gm.getSession(gameId) as any)?.activeTrade ?? null;
+        const timerRemaining = gm.getTimerRemaining(gameId);
+        socket.emit('game:view', buildGameView(engine, gameId, botObs.botPlayerId, trade, timerRemaining));
+        return;
+      }
+
       const mapping = gm.getPlayerIdForSocket(socket.id);
       console.log(`[game:request-view] Sending view to ${mapping?.playerId ?? 'observer'} (phase: ${engine.getState().phase})`);
       const trade = (gm.getSession(gameId) as any)?.activeTrade ?? null;
       const timerRemaining = gm.getTimerRemaining(gameId);
       socket.emit('game:view', buildGameView(engine, gameId, mapping?.playerId ?? null, trade, timerRemaining));
+    });
+
+    socket.on('game:observe-bot', (gameId, botPlayerId, callback) => {
+      if (!gm.isBotPlayer(gameId, botPlayerId)) {
+        callback({ error: 'Not a bot player' });
+        return;
+      }
+      const engine = gm.getEngine(gameId);
+      if (!engine) {
+        callback({ error: 'Game not found' });
+        return;
+      }
+
+      // Store this socket as observing this bot
+      botObservers.set(socket.id, { socketId: socket.id, botPlayerId, gameId });
+
+      // Join game room to receive updates
+      socket.join(gm.getGameRoom(gameId));
+
+      // Send initial bot-perspective view
+      const trade = (gm.getSession(gameId) as any)?.activeTrade ?? null;
+      const timerRemaining = gm.getTimerRemaining(gameId);
+      socket.emit('game:view', buildGameView(engine, gameId, botPlayerId, trade, timerRemaining));
+
+      callback({ success: true });
     });
 
     socket.on('action:roll-dice', (gameId) => {
@@ -447,6 +485,7 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager, botMana
       const result = gm.removePlayer(socket.id);
       if (result) io.to(gm.getGameRoom(result.gameId)).emit('lobby:state', result.lobby);
       gm.removeObserver(socket.id);
+      botObservers.delete(socket.id);
     });
   });
 }
@@ -504,6 +543,15 @@ function broadcastGameView(io: TypedServer, gm: GameManager, gameId: string) {
   for (const socketId of sockets) {
     const s = io.sockets.sockets.get(socketId);
     if (!s) continue;
+
+    // Check if this socket is a bot observer
+    const botObs = botObservers.get(socketId);
+    if (botObs && botObs.gameId === gameId) {
+      const view = buildGameView(engine, gameId, botObs.botPlayerId, activeTrade, timerRemaining);
+      s.emit('game:view', view);
+      continue;
+    }
+
     const mapping = gm.getPlayerIdForSocket(socketId);
     const view = buildGameView(engine, gameId, mapping?.playerId ?? null, activeTrade, timerRemaining);
     s.emit('game:view', view);

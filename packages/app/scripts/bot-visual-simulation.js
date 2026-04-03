@@ -230,11 +230,10 @@ async function main() {
   await host.page.goto(`${BASE}/game/${gameId}`);
   await sleep(1000);
 
-  // Navigate 3 player views (for 3 of the 4 bots)
-  // These are observer views — bots don't have real sockets
-  await p1.page.goto(`${BASE}/play/${gameId}`);
-  await p2.page.goto(`${BASE}/play/${gameId}`);
-  await p3.page.goto(`${BASE}/play/${gameId}`);
+  // Navigate 3 player views (for 3 of the 4 bots) with bot observer mode
+  await p1.page.goto(`${BASE}/play/${gameId}?bot=${botIds[0]}`);
+  await p2.page.goto(`${BASE}/play/${gameId}?bot=${botIds[1]}`);
+  await p3.page.goto(`${BASE}/play/${gameId}?bot=${botIds[2]}`);
   await sleep(1000);
 
   console.log('All browser windows loaded.\n');

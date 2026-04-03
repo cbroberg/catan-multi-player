@@ -85,6 +85,9 @@ export interface ClientToServerEvents {
 
   /** Request current game view */
   'game:request-view': (gameId: string) => void;
+
+  /** Observe a bot player's hand (read-only spectator view) */
+  'game:observe-bot': (gameId: string, botPlayerId: string, callback: (response: { success: boolean } | { error: string }) => void) => void;
 }
 
 // ─── Socket Events: Server → Client ─────────────────────────────────────────
