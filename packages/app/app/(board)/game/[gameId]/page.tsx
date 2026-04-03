@@ -16,6 +16,7 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
   const { gameId } = use(params);
   const { view, connected, connectionError, lastDice, loadFailed } = useGame(gameId);
   const t = useTranslations();
+  const timer = useTimer(view?.turnTimeRemaining ?? null, view?.currentPlayerId ?? null);
 
   if (!connected) {
     return (
@@ -51,7 +52,6 @@ export default function BigScreenGamePage({ params }: { params: Promise<{ gameId
     );
   }
 
-  const timer = useTimer(view?.turnTimeRemaining ?? null, view?.currentPlayerId ?? null);
   const currentPlayer = view.players.find((p) => p.id === view.currentPlayerId);
 
   return (
