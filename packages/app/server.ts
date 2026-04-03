@@ -8,7 +8,8 @@ import { registerSocketHandlers } from './server/socket-handler';
 const dev = process.env.NODE_ENV !== 'production';
 const port = parseInt(process.env.PORT || '3030', 10);
 
-const app = next({ dev });
+const hostname = '0.0.0.0';
+const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -26,7 +27,7 @@ app.prepare().then(() => {
   const gameManager = new GameManager();
   registerSocketHandlers(io, gameManager);
 
-  httpServer.listen(port, () => {
+  httpServer.listen(port, hostname, () => {
     console.log(`> Catan server ready on http://localhost:${port}`);
     console.log(`> Socket.IO path: /api/socket`);
     console.log(`> Environment: ${dev ? 'development' : 'production'}`);
