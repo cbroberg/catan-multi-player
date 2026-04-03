@@ -200,7 +200,7 @@ function generateDemoBuildings(board: GameBoard): BoardBuilding[] {
 
   const used = new Set<string>();
   const buildings: BoardBuilding[] = [];
-  const players = PLAYER_COLORS.slice(0, 6);
+  const players = PLAYER_COLORS;
 
   for (let p = 0; p < players.length; p++) {
     const color = players[p];
@@ -234,7 +234,7 @@ function generateDemoRoads(board: GameBoard): BoardRoad[] {
   const roads: BoardRoad[] = [];
   const usedEdges = new Set<string>();
 
-  for (let p = 0; p < 6; p++) {
+  for (let p = 0; p < PLAYER_COLORS.length; p++) {
     const playerBuildings = buildings.filter((b) => b.playerId === `player-${p}`);
     for (const building of playerBuildings) {
       // Find edges connected to this vertex
