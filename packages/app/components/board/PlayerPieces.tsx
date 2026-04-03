@@ -51,9 +51,9 @@ export function SettlementPiece({ x, y, color, size = 14 }: SettlementPieceProps
         <filter id={filterId}>
           {/* Tint: blend the grayscale image toward player color */}
           <feColorMatrix type="matrix" values={`
-            ${0.4 + r / 255 * 0.6} ${0.1 * (1 - r / 255)} 0 0 ${r / 255 * 0.15}
-            ${0.1 * (1 - g / 255)} ${0.4 + g / 255 * 0.6} 0 0 ${g / 255 * 0.15}
-            ${0.1 * (1 - b / 255)} 0 ${0.4 + b / 255 * 0.6} 0 ${b / 255 * 0.15}
+            ${0.2 + r / 255 * 0.8} ${0.05 * (1 - r / 255)} 0 0 ${r / 255 * 0.25}
+            ${0.05 * (1 - g / 255)} ${0.2 + g / 255 * 0.8} 0 0 ${g / 255 * 0.25}
+            ${0.05 * (1 - b / 255)} 0 ${0.2 + b / 255 * 0.8} 0 ${b / 255 * 0.25}
             0 0 0 1 0
           `} />
         </filter>
@@ -97,9 +97,9 @@ export function CityPiece({ x, y, color, size = 18 }: CityPieceProps) {
       <defs>
         <filter id={filterId}>
           <feColorMatrix type="matrix" values={`
-            ${0.4 + r / 255 * 0.6} ${0.1 * (1 - r / 255)} 0 0 ${r / 255 * 0.15}
-            ${0.1 * (1 - g / 255)} ${0.4 + g / 255 * 0.6} 0 0 ${g / 255 * 0.15}
-            ${0.1 * (1 - b / 255)} 0 ${0.4 + b / 255 * 0.6} 0 ${b / 255 * 0.15}
+            ${0.2 + r / 255 * 0.8} ${0.05 * (1 - r / 255)} 0 0 ${r / 255 * 0.25}
+            ${0.05 * (1 - g / 255)} ${0.2 + g / 255 * 0.8} 0 0 ${g / 255 * 0.25}
+            ${0.05 * (1 - b / 255)} 0 ${0.2 + b / 255 * 0.8} 0 ${b / 255 * 0.25}
             0 0 0 1 0
           `} />
         </filter>
