@@ -150,8 +150,8 @@ export function RoadPiece({ x1, y1, x2, y2, color, width = 4 }: RoadPieceProps) 
 
   return (
     <g transform={`translate(${mx}, ${my}) rotate(${angle})`}>
-      {/* Road body */}
-      <rect x={-length / 2} y={-width / 2} width={length} height={width} rx={width / 3} fill={color} />
+      {/* Road body with border matching base ring stroke */}
+      <rect x={-length / 2} y={-width / 2} width={length} height={width} rx={width / 3} fill={color} stroke={dark} strokeWidth={width * 0.18} />
       {/* Top highlight */}
       <rect x={-length / 2 + 1} y={-width / 2 + 0.3} width={length - 2} height={width * 0.3} rx={width / 4} fill={light} opacity="0.2" />
       {/* Wood plank lines */}
