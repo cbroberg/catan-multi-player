@@ -186,7 +186,6 @@ export function ShipPiece({ x1, y1, x2, y2, color, size = 16 }: ShipPieceProps) 
   const { r, g, b } = hexToRgb(color);
   const mx = (x1 + x2) / 2;
   const my = (y1 + y2) / 2;
-  const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
   const filterId = `tint-ship-${Math.round(mx)}-${Math.round(my)}`;
 
   return (
@@ -202,18 +201,16 @@ export function ShipPiece({ x1, y1, x2, y2, color, size = 16 }: ShipPieceProps) 
         </filter>
       </defs>
       {/* Player color base */}
-      <ellipse cx={mx} cy={my} rx={size * 0.55} ry={size * 0.28} fill={color} opacity="0.8"
-        transform={`rotate(${angle}, ${mx}, ${my})`} />
-      {/* Ship image, rotated to match edge */}
+      <ellipse cx={mx} cy={my + size * 0.12} rx={size * 0.5} ry={size * 0.22} fill={color} opacity="0.8" />
+      {/* Ship image — always upright, no rotation */}
       <image
         href="/tiles/ship.webp"
         x={mx - size / 2}
-        y={my - size / 2 - size * 0.1}
+        y={my - size / 2 - size * 0.08}
         width={size}
         height={size}
         preserveAspectRatio="xMidYMid meet"
         filter={`url(#${filterId})`}
-        transform={`rotate(${angle}, ${mx}, ${my})`}
       />
     </g>
   );
