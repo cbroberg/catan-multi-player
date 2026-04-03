@@ -38,24 +38,7 @@ export function NumberToken({ cx, cy, number, radius = 14 }: NumberTokenProps) {
       >
         {number}
       </text>
-      {/* Pip dots */}
-      <g>
-        {Array.from({ length: pips }, (_, i) => {
-          const dotSpacing = 3.5;
-          const totalWidth = (pips - 1) * dotSpacing;
-          const dotX = cx - totalWidth / 2 + i * dotSpacing;
-          const dotY = cy + radius * 0.55;
-          return (
-            <circle
-              key={i}
-              cx={dotX}
-              cy={dotY}
-              r={1.3}
-              fill={isRed ? '#c62828' : '#5d4037'}
-            />
-          );
-        })}
-      </g>
+      {/* Pips removed — not used in physical Catan */}
     </g>
   );
 }
