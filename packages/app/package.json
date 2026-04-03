@@ -9,7 +9,9 @@
     "start": "node --import tsx server.ts",
     "lint": "eslint",
     "test": "vitest run",
-    "e2e": "node scripts/e2e-visual-game.js"
+    "e2e": "node scripts/e2e-visual-game.js",
+    "sim": "node scripts/bot-simulation.js",
+    "sim:visual": "node scripts/bot-visual-simulation.js"
   },
   "dependencies": {
     "@catan/game-engine": "workspace:*",
