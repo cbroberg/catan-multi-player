@@ -96,12 +96,12 @@ function SeaTerrain() {
     <>
       <defs>
         <linearGradient id="sea-bg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#97a6af" />
-          <stop offset="50%" stopColor="#87969f" />
-          <stop offset="100%" stopColor="#778690" />
+          <stop offset="0%" stopColor="#98a4aa" />
+          <stop offset="50%" stopColor="#88949a" />
+          <stop offset="100%" stopColor="#78848a" />
         </linearGradient>
       </defs>
-      <polygon points={HEX_POINTS} fill="url(#sea-bg)" stroke="#6a7880" strokeWidth="1" />
+      <polygon points={HEX_POINTS} fill="url(#sea-bg)" stroke="#6a767c" strokeWidth="1" />
       <g opacity="0.3" fill="none" stroke="#a8b8c0" strokeWidth="1">
         <path d="M22,18 Q32,14 42,18 Q52,22 62,18 Q72,14 78,18" />
         <path d="M12,32 Q22,28 32,32 Q42,36 52,32 Q62,28 72,32 Q82,36 88,32" />
