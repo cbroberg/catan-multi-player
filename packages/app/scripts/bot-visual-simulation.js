@@ -67,6 +67,8 @@ async function launchWindow(x, y, w, h) {
       `--window-size=${w},${h}`,
       '--disable-features=TranslateUI',
       '--lang=da',
+      '--disable-gpu',
+      '--no-sandbox',
     ],
   });
   const ctx = await browser.newContext({ viewport: { width: w - 16, height: h - 80 } });
@@ -167,9 +169,6 @@ async function main() {
   const p2 = await launchWindow(hostW + playerW, 0, playerW, H);
   const p3 = await launchWindow(hostW + playerW * 2, 0, playerW, H);
 
-  // Minimize terminal
-  try { execSync(`osascript -e 'tell application "System Events" to tell application process "Ghostty" to set miniaturized of every window to true'`); } catch {}
-
   const browsers = [host.browser, p1.browser, p2.browser, p3.browser];
 
   // ─── Set up event listeners ───────────────────────────────────────────
@@ -226,14 +225,14 @@ async function main() {
   if (startResult.error) throw new Error(`Start failed: ${startResult.error}`);
   console.log('Game started!\n');
 
-  // Navigate big screen to game view
-  await host.page.goto(`${BASE}/game/${gameId}`);
+  // Navigate windows sequentially with delays to avoid crashes
+  await host.page.goto(`${BASE}/game/${gameId}`, { waitUntil: 'domcontentloaded' });
+  await sleep(2000);
+  await p1.page.goto(`${BASE}/play/${gameId}?bot=${botIds[0]}`, { waitUntil: 'domcontentloaded' });
   await sleep(1000);
-
-  // Navigate 3 player views (for 3 of the 4 bots) with bot observer mode
-  await p1.page.goto(`${BASE}/play/${gameId}?bot=${botIds[0]}`);
-  await p2.page.goto(`${BASE}/play/${gameId}?bot=${botIds[1]}`);
-  await p3.page.goto(`${BASE}/play/${gameId}?bot=${botIds[2]}`);
+  await p2.page.goto(`${BASE}/play/${gameId}?bot=${botIds[1]}`, { waitUntil: 'domcontentloaded' });
+  await sleep(1000);
+  await p3.page.goto(`${BASE}/play/${gameId}?bot=${botIds[2]}`, { waitUntil: 'domcontentloaded' });
   await sleep(1000);
 
   console.log('All browser windows loaded.\n');
