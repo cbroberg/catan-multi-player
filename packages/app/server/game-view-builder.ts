@@ -13,7 +13,8 @@ export function buildGameView(
   gameId: string,
   playerId: string | null,
   activeTrade?: TradeOffer | null,
-  turnTimeRemaining?: number | null
+  turnTimeRemaining?: number | null,
+  botPlayerIds?: Set<string>,
 ): GameView {
   const state = engine.getState();
   const currentPlayer = engine.currentPlayer();

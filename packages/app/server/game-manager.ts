@@ -270,6 +270,61 @@ export class GameManager {
     return ALL_COLORS.filter((c) => !taken.has(c));
   }
 
+  /**
+   * Add a bot player to a game session. Returns the bot's player ID.
+   */
+  addBot(gameId: string, name: string, color: PlayerColor): string | null {
+    const session = this.games.get(gameId);
+    if (!session || session.phase !== 'waiting') return null;
+
+    if (session.players.size >= session.config.maxPlayers) return null;
+
+    // Ensure color is available
+    const takenColors = new Set([...session.players.values()].map((p) => p.color));
+    if (takenColors.has(color)) {
+      const available = ALL_COLORS.filter((c) => !takenColors.has(c));
+      if (available.length === 0) return null;
+      color = available[0];
+    }
+
+    const playerId = randomBytes(6).toString('hex');
+    const player: LobbyPlayer = {
+      id: playerId,
+      name,
+      color,
+      avatar: 'robot',
+      isReady: true, // Bots are always ready
+      isHost: false,
+      isBot: true,
+    };
+
+    session.players.set(playerId, player);
+    return playerId;
+  }
+
+  /**
+   * Remove all bot players from a game session.
+   */
+  removeBots(gameId: string): void {
+    const session = this.games.get(gameId);
+    if (!session) return;
+
+    for (const [pid, player] of session.players) {
+      if (player.isBot) {
+        session.players.delete(pid);
+      }
+    }
+  }
+
+  /**
+   * Check if a player is a bot.
+   */
+  isBotPlayer(gameId: string, playerId: string): boolean {
+    const session = this.games.get(gameId);
+    if (!session) return false;
+    return session.players.get(playerId)?.isBot === true;
+  }
+
   // ─── Timer Management ────────────────────────────────────────────────────
 
   /**

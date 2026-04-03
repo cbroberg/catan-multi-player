@@ -1,6 +1,7 @@
 import type { Server, Socket } from 'socket.io';
 import type { ClientToServerEvents, ServerToClientEvents } from '@catan/shared';
 import { GameManager } from './game-manager';
+import { BotManager, BOT_NAMES } from './bot-manager';
 import { buildGameView } from './game-view-builder';
 
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
@@ -10,7 +11,7 @@ const TURN_DURATION_MS = 90_000;
 const SETUP_TURN_DURATION_MS = 120_000;
 const TIMER_SYNC_INTERVAL_MS = 5_000;
 
-export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
+export function registerSocketHandlers(io: TypedServer, gm: GameManager, botManager?: BotManager) {
 
   // ─── Timer helpers (shared across all sockets) ───────────────────────
 
@@ -44,6 +45,9 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
     // Broadcast new state and start next timer
     broadcastGameView(io, gm, gameId);
     startTimerForCurrentTurn(gameId);
+
+    // Trigger bot action if next player is a bot
+    triggerBotIfNeeded(gameId);
   }
 
   function startTimerForCurrentTurn(gameId: string) {
@@ -72,6 +76,16 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
     }, TIMER_SYNC_INTERVAL_MS);
 
     gm.setTimerSyncInterval(gameId, syncInterval);
+  }
+
+  // ─── Bot trigger helper ──────────────────────────────────────────────
+
+  function triggerBotIfNeeded(gameId: string) {
+    if (!botManager) return;
+    const engine = gm.getEngine(gameId);
+    if (engine) {
+      botManager.onGameStateChanged(gameId, engine);
+    }
   }
 
   // ─── Socket connections ──────────────────────────────────────────────
@@ -126,6 +140,70 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
       if (result) io.to(gm.getGameRoom(gameId)).emit('lobby:board-updated', result);
     });
 
+    // ─── Bot Events ────────────────────────────────────────────────────
+
+    socket.on('game:add-bot', (gameId, callback) => {
+      if (!botManager) { callback({ error: 'Bots not available' }); return; }
+      const session = gm.getSession(gameId);
+      if (!session) { callback({ error: 'Game not found' }); return; }
+
+      const availableColors = gm.getAvailableColors(gameId);
+      if (availableColors.length === 0) { callback({ error: 'No colors available' }); return; }
+
+      // Pick next bot name
+      const existingBotNames = [...session.players.values()]
+        .filter((p) => p.isBot)
+        .map((p) => p.name.replace('Bot ', ''));
+      const nextName = BOT_NAMES.find((n) => !existingBotNames.includes(n)) ?? `Bot ${session.players.size + 1}`;
+
+      const playerId = gm.addBot(gameId, `Bot ${nextName}`, availableColors[0]);
+      if (!playerId) { callback({ error: 'Could not add bot' }); return; }
+
+      botManager.registerBot(gameId, playerId);
+      callback({ playerId });
+
+      // Broadcast updated lobby state
+      const lobby = gm.getSession(gameId);
+      if (lobby) {
+        io.to(gm.getGameRoom(gameId)).emit('lobby:state', {
+          gameId: lobby.id,
+          code: lobby.code,
+          config: lobby.config,
+          players: [...lobby.players.values()],
+          board: lobby.board,
+          balanceScore: lobby.balanceScore,
+          phase: lobby.phase,
+          maxPlayers: lobby.config.maxPlayers,
+        });
+      }
+    });
+
+    socket.on('game:remove-bots', (gameId) => {
+      if (!botManager) return;
+      botManager.removeBots(gameId);
+      gm.removeBots(gameId);
+
+      // Broadcast updated lobby state
+      const session = gm.getSession(gameId);
+      if (session) {
+        io.to(gm.getGameRoom(gameId)).emit('lobby:state', {
+          gameId: session.id,
+          code: session.code,
+          config: session.config,
+          players: [...session.players.values()],
+          board: session.board,
+          balanceScore: session.balanceScore,
+          phase: session.phase,
+          maxPlayers: session.config.maxPlayers,
+        });
+      }
+    });
+
+    socket.on('game:set-bot-speed', (gameId, speedMultiplier) => {
+      if (!botManager) return;
+      botManager.setSimulationSpeed(gameId, speedMultiplier);
+    });
+
     socket.on('game:start', (gameId, callback) => {
       const result = gm.startGame(gameId, socket.id);
       if ('error' in result) { callback({ error: result.error }); return; }
@@ -135,6 +213,9 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
       // Send initial game view to all players and start the timer
       broadcastGameView(io, gm, gameId);
       startTimerForCurrentTurn(gameId);
+
+      // Trigger bot action if first player is a bot
+      triggerBotIfNeeded(gameId);
     });
 
     socket.on('game:leave', (gameId) => {
@@ -169,6 +250,7 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
         // If setup player index changed or phase changed, a new setup turn started
         if (stateAfter.setupPlayerIndex !== prevSetupIdx || stateAfter.phase !== prevPhase) {
           startTimerForCurrentTurn(gameId);
+          triggerBotIfNeeded(gameId);
         }
       }
     });
@@ -290,6 +372,7 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
         if (engine && engine.getState().turnPhase === 'ROBBER_DISCARD') {
           gm.pauseTurnTimer(gameId);
         }
+        triggerBotIfNeeded(gameId);
       }
     });
 
@@ -347,12 +430,14 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager) {
       if (state.turnPhase !== 'ROBBER_DISCARD' && gm.getSession(gameId)?.timerPausedAt != null) {
         gm.resumeTurnTimer(gameId, onTimerExpire);
       }
+      triggerBotIfNeeded(gameId);
     });
 
     socket.on('action:end-turn', (gameId) => {
       runAction(io, gm, socket, gameId, (engine, pid) => engine.endTurn(pid));
       // Start timer for the next player's turn
       startTimerForCurrentTurn(gameId);
+      triggerBotIfNeeded(gameId);
     });
 
     // ─── Disconnect ────────────────────────────────────────────────────

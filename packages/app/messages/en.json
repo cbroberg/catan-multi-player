@@ -158,6 +158,14 @@
     "tradeWithInactiveDesc": "All players can trade, not just the active one",
     "players": "players",
     "creating": "Creating...",
-    "createGame": "Create Game"
+    "createGame": "Create Game",
+    "botPlayers": "Bot Players",
+    "simulationMode": "Simulation Mode",
+    "simulationModeDesc": "All bots, auto-start — watch the AI play",
+    "botSpeed": "Bot Speed",
+    "botSpeedInstant": "Instant",
+    "botSpeedFast": "Fast",
+    "botSpeedNormal": "Normal",
+    "botSpeedSlow": "Slow"
   }
 }

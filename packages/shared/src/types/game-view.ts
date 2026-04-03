@@ -18,6 +18,7 @@ export interface PublicPlayer {
   settlements: string[];
   cities: string[];
   roads: string[];
+  isBot?: boolean;
 }
 
 /** A building on the board */

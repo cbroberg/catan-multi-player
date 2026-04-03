@@ -52,6 +52,10 @@ export { GameEngine } from './engine/game-engine';
 export type { EngineState, PlayerState, DevCardType, ActionResult, GameLogEntry } from './engine/types';
 export { DEV_CARD_DECK } from './engine/types';
 
+// Bot AI
+export { BotAI } from './bot/bot-ai';
+export type { BotAction } from './bot/bot-ai';
+
 // Presets
 export {
   BEGINNER_PRESET,

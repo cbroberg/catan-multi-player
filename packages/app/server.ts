@@ -3,6 +3,7 @@ import next from 'next';
 import { Server as SocketIOServer } from 'socket.io';
 import type { ClientToServerEvents, ServerToClientEvents } from '@catan/shared';
 import { GameManager } from './server/game-manager';
+import { BotManager } from './server/bot-manager';
 import { registerSocketHandlers } from './server/socket-handler';
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -25,7 +26,8 @@ app.prepare().then(() => {
   });
 
   const gameManager = new GameManager();
-  registerSocketHandlers(io, gameManager);
+  const botManager = new BotManager(io, gameManager);
+  registerSocketHandlers(io, gameManager, botManager);
 
   httpServer.listen(port, hostname, () => {
     console.log(`> Catan server ready on http://localhost:${port}`);

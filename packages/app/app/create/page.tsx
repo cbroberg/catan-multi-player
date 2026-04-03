@@ -15,6 +15,9 @@ export default function CreateGamePage() {
   const router = useRouter();
   const t = useTranslations();
   const [creating, setCreating] = useState(false);
+  const [botCount, setBotCount] = useState(0);
+  const [botThinkTimeMs, setBotThinkTimeMs] = useState(800);
+  const [simulationMode, setSimulationMode] = useState(false);
 
   const [config, setConfig] = useState<GameConfig>({
     boardType: 'random-balanced',
@@ -44,6 +47,9 @@ export default function CreateGamePage() {
     }));
   }, []);
 
+  const maxBots = (selectedVariant?.playerRange[1] ?? 4) - 1; // Leave room for at least 1 human (or 0 in sim mode)
+  const maxBotsAllowed = simulationMode ? (selectedVariant?.playerRange[1] ?? 4) : maxBots;
+
   const handleCreate = useCallback(() => {
     setCreating(true);
     const socket = getSocket();
@@ -52,9 +58,30 @@ export default function CreateGamePage() {
         setCreating(false);
         return;
       }
-      router.push(`/lobby/${response.gameId}`);
+
+      const gameId = response.gameId;
+
+      // Add bots sequentially
+      let botsAdded = 0;
+      const addNextBot = () => {
+        if (botsAdded >= botCount) {
+          // Set bot speed if in simulation mode
+          if (simulationMode && botCount >= 2) {
+            const speedMultiplier = botThinkTimeMs === 0 ? 100 : Math.round(800 / Math.max(50, botThinkTimeMs));
+            socket.emit('game:set-bot-speed', gameId, speedMultiplier);
+          }
+          router.push(`/lobby/${gameId}`);
+          return;
+        }
+        socket.emit('game:add-bot', gameId, (botResponse: { playerId: string } | { error: string }) => {
+          botsAdded++;
+          addNextBot();
+        });
+      };
+
+      addNextBot();
     });
-  }, [config, router]);
+  }, [config, router, botCount, botThinkTimeMs, simulationMode]);
 
   return (
     <div className="min-h-screen bg-[#0e1a2e] text-white flex flex-col items-center p-6">
@@ -146,6 +173,59 @@ export default function CreateGamePage() {
               checked={config.tradeWithInactive}
               onChange={(v) => updateConfig('tradeWithInactive', v)}
             />
+          </div>
+        </Section>
+
+        {/* Bot Players */}
+        <Section title={t('create.botPlayers')}>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setBotCount((c) => Math.max(0, c - 1))}
+                className="w-8 h-8 rounded-lg bg-white/10 text-white/60 hover:bg-white/20 flex items-center justify-center cursor-pointer text-lg font-bold"
+              >
+                -
+              </button>
+              <span className="text-lg font-medium w-16 text-center">
+                {botCount} {botCount === 1 ? 'bot' : 'bots'}
+              </span>
+              <button
+                onClick={() => setBotCount((c) => Math.min(maxBotsAllowed, c + 1))}
+                className="w-8 h-8 rounded-lg bg-white/10 text-white/60 hover:bg-white/20 flex items-center justify-center cursor-pointer text-lg font-bold"
+              >
+                +
+              </button>
+            </div>
+
+            {botCount >= 2 && (
+              <ToggleOption
+                label={t('create.simulationMode')}
+                description={t('create.simulationModeDesc')}
+                checked={simulationMode}
+                onChange={(v) => setSimulationMode(v)}
+              />
+            )}
+
+            {botCount > 0 && (
+              <div>
+                <label className="text-xs text-white/50 uppercase tracking-wide">{t('create.botSpeed')}</label>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {[
+                    { label: t('create.botSpeedInstant'), ms: 0 },
+                    { label: t('create.botSpeedFast'), ms: 200 },
+                    { label: t('create.botSpeedNormal'), ms: 800 },
+                    { label: t('create.botSpeedSlow'), ms: 2000 },
+                  ].map(({ label, ms }) => (
+                    <OptionButton
+                      key={ms}
+                      label={label}
+                      selected={botThinkTimeMs === ms}
+                      onClick={() => setBotThinkTimeMs(ms)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </Section>
 

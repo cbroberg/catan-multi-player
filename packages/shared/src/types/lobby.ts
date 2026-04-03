@@ -11,6 +11,7 @@ export interface LobbyPlayer {
   avatar: string;
   isReady: boolean;
   isHost: boolean;
+  isBot?: boolean;
 }
 
 export interface LobbyState {
@@ -50,6 +51,15 @@ export interface ClientToServerEvents {
 
   /** Host regenerates board */
   'game:regenerate-board': (gameId: string) => void;
+
+  /** Add a bot player */
+  'game:add-bot': (gameId: string, callback: (response: { playerId: string } | { error: string }) => void) => void;
+
+  /** Remove all bot players */
+  'game:remove-bots': (gameId: string) => void;
+
+  /** Set bot simulation speed */
+  'game:set-bot-speed': (gameId: string, speedMultiplier: number) => void;
 
   // ─── Game Actions (forwarded to GameEngine) ────────────────────────
   'action:setup-settlement': GameActionEvents['action:setup-settlement'];

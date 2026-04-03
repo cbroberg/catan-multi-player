@@ -158,6 +158,14 @@
     "tradeWithInactiveDesc": "Alle spillere kan handle, ikke kun den aktive",
     "players": "spillere",
     "creating": "Opretter...",
-    "createGame": "Opret Spil"
+    "createGame": "Opret Spil",
+    "botPlayers": "Bot-spillere",
+    "simulationMode": "Simuleringstilstand",
+    "simulationModeDesc": "Kun bots, auto-start — se AI'en spille",
+    "botSpeed": "Bot-hastighed",
+    "botSpeedInstant": "Instant",
+    "botSpeedFast": "Hurtig",
+    "botSpeedNormal": "Normal",
+    "botSpeedSlow": "Langsom"
   }
 }
