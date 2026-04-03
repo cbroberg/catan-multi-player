@@ -59,9 +59,9 @@ export function SettlementPiece({ x, y, color, size = 14 }: SettlementPieceProps
         </filter>
       </defs>
       {/* Player color base ring */}
-      <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill={color} opacity="0.9" />
-      <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill="none" stroke={darken(color, 0.6)} strokeWidth="1" />
-      {/* Tinted settlement image — nudged down to sit on base */}
+      <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.58} ry={s * 0.29} fill={color} opacity="0.9" />
+      <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.58} ry={s * 0.29} fill="none" stroke={darken(color, 0.6)} strokeWidth="1" />
+      {/* Tinted settlement image — nudged up to sit on base */}
       <image
         href="/tiles/settlement.webp"
         x={x - s / 2}
