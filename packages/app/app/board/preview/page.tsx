@@ -20,11 +20,14 @@ export default function BoardPreviewPage() {
   const dragStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const lastTouchDist = useRef(0);
+  const lastTouchCenter = useRef({ x: 0, y: 0 });
+
+  // ── Mouse events (desktop) ──
   const onMouseDown = useCallback((e: React.MouseEvent) => {
-    if (zoom <= 1) return;
     setDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY, panX: pan.x, panY: pan.y };
-  }, [zoom, pan]);
+  }, [pan]);
 
   const onMouseMove = useCallback((e: React.MouseEvent) => {
     if (!dragging) return;
@@ -42,6 +45,62 @@ export default function BoardPreviewPage() {
       const next = e.deltaY < 0 ? z * 1.15 : z / 1.15;
       return Math.max(0.25, Math.min(20, next));
     });
+  }, []);
+
+  // ── Touch events (mobile pinch-to-zoom + drag) ──
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      // Pinch start
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastTouchDist.current = Math.sqrt(dx * dx + dy * dy);
+      lastTouchCenter.current = {
+        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+        y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+      };
+    } else if (e.touches.length === 1) {
+      // Single finger drag
+      setDragging(true);
+      dragStart.current = {
+        x: e.touches[0].clientX, y: e.touches[0].clientY,
+        panX: pan.x, panY: pan.y,
+      };
+    }
+  }, [pan]);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    e.preventDefault(); // Prevent browser zoom/scroll
+    if (e.touches.length === 2) {
+      // Pinch zoom
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (lastTouchDist.current > 0) {
+        const scale = dist / lastTouchDist.current;
+        setZoom(z => Math.max(0.25, Math.min(20, z * scale)));
+      }
+      lastTouchDist.current = dist;
+
+      // Two-finger pan
+      const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      setPan(p => ({
+        x: p.x + (cx - lastTouchCenter.current.x),
+        y: p.y + (cy - lastTouchCenter.current.y),
+      }));
+      lastTouchCenter.current = { x: cx, y: cy };
+    } else if (e.touches.length === 1 && dragging) {
+      // Single finger drag
+      setPan({
+        x: dragStart.current.panX + (e.touches[0].clientX - dragStart.current.x),
+        y: dragStart.current.panY + (e.touches[0].clientY - dragStart.current.y),
+      });
+    }
+  }, [dragging]);
+
+  const onTouchEnd = useCallback(() => {
+    setDragging(false);
+    lastTouchDist.current = 0;
   }, []);
 
   const fetchBoard = useCallback(async (vid: string) => {
@@ -163,12 +222,18 @@ export default function BoardPreviewPage() {
       <div
         ref={containerRef}
         className="w-full overflow-hidden flex-1"
-        style={{ cursor: zoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'default' }}
+        style={{
+          cursor: zoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'default',
+          touchAction: 'none', // Prevent browser zoom — we handle it
+        }}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
         onWheel={onWheel}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         <div
           className="w-full max-w-3xl mx-auto"
