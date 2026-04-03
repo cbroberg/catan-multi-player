@@ -1,0 +1,611 @@
+══════════════════════════════════════════════════════════════════════
+  CATAN BOT SIMULATION — 2026-04-03T17:27:59.139Z
+  Variant: base-3-4 | Players: 4 | VP Target: 10
+══════════════════════════════════════════════════════════════════════
+
+
+──────────────────────────────────────────────────────────────────────
+SETUP PHASE
+──────────────────────────────────────────────────────────────────────
+
+PLAYERS:
+  1. Bot Charlie (white)
+  2. Bot Bob (blue)
+  3. Bot Diana (orange)
+  4. Bot Alice (red)
+
+  S1 | Bot Charlie    | setup-settlement     | setup-settlement
+  S1 | Bot Charlie    | setup-road           | setup-road
+  S1 | Bot Bob        | setup-settlement     | setup-settlement
+  S1 | Bot Bob        | setup-road           | setup-road
+  S1 | Bot Diana      | setup-settlement     | setup-settlement
+  S1 | Bot Diana      | setup-road           | setup-road
+  S1 | Bot Alice      | setup-settlement     | setup-settlement
+  S2 | Bot Alice      | setup-road           | setup-road
+  S2 | Bot Alice      | setup-settlement     | setup-settlement
+  S2 | Bot Alice      | setup-road           | setup-road
+  S2 | Bot Diana      | setup-settlement     | setup-settlement
+  S2 | Bot Diana      | setup-road           | setup-road
+  S2 | Bot Bob        | setup-settlement     | setup-settlement
+  S2 | Bot Bob        | setup-road           | setup-road
+  S2 | Bot Charlie    | setup-settlement     | setup-settlement
+
+──────────────────────────────────────────────────────────────────────
+PLAYING PHASE
+──────────────────────────────────────────────────────────────────────
+
+T  1 | Bot Charlie    | setup-road           | setup-road
+T  1 | SYSTEM         | game-start           | game-start
+T  1 | Bot Charlie    | dice-roll            | 5+2=7
+T  1 | Bot Charlie    | move-robber          | moved robber
+T  1 | Bot Charlie    | steal                | stole from Bot Bob
+T  2 | Bot Charlie    | end-turn             | ended turn
+T  2 | Bot Bob        | dice-roll            | 3+6=9
+T  2 | SYSTEM         | resource-distribution | resource-distribution
+T  3 | Bot Bob        | end-turn             | ended turn
+T  3 | Bot Diana      | dice-roll            | 5+1=6
+T  3 | SYSTEM         | resource-distribution | resource-distribution
+T  3 | Bot Diana      | build-road           | built road
+T  4 | Bot Diana      | end-turn             | ended turn
+T  4 | Bot Alice      | dice-roll            | 4+2=6
+T  4 | SYSTEM         | resource-distribution | resource-distribution
+T  4 | Bot Alice      | build-road           | built road
+T  4 | Bot Alice      | maritime-trade       | 4:1 brick→lumber
+T  5 | Bot Alice      | end-turn             | ended turn
+T  5 | Bot Charlie    | dice-roll            | 3+3=6
+T  5 | SYSTEM         | resource-distribution | resource-distribution
+T  5 | Bot Charlie    | maritime-trade       | 4:1 wool→lumber
+T  5 | Bot Charlie    | build-road           | built road
+T  6 | Bot Charlie    | end-turn             | ended turn
+T  6 | Bot Bob        | dice-roll            | 3+1=4
+T  6 | SYSTEM         | resource-distribution | resource-distribution
+T  6 | Bot Bob        | maritime-trade       | 4:1 wool→lumber
+T  6 | Bot Bob        | build-road           | built road
+T  7 | Bot Bob        | end-turn             | ended turn
+T  7 | Bot Diana      | dice-roll            | 2+6=8
+T  7 | SYSTEM         | resource-distribution | resource-distribution
+T  8 | Bot Diana      | end-turn             | ended turn
+T  8 | Bot Alice      | dice-roll            | 5+1=6
+T  8 | SYSTEM         | resource-distribution | resource-distribution
+T  8 | Bot Alice      | maritime-trade       | 4:1 brick→wool
+T  9 | Bot Alice      | end-turn             | ended turn
+T  9 | Bot Charlie    | dice-roll            | 6+1=7
+T  9 | Bot Charlie    | move-robber          | moved robber
+T  9 | Bot Charlie    | steal                | stole from Bot Diana
+T  9 | Bot Charlie    | maritime-trade       | 4:1 grain→ore
+T 10 | Bot Charlie    | end-turn             | ended turn
+T 10 | Bot Bob        | dice-roll            | 5+2=7
+T 10 | Bot Bob        | move-robber          | moved robber
+T 10 | Bot Bob        | steal                | stole from Bot Alice
+T 11 | Bot Bob        | end-turn             | ended turn
+T 11 | Bot Diana      | dice-roll            | 3+6=9
+T 11 | SYSTEM         | resource-distribution | resource-distribution
+T 12 | Bot Diana      | end-turn             | ended turn
+T 12 | Bot Alice      | dice-roll            | 5+2=7
+T 12 | Bot Alice      | move-robber          | moved robber
+T 12 | Bot Alice      | steal                | stole from Bot Bob
+T 13 | Bot Alice      | end-turn             | ended turn
+T 13 | Bot Charlie    | dice-roll            | 1+4=5
+T 13 | SYSTEM         | resource-distribution | resource-distribution
+T 13 | Bot Charlie    | buy-dev-card         | bought dev card
+T 14 | Bot Charlie    | end-turn             | ended turn
+T 14 | Bot Bob        | dice-roll            | 2+2=4
+T 14 | SYSTEM         | resource-distribution | resource-distribution
+T 15 | Bot Bob        | end-turn             | ended turn
+T 15 | Bot Diana      | dice-roll            | 6+5=11
+T 15 | SYSTEM         | resource-distribution | resource-distribution
+T 16 | Bot Diana      | end-turn             | ended turn
+T 16 | Bot Alice      | dice-roll            | 1+4=5
+T 16 | SYSTEM         | resource-distribution | resource-distribution
+T 17 | Bot Alice      | end-turn             | ended turn
+T 17 | Bot Charlie    | dice-roll            | 3+3=6
+T 17 | SYSTEM         | resource-distribution | resource-distribution
+T 18 | Bot Charlie    | end-turn             | ended turn
+T 18 | Bot Bob        | dice-roll            | 4+6=10
+T 18 | SYSTEM         | resource-distribution | resource-distribution
+T 19 | Bot Bob        | end-turn             | ended turn
+T 19 | Bot Diana      | dice-roll            | 6+6=12
+T 19 | SYSTEM         | resource-distribution | resource-distribution
+T 19 | Bot Diana      | maritime-trade       | 4:1 ore→grain
+T 20 | Bot Diana      | end-turn             | ended turn
+T 20 | Bot Alice      | dice-roll            | 5+5=10
+T 20 | SYSTEM         | resource-distribution | resource-distribution
+T 20 | Bot Alice      | build-settlement     | built settlement
+T 20 | Bot Alice      | build-road           | built road
+T 21 | Bot Alice      | end-turn             | ended turn
+T 21 | Bot Charlie    | dice-roll            | 3+3=6
+T 21 | SYSTEM         | resource-distribution | resource-distribution
+T 21 | Bot Charlie    | maritime-trade       | 4:1 wool→grain
+T 22 | Bot Charlie    | end-turn             | ended turn
+T 22 | Bot Bob        | dice-roll            | 4+5=9
+T 22 | SYSTEM         | resource-distribution | resource-distribution
+T 22 | Bot Bob        | maritime-trade       | 4:1 wool→lumber
+T 23 | Bot Bob        | end-turn             | ended turn
+T 23 | Bot Diana      | dice-roll            | 1+2=3
+T 23 | SYSTEM         | resource-distribution | resource-distribution
+T 24 | Bot Diana      | end-turn             | ended turn
+T 24 | Bot Alice      | dice-roll            | 4+3=7
+T 24 | Bot Alice      | move-robber          | moved robber
+T 24 | Bot Alice      | steal                | stole from Bot Diana
+T 24 | Bot Alice      | build-road           | built road
+T 25 | Bot Alice      | end-turn             | ended turn
+T 25 | Bot Charlie    | dice-roll            | 6+4=10
+T 25 | SYSTEM         | resource-distribution | resource-distribution
+T 26 | Bot Charlie    | end-turn             | ended turn
+T 26 | Bot Bob        | dice-roll            | 4+1=5
+T 26 | SYSTEM         | resource-distribution | resource-distribution
+T 27 | Bot Bob        | end-turn             | ended turn
+T 27 | Bot Diana      | dice-roll            | 3+2=5
+T 27 | SYSTEM         | resource-distribution | resource-distribution
+T 27 | Bot Diana      | buy-dev-card         | bought dev card
+T 28 | Bot Diana      | end-turn             | ended turn
+T 28 | Bot Alice      | dice-roll            | 4+1=5
+T 28 | SYSTEM         | resource-distribution | resource-distribution
+T 28 | Bot Alice      | build-road           | built road
+T 29 | Bot Alice      | end-turn             | ended turn
+T 29 | Bot Charlie    | dice-roll            | 5+2=7
+T 29 | Bot Charlie    | discard              | discarded 5 cards
+T 29 | Bot Charlie    | move-robber          | moved robber
+T 29 | Bot Charlie    | steal                | stole from Bot Alice
+T 30 | Bot Charlie    | end-turn             | ended turn
+T 30 | Bot Bob        | dice-roll            | 4+6=10
+T 30 | SYSTEM         | resource-distribution | resource-distribution
+T 31 | Bot Bob        | end-turn             | ended turn
+T 31 | Bot Diana      | dice-roll            | 4+5=9
+T 31 | SYSTEM         | resource-distribution | resource-distribution
+T 32 | Bot Diana      | end-turn             | ended turn
+T 32 | Bot Alice      | dice-roll            | 5+4=9
+T 32 | SYSTEM         | resource-distribution | resource-distribution
+T 32 | Bot Alice      | build-road           | built road
+T 33 | Bot Alice      | end-turn             | ended turn
+T 33 | Bot Charlie    | dice-roll            | 2+2=4
+T 33 | SYSTEM         | resource-distribution | resource-distribution
+T 33 | Bot Charlie    | build-settlement     | built settlement
+T 33 | Bot Charlie    | maritime-trade       | 3:1 grain→lumber
+T 33 | Bot Charlie    | build-road           | built road
+T 33 | Bot Charlie    | maritime-trade       | 3:1 brick→lumber
+T 34 | Bot Charlie    | end-turn             | ended turn
+T 34 | Bot Bob        | dice-roll            | 5+3=8
+T 34 | SYSTEM         | resource-distribution | resource-distribution
+T 35 | Bot Bob        | end-turn             | ended turn
+T 35 | Bot Diana      | dice-roll            | 1+5=6
+T 35 | SYSTEM         | resource-distribution | resource-distribution
+T 35 | Bot Diana      | build-city           | upgraded to city
+T 36 | Bot Diana      | end-turn             | ended turn
+T 36 | Bot Alice      | dice-roll            | 2+4=6
+T 36 | SYSTEM         | resource-distribution | resource-distribution
+T 37 | Bot Alice      | end-turn             | ended turn
+T 37 | Bot Charlie    | dice-roll            | 1+6=7
+T 37 | Bot Bob        | discard              | discarded 4 cards
+T 37 | Bot Charlie    | move-robber          | moved robber
+T 37 | Bot Charlie    | steal                | stole from Bot Diana
+T 37 | Bot Charlie    | build-road           | built road
+T 38 | Bot Charlie    | end-turn             | ended turn
+T 38 | Bot Bob        | dice-roll            | 2+2=4
+T 38 | SYSTEM         | resource-distribution | resource-distribution
+T 39 | Bot Bob        | end-turn             | ended turn
+T 39 | Bot Diana      | play-knight          | played knight
+T 39 | Bot Diana      | move-robber          | moved robber
+T 39 | Bot Diana      | steal                | stole from Bot Alice
+T 40 | Bot Diana      | end-turn             | ended turn
+T 40 | Bot Alice      | dice-roll            | 4+2=6
+T 40 | SYSTEM         | resource-distribution | resource-distribution
+T 41 | Bot Alice      | end-turn             | ended turn
+T 41 | Bot Charlie    | dice-roll            | 3+4=7
+T 41 | Bot Charlie    | move-robber          | moved robber
+T 41 | Bot Charlie    | steal                | stole from Bot Diana
+T 41 | Bot Charlie    | maritime-trade       | 3:1 wool→ore
+T 42 | Bot Charlie    | end-turn             | ended turn
+T 42 | Bot Bob        | dice-roll            | 5+2=7
+T 42 | Bot Bob        | move-robber          | moved robber
+T 42 | Bot Bob        | steal                | stole from Bot Alice
+T 42 | Bot Bob        | buy-dev-card         | bought dev card
+T 43 | Bot Bob        | end-turn             | ended turn
+T 43 | Bot Diana      | dice-roll            | 4+3=7
+T 43 | Bot Diana      | move-robber          | moved robber
+T 43 | Bot Diana      | steal                | stole from Bot Bob
+T 44 | Bot Diana      | end-turn             | ended turn
+T 44 | Bot Alice      | dice-roll            | 4+3=7
+T 44 | Bot Alice      | move-robber          | moved robber
+T 44 | Bot Alice      | steal                | stole from Bot Diana
+T 45 | Bot Alice      | end-turn             | ended turn
+T 45 | Bot Charlie    | dice-roll            | 3+5=8
+T 45 | SYSTEM         | resource-distribution | resource-distribution
+T 46 | Bot Charlie    | end-turn             | ended turn
+T 46 | Bot Bob        | dice-roll            | 2+2=4
+T 46 | SYSTEM         | resource-distribution | resource-distribution
+T 47 | Bot Bob        | end-turn             | ended turn
+T 47 | Bot Diana      | dice-roll            | 3+4=7
+T 47 | Bot Diana      | move-robber          | moved robber
+T 47 | Bot Diana      | steal                | stole from Bot Bob
+T 47 | Bot Diana      | maritime-trade       | 4:1 brick→lumber
+T 48 | Bot Diana      | end-turn             | ended turn
+T 48 | Bot Alice      | dice-roll            | 1+6=7
+T 48 | Bot Alice      | move-robber          | moved robber
+T 48 | Bot Alice      | steal                | stole from Bot Diana
+T 49 | Bot Alice      | end-turn             | ended turn
+T 49 | Bot Charlie    | dice-roll            | 3+1=4
+T 49 | SYSTEM         | resource-distribution | resource-distribution
+T 50 | Bot Charlie    | end-turn             | ended turn
+T 50 | Bot Bob        | dice-roll            | 3+5=8
+T 50 | SYSTEM         | resource-distribution | resource-distribution
+T 51 | Bot Bob        | end-turn             | ended turn
+T 51 | Bot Diana      | dice-roll            | 6+5=11
+T 51 | SYSTEM         | resource-distribution | resource-distribution
+T 51 | Bot Diana      | maritime-trade       | 4:1 grain→wool
+T 52 | Bot Diana      | end-turn             | ended turn
+T 52 | Bot Alice      | dice-roll            | 4+6=10
+T 52 | SYSTEM         | resource-distribution | resource-distribution
+T 52 | Bot Alice      | maritime-trade       | 4:1 grain→brick
+T 52 | Bot Alice      | build-road           | built road
+T 53 | Bot Alice      | end-turn             | ended turn
+T 53 | Bot Charlie    | dice-roll            | 6+6=12
+T 53 | SYSTEM         | resource-distribution | resource-distribution
+T 54 | Bot Charlie    | end-turn             | ended turn
+T 54 | Bot Bob        | dice-roll            | 3+2=5
+T 54 | SYSTEM         | resource-distribution | resource-distribution
+T 55 | Bot Bob        | end-turn             | ended turn
+T 55 | Bot Diana      | dice-roll            | 5+6=11
+T 55 | SYSTEM         | resource-distribution | resource-distribution
+T 56 | Bot Diana      | end-turn             | ended turn
+T 56 | Bot Alice      | dice-roll            | 5+4=9
+T 56 | SYSTEM         | resource-distribution | resource-distribution
+T 56 | Bot Alice      | buy-dev-card         | bought dev card
+T 57 | Bot Alice      | end-turn             | ended turn
+T 57 | Bot Charlie    | dice-roll            | 1+5=6
+T 57 | SYSTEM         | resource-distribution | resource-distribution
+T 57 | Bot Charlie    | build-settlement     | built settlement
+T 57 | Bot Charlie    | buy-dev-card         | bought dev card
+T 58 | Bot Charlie    | end-turn             | ended turn
+T 58 | Bot Bob        | dice-roll            | 6+6=12
+T 58 | SYSTEM         | resource-distribution | resource-distribution
+T 58 | Bot Bob        | maritime-trade       | 4:1 wool→grain
+T 59 | Bot Bob        | end-turn             | ended turn
+T 59 | Bot Diana      | dice-roll            | 3+1=4
+T 59 | SYSTEM         | resource-distribution | resource-distribution
+T 59 | Bot Diana      | build-settlement     | built settlement
+T 60 | Bot Diana      | end-turn             | ended turn
+T 60 | Bot Alice      | dice-roll            | 3+4=7
+T 60 | Bot Bob        | discard              | discarded 5 cards
+T 60 | Bot Alice      | discard              | discarded 4 cards
+T 60 | Bot Alice      | move-robber          | moved robber
+T 60 | Bot Alice      | steal                | stole from Bot Charlie
+T 60 | Bot Alice      | buy-dev-card         | bought dev card
+T 60 | Bot Alice      | play-road-building   | play-road-building
+T 60 | Bot Alice      | longest-road         | longest road (5)
+T 61 | Bot Alice      | end-turn             | ended turn
+T 61 | Bot Charlie    | play-knight          | played knight
+T 61 | Bot Charlie    | move-robber          | moved robber
+T 61 | Bot Charlie    | steal                | stole from Bot Alice
+T 62 | Bot Charlie    | end-turn             | ended turn
+T 62 | Bot Bob        | dice-roll            | 2+1=3
+T 62 | SYSTEM         | resource-distribution | resource-distribution
+T 63 | Bot Bob        | end-turn             | ended turn
+T 63 | Bot Diana      | dice-roll            | 6+6=12
+T 63 | SYSTEM         | resource-distribution | resource-distribution
+T 63 | Bot Diana      | buy-dev-card         | bought dev card
+T 64 | Bot Diana      | end-turn             | ended turn
+T 64 | Bot Alice      | play-knight          | played knight
+T 64 | Bot Alice      | move-robber          | moved robber
+T 64 | Bot Alice      | steal                | stole from Bot Diana
+T 65 | Bot Alice      | end-turn             | ended turn
+T 65 | Bot Charlie    | dice-roll            | 6+1=7
+T 65 | Bot Charlie    | move-robber          | moved robber
+T 65 | Bot Charlie    | steal                | stole from Bot Alice
+T 66 | Bot Charlie    | end-turn             | ended turn
+T 66 | Bot Bob        | dice-roll            | 1+4=5
+T 66 | SYSTEM         | resource-distribution | resource-distribution
+T 66 | Bot Bob        | build-city           | upgraded to city
+T 67 | Bot Bob        | end-turn             | ended turn
+T 67 | Bot Diana      | dice-roll            | 3+5=8
+T 67 | SYSTEM         | resource-distribution | resource-distribution
+T 67 | Bot Diana      | maritime-trade       | 3:1 ore→lumber
+T 67 | Bot Diana      | build-road           | built road
+T 68 | Bot Diana      | end-turn             | ended turn
+T 68 | Bot Alice      | dice-roll            | 2+1=3
+T 68 | SYSTEM         | resource-distribution | resource-distribution
+T 69 | Bot Alice      | end-turn             | ended turn
+T 69 | Bot Charlie    | dice-roll            | 1+1=2
+T 69 | SYSTEM         | resource-distribution | resource-distribution
+T 69 | Bot Charlie    | maritime-trade       | 3:1 wool→lumber
+T 69 | Bot Charlie    | build-road           | built road
+T 70 | Bot Charlie    | end-turn             | ended turn
+T 70 | Bot Bob        | dice-roll            | 4+4=8
+T 70 | SYSTEM         | resource-distribution | resource-distribution
+T 70 | Bot Bob        | maritime-trade       | 4:1 lumber→brick
+T 71 | Bot Bob        | end-turn             | ended turn
+T 71 | Bot Diana      | dice-roll            | 3+4=7
+T 71 | Bot Diana      | discard              | discarded 4 cards
+T 71 | Bot Diana      | move-robber          | moved robber
+T 71 | Bot Diana      | steal                | stole from Bot Bob
+T 72 | Bot Diana      | end-turn             | ended turn
+T 72 | Bot Alice      | dice-roll            | 6+4=10
+T 72 | SYSTEM         | resource-distribution | resource-distribution
+T 72 | Bot Alice      | build-road           | built road
+T 73 | Bot Alice      | end-turn             | ended turn
+T 73 | Bot Charlie    | dice-roll            | 2+3=5
+T 73 | SYSTEM         | resource-distribution | resource-distribution
+T 73 | Bot Charlie    | maritime-trade       | 3:1 wool→brick
+T 74 | Bot Charlie    | end-turn             | ended turn
+T 74 | Bot Bob        | dice-roll            | 3+1=4
+T 74 | SYSTEM         | resource-distribution | resource-distribution
+T 75 | Bot Bob        | end-turn             | ended turn
+T 75 | Bot Diana      | dice-roll            | 3+3=6
+T 75 | SYSTEM         | resource-distribution | resource-distribution
+T 75 | Bot Diana      | build-settlement     | built settlement
+T 75 | Bot Diana      | buy-dev-card         | bought dev card
+T 76 | Bot Diana      | end-turn             | ended turn
+T 76 | Bot Alice      | dice-roll            | 2+3=5
+T 76 | SYSTEM         | resource-distribution | resource-distribution
+T 76 | Bot Alice      | build-road           | built road
+T 77 | Bot Alice      | end-turn             | ended turn
+T 77 | Bot Charlie    | dice-roll            | 5+3=8
+T 77 | SYSTEM         | resource-distribution | resource-distribution
+T 77 | Bot Charlie    | build-settlement     | built settlement
+T 78 | Bot Charlie    | end-turn             | ended turn
+T 78 | Bot Bob        | dice-roll            | 4+3=7
+T 78 | Bot Bob        | move-robber          | moved robber
+T 78 | Bot Bob        | steal                | stole from Bot Diana
+T 78 | Bot Bob        | build-settlement     | built settlement
+T 78 | Bot Bob        | build-road           | built road
+T 79 | Bot Bob        | end-turn             | ended turn
+T 79 | Bot Diana      | play-knight          | played knight
+T 79 | Bot Diana      | move-robber          | moved robber
+T 79 | Bot Diana      | steal                | stole from Bot Bob
+T 79 | Bot Diana      | maritime-trade       | 3:1 ore→lumber
+T 79 | Bot Diana      | build-road           | built road
+T 80 | Bot Diana      | end-turn             | ended turn
+T 80 | Bot Alice      | dice-roll            | 3+5=8
+T 80 | SYSTEM         | resource-distribution | resource-distribution
+T 81 | Bot Alice      | end-turn             | ended turn
+T 81 | Bot Charlie    | dice-roll            | 5+6=11
+T 81 | SYSTEM         | resource-distribution | resource-distribution
+T 82 | Bot Charlie    | end-turn             | ended turn
+T 82 | Bot Bob        | dice-roll            | 5+2=7
+T 82 | Bot Bob        | move-robber          | moved robber
+T 82 | Bot Bob        | steal                | stole from Bot Diana
+T 83 | Bot Bob        | end-turn             | ended turn
+T 83 | Bot Diana      | dice-roll            | 4+1=5
+T 83 | SYSTEM         | resource-distribution | resource-distribution
+T 83 | Bot Diana      | build-road           | built road
+T 83 | Bot Diana      | maritime-trade       | 3:1 ore→brick
+T 83 | Bot Diana      | build-road           | built road
+T 84 | Bot Diana      | end-turn             | ended turn
+T 84 | Bot Alice      | dice-roll            | 3+3=6
+T 84 | SYSTEM         | resource-distribution | resource-distribution
+T 84 | Bot Alice      | buy-dev-card         | bought dev card
+T 84 | Bot Alice      | maritime-trade       | 4:1 brick→lumber
+T 85 | Bot Alice      | end-turn             | ended turn
+T 85 | Bot Charlie    | dice-roll            | 6+4=10
+T 85 | SYSTEM         | resource-distribution | resource-distribution
+T 85 | Bot Charlie    | maritime-trade       | 3:1 wool→brick
+T 85 | Bot Charlie    | build-road           | built road
+T 85 | Bot Charlie    | maritime-trade       | 3:1 wool→ore
+T 86 | Bot Charlie    | end-turn             | ended turn
+T 86 | Bot Bob        | dice-roll            | 2+5=7
+T 86 | Bot Bob        | move-robber          | moved robber
+T 86 | Bot Bob        | steal                | stole from Bot Alice
+T 86 | Bot Bob        | buy-dev-card         | bought dev card
+T 87 | Bot Bob        | end-turn             | ended turn
+T 87 | Bot Diana      | dice-roll            | 4+3=7
+T 87 | Bot Diana      | move-robber          | moved robber
+T 87 | Bot Diana      | steal                | stole from Bot Bob
+T 88 | Bot Diana      | end-turn             | ended turn
+T 88 | Bot Alice      | dice-roll            | 1+4=5
+T 88 | SYSTEM         | resource-distribution | resource-distribution
+T 89 | Bot Alice      | end-turn             | ended turn
+T 89 | Bot Charlie    | dice-roll            | 4+2=6
+T 89 | SYSTEM         | resource-distribution | resource-distribution
+T 89 | Bot Charlie    | buy-dev-card         | bought dev card
+T 90 | Bot Charlie    | end-turn             | ended turn
+T 90 | Bot Bob        | dice-roll            | 2+6=8
+T 90 | SYSTEM         | resource-distribution | resource-distribution
+T 90 | Bot Bob        | play-year-of-plenty  | play-year-of-plenty
+T 90 | Bot Bob        | build-road           | built road
+T 91 | Bot Bob        | end-turn             | ended turn
+T 91 | Bot Diana      | dice-roll            | 4+4=8
+T 91 | SYSTEM         | resource-distribution | resource-distribution
+T 91 | Bot Diana      | maritime-trade       | 3:1 ore→grain
+T 91 | Bot Diana      | buy-dev-card         | bought dev card
+T 92 | Bot Diana      | end-turn             | ended turn
+T 92 | Bot Alice      | dice-roll            | 1+2=3
+T 92 | SYSTEM         | resource-distribution | resource-distribution
+T 93 | Bot Alice      | end-turn             | ended turn
+T 93 | Bot Charlie    | dice-roll            | 2+4=6
+T 93 | SYSTEM         | resource-distribution | resource-distribution
+T 94 | Bot Charlie    | end-turn             | ended turn
+T 94 | Bot Bob        | dice-roll            | 5+2=7
+T 94 | Bot Alice      | discard              | discarded 4 cards
+T 94 | Bot Bob        | move-robber          | moved robber
+T 94 | Bot Bob        | steal                | stole from Bot Diana
+T 94 | Bot Bob        | buy-dev-card         | bought dev card
+T 95 | Bot Bob        | end-turn             | ended turn
+T 95 | Bot Diana      | play-knight          | played knight
+T 95 | Bot Diana      | move-robber          | moved robber
+T 95 | Bot Diana      | steal                | stole from Bot Charlie
+T 95 | Bot Diana      | largest-army         | largest army (3)
+T 95 | Bot Diana      | maritime-trade       | 3:1 wool→grain
+T 95 | Bot Diana      | maritime-trade       | 3:1 ore→grain
+T 96 | Bot Diana      | end-turn             | ended turn
+T 96 | Bot Alice      | dice-roll            | 3+1=4
+T 96 | SYSTEM         | resource-distribution | resource-distribution
+T 97 | Bot Alice      | end-turn             | ended turn
+T 97 | Bot Charlie    | play-knight          | played knight
+T 97 | Bot Charlie    | move-robber          | moved robber
+T 97 | Bot Charlie    | steal                | stole from Bot Diana
+T 97 | Bot Charlie    | maritime-trade       | 3:1 wool→ore
+T 97 | Bot Charlie    | buy-dev-card         | bought dev card
+T 98 | Bot Charlie    | end-turn             | ended turn
+T 98 | Bot Bob        | dice-roll            | 5+1=6
+T 98 | SYSTEM         | resource-distribution | resource-distribution
+T 98 | Bot Bob        | play-monopoly        | play-monopoly
+T 98 | Bot Bob        | maritime-trade       | 4:1 brick→lumber
+T 98 | Bot Bob        | build-settlement     | built settlement
+T 98 | Bot Bob        | maritime-trade       | 3:1 brick→lumber
+T 99 | Bot Bob        | end-turn             | ended turn
+T 99 | Bot Diana      | dice-roll            | 1+2=3
+T 99 | SYSTEM         | resource-distribution | resource-distribution
+T 99 | Bot Diana      | maritime-trade       | 3:1 grain→ore
+T 99 | Bot Diana      | buy-dev-card         | bought dev card
+T100 | Bot Diana      | end-turn             | ended turn
+T100 | Bot Alice      | dice-roll            | 6+2=8
+T100 | SYSTEM         | resource-distribution | resource-distribution
+T101 | Bot Alice      | end-turn             | ended turn
+T101 | Bot Charlie    | dice-roll            | 4+6=10
+T101 | SYSTEM         | resource-distribution | resource-distribution
+T102 | Bot Charlie    | end-turn             | ended turn
+T102 | Bot Bob        | dice-roll            | 6+1=7
+T102 | Bot Bob        | discard              | discarded 4 cards
+T102 | Bot Bob        | move-robber          | moved robber
+T102 | Bot Bob        | steal                | stole from Bot Charlie
+T102 | Bot Bob        | maritime-trade       | 3:1 grain→brick
+T102 | Bot Bob        | build-road           | built road
+T103 | Bot Bob        | end-turn             | ended turn
+T103 | Bot Diana      | dice-roll            | 1+2=3
+T103 | SYSTEM         | resource-distribution | resource-distribution
+T103 | Bot Diana      | play-monopoly        | play-monopoly
+T104 | Bot Diana      | end-turn             | ended turn
+T104 | Bot Alice      | dice-roll            | 6+2=8
+T104 | SYSTEM         | resource-distribution | resource-distribution
+T105 | Bot Alice      | end-turn             | ended turn
+T105 | Bot Charlie    | dice-roll            | 6+5=11
+T105 | SYSTEM         | resource-distribution | resource-distribution
+T106 | Bot Charlie    | end-turn             | ended turn
+T106 | Bot Bob        | dice-roll            | 6+5=11
+T106 | SYSTEM         | resource-distribution | resource-distribution
+T106 | Bot Bob        | maritime-trade       | 3:1 lumber→brick
+T106 | Bot Bob        | maritime-trade       | 3:1 wool→lumber
+T106 | Bot Bob        | build-road           | built road
+T107 | Bot Bob        | end-turn             | ended turn
+T107 | Bot Diana      | dice-roll            | 2+3=5
+T107 | SYSTEM         | resource-distribution | resource-distribution
+T107 | Bot Diana      | maritime-trade       | 3:1 lumber→brick
+T107 | Bot Diana      | build-road           | built road
+T107 | Bot Diana      | maritime-trade       | 3:1 wool→grain
+T107 | Bot Diana      | buy-dev-card         | bought dev card
+T107 | Bot Diana      | maritime-trade       | 3:1 wool→grain
+T107 | Bot Diana      | maritime-trade       | 3:1 ore→grain
+T108 | Bot Diana      | end-turn             | ended turn
+T108 | Bot Alice      | dice-roll            | 6+4=10
+T108 | SYSTEM         | resource-distribution | resource-distribution
+T108 | Bot Alice      | maritime-trade       | 4:1 lumber→brick
+T109 | Bot Alice      | end-turn             | ended turn
+T109 | Bot Charlie    | dice-roll            | 3+1=4
+T109 | SYSTEM         | resource-distribution | resource-distribution
+T110 | Bot Charlie    | end-turn             | ended turn
+T110 | Bot Bob        | dice-roll            | 3+1=4
+T110 | SYSTEM         | resource-distribution | resource-distribution
+T110 | Bot Bob        | maritime-trade       | 3:1 grain→lumber
+T110 | Bot Bob        | build-road           | built road
+T110 | Bot Bob        | maritime-trade       | 3:1 brick→lumber
+T111 | Bot Bob        | end-turn             | ended turn
+T111 | Bot Diana      | dice-roll            | 6+4=10
+T111 | SYSTEM         | resource-distribution | resource-distribution
+T111 | Bot Diana      | maritime-trade       | 3:1 grain→lumber
+T111 | Bot Diana      | build-road           | built road
+T111 | Bot Diana      | maritime-trade       | 3:1 grain→lumber
+T112 | Bot Diana      | end-turn             | ended turn
+T112 | Bot Alice      | dice-roll            | 6+3=9
+T112 | SYSTEM         | resource-distribution | resource-distribution
+T112 | Bot Alice      | build-settlement     | built settlement
+T113 | Bot Alice      | end-turn             | ended turn
+T113 | Bot Charlie    | dice-roll            | 2+5=7
+T113 | Bot Charlie    | discard              | discarded 5 cards
+T113 | Bot Charlie    | move-robber          | moved robber
+T113 | Bot Charlie    | steal                | stole from Bot Diana
+T113 | Bot Charlie    | build-road           | built road
+T113 | Bot Charlie    | maritime-trade       | 2:1 lumber→brick
+T114 | Bot Charlie    | end-turn             | ended turn
+T114 | Bot Bob        | dice-roll            | 3+6=9
+T114 | SYSTEM         | resource-distribution | resource-distribution
+T114 | Bot Bob        | build-settlement     | built settlement
+T115 | Bot Bob        | end-turn             | ended turn
+T115 | Bot Diana      | play-knight          | played knight
+T115 | Bot Diana      | move-robber          | moved robber
+T115 | Bot Diana      | steal                | stole from Bot Bob
+T116 | Bot Diana      | end-turn             | ended turn
+T116 | Bot Alice      | dice-roll            | 6+3=9
+T116 | SYSTEM         | resource-distribution | resource-distribution
+T117 | Bot Alice      | end-turn             | ended turn
+T117 | Bot Charlie    | dice-roll            | 2+4=6
+T117 | SYSTEM         | resource-distribution | resource-distribution
+T117 | Bot Charlie    | maritime-trade       | 3:1 wool→lumber
+T117 | Bot Charlie    | build-road           | built road
+T117 | Bot Charlie    | maritime-trade       | 3:1 grain→lumber
+T118 | Bot Charlie    | end-turn             | ended turn
+T118 | Bot Bob        | dice-roll            | 1+2=3
+T118 | SYSTEM         | resource-distribution | resource-distribution
+T118 | Bot Bob        | maritime-trade       | 3:1 grain→lumber
+T118 | Bot Bob        | build-road           | built road
+T119 | Bot Bob        | end-turn             | ended turn
+T119 | Bot Diana      | dice-roll            | 5+4=9
+T119 | SYSTEM         | resource-distribution | resource-distribution
+T120 | Bot Diana      | end-turn             | ended turn
+T120 | Bot Alice      | dice-roll            | 2+3=5
+T120 | SYSTEM         | resource-distribution | resource-distribution
+T120 | Bot Alice      | maritime-trade       | 3:1 brick→lumber
+T121 | Bot Alice      | end-turn             | ended turn
+T121 | Bot Charlie    | dice-roll            | 6+4=10
+T121 | SYSTEM         | resource-distribution | resource-distribution
+T121 | Bot Charlie    | maritime-trade       | 2:1 lumber→ore
+T121 | Bot Charlie    | buy-dev-card         | bought dev card
+T121 | Bot Charlie    | maritime-trade       | 3:1 grain→lumber
+T121 | Bot Charlie    | maritime-trade       | 3:1 brick→grain
+T122 | Bot Charlie    | end-turn             | ended turn
+T122 | Bot Bob        | dice-roll            | 4+3=7
+T122 | Bot Bob        | move-robber          | moved robber
+T122 | Bot Bob        | steal                | stole from Bot Diana
+T123 | Bot Bob        | end-turn             | ended turn
+T123 | Bot Diana      | dice-roll            | 1+1=2
+T123 | SYSTEM         | resource-distribution | resource-distribution
+T123 | Bot Diana      | build-settlement     | built settlement
+T123 | Bot Diana      | buy-dev-card         | bought dev card
+T124 | Bot Diana      | end-turn             | ended turn
+T124 | Bot Alice      | dice-roll            | 2+3=5
+T124 | SYSTEM         | resource-distribution | resource-distribution
+T124 | Bot Alice      | maritime-trade       | 3:1 lumber→brick
+T125 | Bot Alice      | end-turn             | ended turn
+T125 | Bot Charlie    | dice-roll            | 1+1=2
+T125 | SYSTEM         | resource-distribution | resource-distribution
+T125 | Bot Charlie    | maritime-trade       | 3:1 wool→brick
+T126 | Bot Charlie    | end-turn             | ended turn
+T126 | Bot Bob        | dice-roll            | 3+6=9
+T126 | SYSTEM         | resource-distribution | resource-distribution
+T126 | Bot Bob        | maritime-trade       | 3:1 brick→lumber
+T127 | Bot Bob        | end-turn             | ended turn
+T127 | Bot Diana      | dice-roll            | 2+2=4
+T127 | SYSTEM         | resource-distribution | resource-distribution
+T127 | Bot Diana      | build-road           | built road
+T127 | Bot Diana      | play-road-building   | play-road-building
+T127 | Bot Diana      | longest-road         | longest road (6)
+T127 | Bot Diana      | VICTORY              | WON with 11 VP!
+
+══════════════════════════════════════════════════════════════════════
+  GAME OVER — Turn 127 — 26.4s
+══════════════════════════════════════════════════════════════════════
+
+WINNER: Bot Diana — 10 VP
+
+FINAL STANDINGS:
+  1. Bot Diana (orange) — 11 VP | S:4 C:1 R:12 LR LA
+  2. Bot Charlie (white) — 7 VP | S:5 C:0 R:9 
+  3. Bot Bob (blue) — 7 VP | S:4 C:1 R:9 
+  4. Bot Alice (red) — 4 VP | S:4 C:0 R:12 
+
+STATISTICS:
+  Turns: 126
+  Duration: 26.4s
+  Dice: 2:3, 3:7, 4:12, 5:14, 6:16, 7:24, 8:12, 9:11, 10:11, 11:6, 12:4
+  Settlements built: 19
+  Cities built: 2
+  Roads built: 38
+  Maritime trades: 54
+  Robberies: 31
+  Forced discards: 8
+  Dev cards bought: 18
+  Dev cards played: 12
+  Longest road: Bot Diana
+  Largest army: Bot Diana (4 knights)
+  Views received: 422
+  Log entries: 560
+

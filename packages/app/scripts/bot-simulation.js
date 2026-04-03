@@ -3,38 +3,40 @@
  *
  * Connects via socket.io-client (no browser needed), creates a game,
  * adds 4 bots, and watches them play to completion.
- * Logs everything to console and simulation-log.txt.
+ *
+ * Log is IMMUTABLE — timestamped filename, append-only during game.
  *
  * Usage: node scripts/bot-simulation.js
  * Requires: server running on localhost:3030
  */
 
 import { io } from 'socket.io-client';
-import { writeFileSync } from 'node:fs';
+import { appendFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BASE = 'http://localhost:3030';
-const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes max
-const LOG_FILE = join(__dirname, 'simulation-log.txt');
+const TIMEOUT_MS = 5 * 60 * 1000;
 
-// ─── State tracking ─────────────────────────────────────────────────────────
+// Timestamped log file — never overwritten
+const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+const LOG_FILE = join(__dirname, `logs/sim-${timestamp}.log`);
+
+// Ensure logs dir exists
+import { mkdirSync } from 'node:fs';
+mkdirSync(join(__dirname, 'logs'), { recursive: true });
+
+// ─── State ──────────────────────────────────────────────────────────────────
 
 let gameId = null;
 let gameStartTime = null;
 let lastView = null;
 let viewCount = 0;
-
-/**
- * recentLog is a sliding window of the last 20 entries from the engine.
- * To track all entries across the entire game, we fingerprint the last
- * seen entry and only process entries that appear after it in each new view.
- */
 let lastSeenFingerprint = null;
-let totalLogEntriesSeen = 0;
+let totalLogEntries = 0;
+let playerNames = {};  // playerId → name
 
-// Tracking stats
 const diceDistribution = {};
 for (let i = 2; i <= 12; i++) diceDistribution[i] = 0;
 
@@ -44,41 +46,50 @@ const stats = {
   devCardsBought: 0,
   devCardsPlayed: 0,
   totalTurns: 0,
+  forcedDiscards: 0,
+  settlementsBuilt: 0,
+  citiesBuilt: 0,
+  roadsBuilt: 0,
 };
 
-// Collected log lines
-const turnLog = [];
+// ─── Logging (append-only) ──────────────────────────────────────────────────
 
 function log(line) {
   console.log(line);
 }
 
-function logTurn(turn, player, action, details) {
-  const entry = `T${String(turn).padStart(3)} | ${player.padEnd(14)} | ${action.padEnd(20)} | ${details}`;
-  turnLog.push(entry);
+function appendLog(line) {
+  appendFileSync(LOG_FILE, line + '\n');
+}
+
+function logTurn(phase, turn, player, action, details) {
+  const prefix = phase === 'setup' ? `S${turn}` : `T${String(turn).padStart(3)}`;
+  const entry = `${prefix.padStart(4)} | ${player.padEnd(14)} | ${action.padEnd(20)} | ${details}`;
+  log(`  ${entry}`);
+  appendLog(entry);
 }
 
 function fingerprint(entry) {
   return `${entry.player}|${entry.action}|${entry.details}`;
 }
 
-// ─── Main ────────────────────────────────────────────────────────────────────
+// ─── Main ───────────────────────────────────────────────────────────────────
 
 async function main() {
-  log('');
-  log('Connecting to server...');
+  log('\nCATAN BOT SIMULATION\n');
+  log(`Log file: ${LOG_FILE}\n`);
 
   const socket = io(BASE, { transports: ['websocket'], path: '/api/socket' });
 
   await new Promise((resolve, reject) => {
     socket.on('connect', resolve);
-    socket.on('connect_error', (err) => reject(new Error(`Cannot connect to ${BASE}: ${err.message}`)));
-    setTimeout(() => reject(new Error(`Connection timeout after 5s`)), 5000);
+    socket.on('connect_error', (err) => reject(new Error(`Cannot connect: ${err.message}`)));
+    setTimeout(() => reject(new Error('Connection timeout')), 5000);
   });
 
   log(`Connected: ${socket.id}`);
 
-  // ─── Create game ──────────────────────────────────────────────────────
+  // ─── Create game ────────────────────────────────────────────────────
 
   const config = {
     boardType: 'random-balanced',
@@ -92,295 +103,228 @@ async function main() {
   };
 
   const createResult = await emitCb(socket, 'game:create', config);
-  if (createResult.error) throw new Error(`Create failed: ${createResult.error}`);
   gameId = createResult.gameId;
   log(`Game created: ${gameId} (code: ${createResult.code})`);
 
-  // ─── Observe the game (join the room) ─────────────────────────────────
+  await emitCb(socket, 'game:observe', gameId);
 
-  const observeResult = await emitCb(socket, 'game:observe', gameId);
-  if (observeResult.error) throw new Error(`Observe failed: ${observeResult.error}`);
-  log('Joined game room as observer');
-
-  // ─── Add 4 bots ───────────────────────────────────────────────────────
+  // ─── Add 4 bots ─────────────────────────────────────────────────────
 
   const botIds = [];
   for (let i = 0; i < 4; i++) {
-    const botResult = await emitCb(socket, 'game:add-bot', gameId);
-    if (botResult.error) throw new Error(`Add bot failed: ${botResult.error}`);
-    botIds.push(botResult.playerId);
-    log(`Added bot ${i + 1}: ${botResult.playerId}`);
+    const r = await emitCb(socket, 'game:add-bot', gameId);
+    botIds.push(r.playerId);
+    log(`Added bot ${i + 1}: ${r.playerId}`);
   }
 
-  // ─── Set bot speed to max (instant) ───────────────────────────────────
+  socket.emit('game:set-bot-speed', gameId, 100);
+  log('Bot speed: instant\n');
 
-  socket.emit('game:set-bot-speed', gameId, 100); // 100x = ~8ms think time
-  log('Bot speed set to instant');
+  // ─── Write log header ───────────────────────────────────────────────
 
-  // ─── Listen for events ────────────────────────────────────────────────
+  writeFileSync(LOG_FILE, [
+    '═'.repeat(70),
+    `  CATAN BOT SIMULATION — ${new Date().toISOString()}`,
+    `  Variant: ${config.variantId} | Players: 4 | VP Target: ${config.victoryPoints}`,
+    '═'.repeat(70),
+    '',
+  ].join('\n') + '\n');
+
+  // ─── Listen for events ──────────────────────────────────────────────
+
+  let setupRound = 1;
 
   const gameOverPromise = new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error(`Game did not finish within ${TIMEOUT_MS / 1000}s`));
-    }, TIMEOUT_MS);
+    const timeout = setTimeout(() => reject(new Error('Game timeout (5min)')), TIMEOUT_MS);
 
     socket.on('game:starting', (data) => {
       gameStartTime = Date.now();
-      log(`\nGame starting! Turn order: ${data.turnOrder.join(', ')}\n`);
-    });
-
-    socket.on('game:dice-result', (data) => {
-      // Bot dice results may not come through here (bots use engine directly),
-      // so we also parse dice from recentLog entries
-      diceDistribution[data.total]++;
+      log(`Game starting! Turn order: ${data.turnOrder.join(', ')}\n`);
+      appendLog('');
+      appendLog('─'.repeat(70));
+      appendLog('SETUP PHASE');
+      appendLog('─'.repeat(70));
+      appendLog('');
     });
 
     socket.on('game:view', (view) => {
       viewCount++;
-      processView(view);
+
+      // Capture player names on first view
+      if (Object.keys(playerNames).length === 0) {
+        for (const p of view.players) {
+          playerNames[p.id] = p.name;
+        }
+        appendLog('PLAYERS:');
+        for (let i = 0; i < view.players.length; i++) {
+          const p = view.players[i];
+          appendLog(`  ${i + 1}. ${p.name} (${p.color})`);
+        }
+        appendLog('');
+      }
+
+      // Detect setup → playing transition
+      if (lastView && (lastView.phase === 'SETUP_ROUND_1' || lastView.phase === 'SETUP_ROUND_2') && view.phase === 'PLAYING') {
+        appendLog('');
+        appendLog('─'.repeat(70));
+        appendLog('PLAYING PHASE');
+        appendLog('─'.repeat(70));
+        appendLog('');
+      }
+
+      if (view.phase === 'SETUP_ROUND_2' && lastView?.phase === 'SETUP_ROUND_1') {
+        setupRound = 2;
+      }
+
+      processView(view, setupRound);
 
       if (view.winner) {
         clearTimeout(timeout);
         resolve(view);
       }
     });
-
-    socket.on('game:timer-expired', (data) => {
-      log(`  [TIMER EXPIRED] Player: ${data.playerId}`);
-    });
-
-    socket.on('game:action-error', (error) => {
-      log(`  [ACTION ERROR] ${error}`);
-    });
   });
 
-  // ─── Start the game ───────────────────────────────────────────────────
+  // ─── Start ──────────────────────────────────────────────────────────
 
-  log('');
   log('Starting game...');
   const startResult = await emitCb(socket, 'game:start', gameId);
   if (startResult.error) throw new Error(`Start failed: ${startResult.error}`);
-  log('Game started!');
+  log('Game started!\n');
 
-  // ─── Wait for completion ──────────────────────────────────────────────
+  // ─── Wait ───────────────────────────────────────────────────────────
 
   let finalView;
   try {
     finalView = await gameOverPromise;
   } catch (err) {
     log(`\nERROR: ${err.message}`);
+    appendLog(`\nERROR: ${err.message}`);
     if (lastView) {
-      log(`Last known state: phase=${lastView.phase}, turn=${lastView.turnNumber}, turnPhase=${lastView.turnPhase}`);
-      log(`Current player: ${lastView.currentPlayerId}`);
       for (const p of lastView.players) {
-        log(`  ${p.name} (${p.color}): ${p.vp} VP, ${p.resourceCount} cards`);
+        appendLog(`  ${p.name}: ${p.vp} VP, ${p.resourceCount} cards`);
       }
     }
-    writeLogFile(lastView);
     socket.disconnect();
     process.exit(1);
   }
 
-  const duration = ((Date.now() - gameStartTime) / 1000).toFixed(1);
-  log('');
-  log('='.repeat(70));
-  log(`GAME OVER after ${finalView.turnNumber} turns (${duration}s)`);
-  log(`WINNER: ${finalView.winnerName} with ${finalView.victoryPoints} VP!`);
-  log('='.repeat(70));
+  // ─── Final summary ──────────────────────────────────────────────────
 
-  for (const p of finalView.players) {
-    const lr = p.hasLongestRoad ? 'LR' : '';
-    const la = p.hasLargestArmy ? 'LA' : '';
-    const badges = [lr, la].filter(Boolean).join(', ');
-    log(`  ${p.name} (${p.color}) - ${p.vp} VP | S:${p.settlements.length} C:${p.cities.length} R:${p.roads.length} ${badges}`);
+  const duration = ((Date.now() - gameStartTime) / 1000).toFixed(1);
+
+  const summary = [];
+  summary.push('');
+  summary.push('═'.repeat(70));
+  summary.push(`  GAME OVER — Turn ${finalView.turnNumber} — ${duration}s`);
+  summary.push('═'.repeat(70));
+  summary.push('');
+  summary.push(`WINNER: ${finalView.winnerName} — ${finalView.victoryPoints} VP`);
+  summary.push('');
+  summary.push('FINAL STANDINGS:');
+
+  const sorted = [...finalView.players].sort((a, b) => b.vp - a.vp);
+  for (let i = 0; i < sorted.length; i++) {
+    const p = sorted[i];
+    const flags = [p.hasLongestRoad && 'LR', p.hasLargestArmy && 'LA'].filter(Boolean).join(' ');
+    summary.push(`  ${i + 1}. ${p.name} (${p.color}) — ${p.vp} VP | S:${p.settlements?.length ?? '?'} C:${p.cities?.length ?? '?'} R:${p.roads?.length ?? '?'} ${flags}`);
   }
 
-  log(`\nReceived ${viewCount} game:view events`);
-  log(`Turn log entries: ${turnLog.length}`);
+  summary.push('');
+  summary.push('STATISTICS:');
+  summary.push(`  Turns: ${stats.totalTurns}`);
+  summary.push(`  Duration: ${duration}s`);
+  summary.push(`  Dice: ${Object.entries(diceDistribution).map(([k, v]) => `${k}:${v}`).join(', ')}`);
+  summary.push(`  Settlements built: ${stats.settlementsBuilt}`);
+  summary.push(`  Cities built: ${stats.citiesBuilt}`);
+  summary.push(`  Roads built: ${stats.roadsBuilt}`);
+  summary.push(`  Maritime trades: ${stats.maritimeTrades}`);
+  summary.push(`  Robberies: ${stats.robberies}`);
+  summary.push(`  Forced discards: ${stats.forcedDiscards}`);
+  summary.push(`  Dev cards bought: ${stats.devCardsBought}`);
+  summary.push(`  Dev cards played: ${stats.devCardsPlayed}`);
 
-  writeLogFile(finalView);
+  const lrPlayer = finalView.players.find(p => p.hasLongestRoad);
+  const laPlayer = finalView.players.find(p => p.hasLargestArmy);
+  if (lrPlayer) summary.push(`  Longest road: ${lrPlayer.name}`);
+  if (laPlayer) summary.push(`  Largest army: ${laPlayer.name} (${laPlayer.knightsPlayed} knights)`);
 
+  summary.push(`  Views received: ${viewCount}`);
+  summary.push(`  Log entries: ${totalLogEntries}`);
+  summary.push('');
+
+  for (const line of summary) {
+    log(line);
+    appendLog(line);
+  }
+
+  log(`Log: ${LOG_FILE}`);
   socket.disconnect();
-  log('\nDone.');
 }
 
-// ─── Process game:view events ────────────────────────────────────────────────
+// ─── Process views ──────────────────────────────────────────────────────────
 
-function processView(view) {
+function processView(view, setupRound) {
   const recentLog = view.recentLog || [];
-  if (recentLog.length === 0) {
-    lastView = view;
-    return;
-  }
+  if (recentLog.length === 0) { lastView = view; return; }
 
-  // Find where the new entries start in the recentLog window
   let newStartIdx = 0;
-
   if (lastSeenFingerprint) {
-    // Search for the last fingerprint in the current window
     for (let i = recentLog.length - 1; i >= 0; i--) {
       if (fingerprint(recentLog[i]) === lastSeenFingerprint) {
         newStartIdx = i + 1;
         break;
       }
     }
-    // If fingerprint not found at all, it scrolled out of the 20-entry window.
-    // In that case all entries in the window are new to us.
-    // This means we may have missed some entries between calls, but with bots
-    // running at ~8ms and socket events firing per action, this is unlikely.
   }
 
   if (newStartIdx < recentLog.length) {
-    const newEntries = recentLog.slice(newStartIdx);
-    for (const entry of newEntries) {
-      totalLogEntriesSeen++;
-      processLogEntry(view.turnNumber, entry);
+    const isSetup = view.phase === 'SETUP_ROUND_1' || view.phase === 'SETUP_ROUND_2';
+    for (const entry of recentLog.slice(newStartIdx)) {
+      totalLogEntries++;
+      processLogEntry(isSetup ? 'setup' : 'playing', isSetup ? setupRound : view.turnNumber, entry);
     }
-    // Update fingerprint to the last entry we processed
     lastSeenFingerprint = fingerprint(recentLog[recentLog.length - 1]);
   }
 
   lastView = view;
-
-  // Periodic progress update (every 100 views)
-  if (viewCount % 100 === 0) {
-    const elapsed = gameStartTime ? ((Date.now() - gameStartTime) / 1000).toFixed(0) : '?';
-    const vps = view.players.map(p => `${p.name.replace('Bot ', '')}:${p.vp}`).join(' ');
-    log(`  [${elapsed}s] Turn ${view.turnNumber} | ${vps}`);
-  }
 }
 
-function processLogEntry(turn, entry) {
-  const action = entry.action;
-  const details = entry.details;
+function processLogEntry(phase, turn, entry) {
+  const { action, details } = entry;
 
-  // Track stats
   switch (action) {
     case 'dice-roll': {
-      // Parse dice from details string like "3+5=8"
-      const match = details.match(/(\d+)\+(\d+)=(\d+)/);
-      if (match) {
-        const total = parseInt(match[3], 10);
-        diceDistribution[total] = (diceDistribution[total] || 0) + 1;
-      }
+      const m = details.match(/(\d+)\+(\d+)=(\d+)/);
+      if (m) diceDistribution[parseInt(m[3], 10)]++;
       break;
     }
-    case 'buy-dev-card':
-      stats.devCardsBought++;
-      break;
+    case 'maritime-trade': stats.maritimeTrades++; break;
+    case 'move-robber': stats.robberies++; break;
+    case 'buy-dev-card': stats.devCardsBought++; break;
     case 'play-knight':
-      stats.devCardsPlayed++;
-      break;
-    case 'maritime-trade':
-      stats.maritimeTrades++;
-      break;
-    case 'move-robber':
-      stats.robberies++;
-      break;
-    case 'end-turn':
-      stats.totalTurns++;
-      break;
+    case 'play-road-building':
+    case 'play-year-of-plenty':
+    case 'play-monopoly': stats.devCardsPlayed++; break;
+    case 'end-turn': stats.totalTurns++; break;
+    case 'discard': stats.forcedDiscards++; break;
+    case 'build-settlement':
+    case 'setup-settlement': stats.settlementsBuilt++; break;
+    case 'build-city': stats.citiesBuilt++; break;
+    case 'build-road':
+    case 'setup-road': stats.roadsBuilt++; break;
   }
 
-  logTurn(turn, entry.player, action, details);
+  logTurn(phase, turn, entry.player, action, details);
 }
 
-// ─── Write log file ──────────────────────────────────────────────────────────
-
-function writeLogFile(view) {
-  if (!view) {
-    writeFileSync(LOG_FILE, 'Simulation failed -- no game view received.\n');
-    log(`Log written to ${LOG_FILE}`);
-    return;
-  }
-
-  const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
-  const duration = gameStartTime ? ((Date.now() - gameStartTime) / 1000).toFixed(1) : '?';
-
-  // Find longest road and largest army holders
-  const lrPlayer = view.players.find(p => p.hasLongestRoad);
-  const laPlayer = view.players.find(p => p.hasLargestArmy);
-
-  const lines = [];
-
-  lines.push('='.repeat(70));
-  lines.push(`  CATAN BOT SIMULATION -- ${now}`);
-  lines.push(`  Variant: ${view.variantId}, Players: ${view.players.length}, VP Target: ${view.victoryPoints}`);
-  lines.push('='.repeat(70));
-  lines.push('');
-
-  lines.push('PLAYERS:');
-  for (let i = 0; i < view.players.length; i++) {
-    const p = view.players[i];
-    lines.push(`  ${i + 1}. ${p.name} (${p.color})`);
-  }
-  lines.push('');
-
-  lines.push('-'.repeat(70));
-  lines.push('TURN LOG:');
-  lines.push('-'.repeat(70));
-  lines.push('');
-
-  for (const entry of turnLog) {
-    lines.push(entry);
-  }
-
-  lines.push('');
-  lines.push('='.repeat(70));
-  lines.push(`GAME OVER -- Turn ${view.turnNumber}`);
-  lines.push('='.repeat(70));
-  lines.push('');
-
-  if (view.winner) {
-    lines.push(`WINNER: ${view.winnerName} with ${view.victoryPoints} Victory Points!`);
-  } else {
-    lines.push('NO WINNER (game timed out or errored)');
-  }
-  lines.push('');
-
-  lines.push('FINAL STANDINGS:');
-  const sorted = [...view.players].sort((a, b) => b.vp - a.vp);
-  for (let i = 0; i < sorted.length; i++) {
-    const p = sorted[i];
-    const lr = p.hasLongestRoad ? 'true' : 'false';
-    const la = p.hasLargestArmy ? 'true' : 'false';
-    lines.push(`  ${i + 1}. ${p.name} -- ${p.vp} VP (S:${p.settlements.length} C:${p.cities.length} LR:${lr} LA:${la})`);
-  }
-  lines.push('');
-
-  lines.push('STATISTICS:');
-  lines.push(`  Total turns: ${stats.totalTurns}`);
-  lines.push(`  Game duration: ${duration}s`);
-
-  const diceLine = Object.entries(diceDistribution)
-    .map(([k, v]) => `${k}:${v}`)
-    .join(', ');
-  lines.push(`  Dice distribution: ${diceLine}`);
-
-  lines.push(`  Maritime trades: ${stats.maritimeTrades}`);
-  lines.push(`  Robberies: ${stats.robberies}`);
-  lines.push(`  Dev cards bought: ${stats.devCardsBought}`);
-  lines.push(`  Dev cards played: ${stats.devCardsPlayed}`);
-  lines.push(`  Longest road: ${lrPlayer ? `${lrPlayer.name}` : 'none'}`);
-  lines.push(`  Largest army: ${laPlayer ? `${laPlayer.name} (${laPlayer.knightsPlayed} knights)` : 'none'}`);
-  lines.push(`  Game views received: ${viewCount}`);
-  lines.push(`  Log entries captured: ${totalLogEntriesSeen}`);
-  lines.push('');
-
-  const content = lines.join('\n');
-  writeFileSync(LOG_FILE, content);
-  log(`\nLog written to ${LOG_FILE}`);
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function emitCb(socket, event, ...args) {
   return new Promise((resolve) => {
     socket.emit(event, ...args, (response) => resolve(response));
   });
 }
-
-// ─── Run ─────────────────────────────────────────────────────────────────────
 
 main().catch((err) => {
   console.error('FATAL:', err.message);
