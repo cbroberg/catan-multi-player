@@ -13,7 +13,7 @@ const COLOR_HEX: Record<string, string> = {
   red: '#AE0100',
   blue: '#071C8F',
   white: '#f5f5f5',
-  orange: '#FFC32B',
+  orange: '#FF940F',
   green: '#003224',
   brown: '#461E00', purple: '#8b5cf6', cyan: '#06b6d4',
 };

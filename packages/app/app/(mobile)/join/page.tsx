@@ -12,7 +12,7 @@ const COLORS: { id: PlayerColor; hex: string }[] = [
   { id: 'red', hex: '#AE0100' },
   { id: 'blue', hex: '#071C8F' },
   { id: 'white', hex: '#f5f5f5' },
-  { id: 'orange', hex: '#FFC32B' },
+  { id: 'orange', hex: '#FF940F' },
   { id: 'green', hex: '#003224' },
   { id: 'brown', hex: '#461E00' },
   { id: 'purple', hex: '#8b5cf6' },

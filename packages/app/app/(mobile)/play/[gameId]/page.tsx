@@ -19,7 +19,7 @@ const RESOURCES: { type: ResourceType; icon: string; color: string }[] = [
 
 const COLOR_HEX: Record<string, string> = {
   red: '#AE0100', blue: '#071C8F', white: '#e5e5e5',
-  orange: '#FFC32B', green: '#003224', brown: '#461E00', purple: '#8b5cf6', cyan: '#06b6d4',
+  orange: '#FF940F', green: '#003224', brown: '#461E00', purple: '#8b5cf6', cyan: '#06b6d4',
 };
 
 type UIMode = null | 'build-settlement' | 'build-road' | 'build-city' | 'move-robber' | 'steal-select' | 'trade-create';
