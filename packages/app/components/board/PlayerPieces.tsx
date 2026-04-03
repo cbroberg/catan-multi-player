@@ -65,7 +65,7 @@ export function SettlementPiece({ x, y, color, size = 14 }: SettlementPieceProps
       <image
         href="/tiles/settlement.webp"
         x={x - s / 2}
-        y={y - s / 2 + s * 0.08}
+        y={y - s / 2 - s * 0.08}
         width={s}
         height={s}
         preserveAspectRatio="xMidYMid meet"
@@ -111,7 +111,7 @@ export function CityPiece({ x, y, color, size = 18 }: CityPieceProps) {
       <image
         href="/tiles/city.webp"
         x={x - s / 2}
-        y={y - s / 2 + s * 0.15}
+        y={y - s / 2 - s * 0.15}
         width={s}
         height={s}
         preserveAspectRatio="xMidYMid meet"
