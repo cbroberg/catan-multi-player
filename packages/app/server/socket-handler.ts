@@ -350,6 +350,9 @@ export function registerSocketHandlers(io: TypedServer, gm: GameManager, botMana
         return;
       }
 
+      // Auto-join game room so this socket receives broadcasts (dice-result, timer-sync, etc.)
+      socket.join(gm.getGameRoom(gameId));
+
       // Check if this socket is a bot observer — send bot-perspective view
       const botObs = botObservers.get(socket.id);
       if (botObs && botObs.gameId === gameId) {
