@@ -19,7 +19,7 @@ const RESOURCES: { type: ResourceType; icon: string; color: string }[] = [
 
 const COLOR_HEX: Record<string, string> = {
   red: '#AE0100', blue: '#071C8F', white: '#e5e5e5',
-  orange: '#FFC32B', green: '#22c55e', brown: '#461E00', purple: '#8b5cf6', cyan: '#06b6d4',
+  orange: '#FFC32B', green: '#003224', brown: '#461E00', purple: '#8b5cf6', cyan: '#06b6d4',
 };
 
 type UIMode = null | 'build-settlement' | 'build-road' | 'build-city' | 'move-robber' | 'steal-select' | 'trade-create';
@@ -348,7 +348,7 @@ function autoDiscard(resources: Record<ResourceType, number>): Partial<Record<Re
 }
 
 function MobileTimer({ seconds, isLow, isCritical }: { seconds: number; isLow: boolean; isCritical: boolean }) {
-  const color = isCritical ? '#AE0100' : isLow ? '#eab308' : '#22c55e';
+  const color = isCritical ? '#AE0100' : isLow ? '#eab308' : '#003224';
   return (
     <span
       className={`text-sm font-bold tabular-nums ${isCritical ? 'animate-pulse' : ''}`}
