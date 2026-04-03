@@ -2,6 +2,15 @@
 
 // ─── Color utilities ─────────────────────────────────────────────────────────
 
+/** Parse hex color to RGB */
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  return {
+    r: parseInt(hex.slice(1, 3), 16),
+    g: parseInt(hex.slice(3, 5), 16),
+    b: parseInt(hex.slice(5, 7), 16),
+  };
+}
+
 /** Darken a hex color by a factor (0 = black, 1 = original) */
 function darken(hex: string, factor: number): string {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -33,12 +42,26 @@ interface SettlementPieceProps {
  */
 export function SettlementPiece({ x, y, color, size = 14 }: SettlementPieceProps) {
   const s = size * 1.2;
+  const filterId = `tint-s-${Math.round(x)}-${Math.round(y)}`;
+  const { r, g, b } = hexToRgb(color);
+
   return (
     <g>
+      <defs>
+        <filter id={filterId}>
+          {/* Tint: blend the grayscale image toward player color */}
+          <feColorMatrix type="matrix" values={`
+            ${0.4 + r / 255 * 0.6} ${0.1 * (1 - r / 255)} 0 0 ${r / 255 * 0.15}
+            ${0.1 * (1 - g / 255)} ${0.4 + g / 255 * 0.6} 0 0 ${g / 255 * 0.15}
+            ${0.1 * (1 - b / 255)} 0 ${0.4 + b / 255 * 0.6} 0 ${b / 255 * 0.15}
+            0 0 0 1 0
+          `} />
+        </filter>
+      </defs>
       {/* Player color base ring */}
-      <circle cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill={color} opacity="0.9" />
-      <circle cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill="none" stroke={darken(color, 0.6)} strokeWidth="1" />
-      {/* High-res settlement image */}
+      <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill={color} opacity="0.9" />
+      <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.5} ry={s * 0.25} fill="none" stroke={darken(color, 0.6)} strokeWidth="1" />
+      {/* Tinted settlement image */}
       <image
         href="/tiles/settlement.webp"
         x={x - s / 2}
@@ -46,6 +69,7 @@ export function SettlementPiece({ x, y, color, size = 14 }: SettlementPieceProps
         width={s}
         height={s}
         preserveAspectRatio="xMidYMid meet"
+        filter={`url(#${filterId})`}
       />
     </g>
   );
@@ -65,12 +89,25 @@ interface CityPieceProps {
  */
 export function CityPiece({ x, y, color, size = 18 }: CityPieceProps) {
   const s = size * 1.3;
+  const filterId = `tint-c-${Math.round(x)}-${Math.round(y)}`;
+  const { r, g, b } = hexToRgb(color);
+
   return (
     <g>
-      {/* Player color base ring — slightly larger than settlement */}
-      <circle cx={x} cy={y + s * 0.15} rx={s * 0.55} ry={s * 0.28} fill={color} opacity="0.9" />
-      <circle cx={x} cy={y + s * 0.15} rx={s * 0.55} ry={s * 0.28} fill="none" stroke={darken(color, 0.6)} strokeWidth="1.2" />
-      {/* High-res city image */}
+      <defs>
+        <filter id={filterId}>
+          <feColorMatrix type="matrix" values={`
+            ${0.4 + r / 255 * 0.6} ${0.1 * (1 - r / 255)} 0 0 ${r / 255 * 0.15}
+            ${0.1 * (1 - g / 255)} ${0.4 + g / 255 * 0.6} 0 0 ${g / 255 * 0.15}
+            ${0.1 * (1 - b / 255)} 0 ${0.4 + b / 255 * 0.6} 0 ${b / 255 * 0.15}
+            0 0 0 1 0
+          `} />
+        </filter>
+      </defs>
+      {/* Player color base ring */}
+      <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.55} ry={s * 0.28} fill={color} opacity="0.9" />
+      <ellipse cx={x} cy={y + s * 0.15} rx={s * 0.55} ry={s * 0.28} fill="none" stroke={darken(color, 0.6)} strokeWidth="1.2" />
+      {/* Tinted city image */}
       <image
         href="/tiles/city.webp"
         x={x - s / 2}
@@ -78,6 +115,7 @@ export function CityPiece({ x, y, color, size = 18 }: CityPieceProps) {
         width={s}
         height={s}
         preserveAspectRatio="xMidYMid meet"
+        filter={`url(#${filterId})`}
       />
     </g>
   );
