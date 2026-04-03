@@ -316,8 +316,9 @@ function generateDemoRoads(board: GameBoard): BoardRoad[] {
     const playerBuildings = buildings.filter((b) => b.playerId === `player-${p}`);
     for (const building of playerBuildings) {
       // Find edges connected to this vertex
+      // Only land edges — no roads in the water!
       const connectedEdges = board.edges.filter(
-        (e) => e.vertexIds.includes(building.vertexId) && !usedEdges.has(e.id)
+        (e) => e.vertexIds.includes(building.vertexId) && !usedEdges.has(e.id) && e.edgeType === 'land'
       );
       if (connectedEdges.length > 0) {
         const edge = connectedEdges[0];
